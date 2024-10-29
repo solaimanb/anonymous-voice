@@ -1,71 +1,71 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "@/components/layout/Header";
 
-const openSans = localFont({
+const comfortaa = localFont({
   src: [
     {
-      path: "./fonts/OpenSans-Regular.woff",
+      path: "./fonts/Comfortaa-Light.woff",
+      weight: "300",
+    },
+    {
+      path: "./fonts/Comfortaa-Regular.woff",
       weight: "400",
     },
     {
-      path: "./fonts/OpenSans-SemiBold.ttf",
-      weight: "600",
+      path: "./fonts/Comfortaa-Medium.woff",
+      weight: "500",
     },
+    // {
+    //   path: "./fonts/Comfortaa-Semibold.woff",
+    //   weight: "600",
+    // },
     {
-      path: "./fonts/OpenSans-Bold.ttf",
-      weight: "700",
-    },
-    {
-      path: "./fonts/OpenSans-ExtraBold.ttf",
+      path: "./fonts/Comfortaa-Bold.woff",
       weight: "800",
-    }
+    },
   ],
-  variable: "--font-open-sans",
-});
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+  variable: "--font-comfortaa",
 });
 
 export const metadata: Metadata = {
-  title: 'Anonymous Voice',
-  description: 'Your safe space for mental health support and anonymous communication',
-  keywords: ['mental health', 'anonymous chat', 'support', 'counseling'],
-  authors: [{ name: 'Anonymous Voice Team' }],
-  creator: 'Anonymous Voice',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  title: "Anonymous Voice",
+  description:
+    "Your safe space for mental health support and anonymous communication",
+  metadataBase: new URL("https://anonymous-voting.vercel.app"),
+  keywords: ["mental health", "anonymous chat", "support", "counseling"],
+  authors: [{ name: "Anonymous Voice Team" }],
+  creator: "Anonymous Voice",
   icons: {
-    icon: '/favicon.ico',
-    apple: '/images/apple-touch-icon.png',
+    icon: "/favicon.ico",
+    apple: "/images/apple-touch-icon.png",
   },
-  manifest: '/manifest.json',
+  manifest: "/manifest.json",
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://anonymous-voice.com',
-    title: 'Anonymous Voice',
-    description: 'Your safe space for mental health support and anonymous communication',
-    siteName: 'Anonymous Voice',
+    type: "website",
+    locale: "en_US",
+    url: "https://anonymous-voice.com",
+    title: "Anonymous Voice",
+    description:
+      "Your safe space for mental health support and anonymous communication",
+    siteName: "Anonymous Voice",
     images: [
       {
-        url: '/images/og-image.png',
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: 'Anonymous Voice',
+        alt: "Anonymous Voice",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Anonymous Voice',
-    description: 'Your safe space for mental health support and anonymous communication',
-    images: ['/images/twitter-card.png'],
-    site: '@anonymousvoice',
+    card: "summary_large_image",
+    title: "Anonymous Voice",
+    description:
+      "Your safe space for mental health support and anonymous communication",
+    images: ["/images/twitter-card.png"],
+    site: "@anonymousvoice",
   },
   robots: {
     index: true,
@@ -73,9 +73,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
 };
@@ -87,9 +87,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${openSans.variable} ${geistSans.variable} antialiased bg-base-100 text-base-content`}
-      >
+      <body className={`${comfortaa.variable} antialiased`}>
+        <Header />
         {children}
       </body>
     </html>
