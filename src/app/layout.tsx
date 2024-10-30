@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/layout/Header";
 
 const comfortaa = localFont({
   src: [
@@ -87,9 +86,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${comfortaa.variable} antialiased`}>
-        {children}
-      </body>
+      <body className={`${comfortaa.variable} antialiased`}>{children}</body>
     </html>
   );
 }

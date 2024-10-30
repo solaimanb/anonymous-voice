@@ -76,7 +76,11 @@ export default function Hero() {
         </motion.p>
 
         <div className="flex items-center w-full gap-4 flex-row justify-center">
-          <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+          <motion.div
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
             <Button className="w-full md:w-auto bg-soft-paste text-white font-bold">
               <MessageCircleMore />
               Chat Now
@@ -84,7 +88,11 @@ export default function Hero() {
           </motion.div>
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
-              <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+              <motion.div
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+              >
                 <Button className="w-full md:w-auto bg-violet text-white font-bold">
                   Make A Call
                   <ChevronDown className="w-4 h-4 ml-2" />
