@@ -1,3 +1,4 @@
+import Header from "@/components/layout/Header";
 import React from "react";
 
 export default function MarketingLayout({
@@ -6,7 +7,8 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="flex flex-col justify-center items-center">
+      <Header />
       {children}
     </div>
   );

@@ -88,7 +88,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${comfortaa.variable} antialiased`}>
-        <Header />
         {children}
       </body>
     </html>
