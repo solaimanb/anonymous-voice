@@ -1,6 +1,7 @@
 "use client";
 
 import Hero from "@/components/pages/home/hero/Hero";
+import WhatWeDo from "@/components/pages/home/what-we-do/WhatWeDo";
 import WhoWeAre from "@/components/pages/home/who-we-are/WhoWeAre";
 
 const whoWeAreProps = {
@@ -19,11 +20,37 @@ const whoWeAreProps = {
   },
 };
 
+const whatWeDoProps = {
+  title: "What We Do",
+  subtitle: "How Our Volunteers Are Trained",
+  description:
+    "A short paragraph introducing the work done by volunteers, highlighting the training they receive and how that equips them to help users.",
+  videoThumbnail: "/placeholder.svg?height=400&width=600",
+  trainingSteps: [
+    {
+      title: "Initial Screening",
+      description:
+        "Background checks, interviews, and mental health evaluations.",
+    },
+    {
+      title: "Comprehensive Training",
+      description:
+        "Courses on mental health, empathy training, and crisis handling.",
+    },
+    {
+      title: "Ongoing Education",
+      description:
+        "Continuous learning through workshops and mental health experts.",
+    },
+  ],
+};
+
 export default function Page() {
   return (
     <div>
       <Hero />
       <WhoWeAre {...whoWeAreProps} />
+      <WhatWeDo {...whatWeDoProps} />
     </div>
   );
 }
