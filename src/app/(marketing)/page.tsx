@@ -1,6 +1,7 @@
 "use client";
 
 import Hero from "@/components/pages/home/hero/Hero";
+import HonourableVolunteers from "@/components/pages/home/volunteers/HonourableVolunteers";
 import WhatWeDo from "@/components/pages/home/what-we-do/WhatWeDo";
 import WhoWeAre from "@/components/pages/home/who-we-are/WhoWeAre";
 
@@ -51,6 +52,7 @@ export default function Page() {
       <Hero />
       <WhoWeAre {...whoWeAreProps} />
       <WhatWeDo {...whatWeDoProps} />
+      <HonourableVolunteers />
     </div>
   );
 }
