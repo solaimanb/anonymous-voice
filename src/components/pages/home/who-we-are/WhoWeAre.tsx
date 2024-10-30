@@ -1,38 +1,38 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { MessageCircle } from 'lucide-react'
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
 
 interface WhoWeAreProps {
-  mobileImage: string
-  desktopImage: string
-  altImg: string
-  title: string
-  subtitle: string
-  description: string
-  extendedDescription?: string
-  buttonText: string
-  onLearnMore?: () => void
+  mobileImage: string;
+  desktopImage: string;
+  altImg: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  extendedDescription?: string;
+  buttonText: string;
+  onLearnMore?: () => void;
 }
 
 export default function WhoWeAre({
-  mobileImage = 'https://via.placeholder.com/600x400',
-  desktopImage = 'https://via.placeholder.com/800x600',
-  altImg = 'Who We Are',
-  title = 'Who We Are',
-  subtitle = 'Committed to Your Mental Wellness with Compassionate Care',
-  description = 'At Anonymous Voice, we believe that every voice deserves to be heard, especially when it comes to mental health. We are dedicated to creating a safe, supportive space where individuals can seek guidance, share their experiences, and find solace without judgment.',
-  extendedDescription = 'Our team of compassionate professionals is committed to providing personalized mental health services that prioritize your unique journey. We understand that reaching out for help can be daunting, which is why we focus on creating a comfortable and confidential environment.',
-  buttonText = 'Learn More',
-  onLearnMore = () => { },
+  mobileImage = "https://via.placeholder.com/600x400",
+  desktopImage = "https://via.placeholder.com/800x600",
+  altImg = "Who We Are",
+  title = "Who We Are",
+  subtitle = "Committed to Your Mental Wellness with Compassionate Care",
+  description = "At Anonymous Voice, we believe that every voice deserves to be heard, especially when it comes to mental health. We are dedicated to creating a safe, supportive space where individuals can seek guidance, share their experiences, and find solace without judgment.",
+  extendedDescription = "Our team of compassionate professionals is committed to providing personalized mental health services that prioritize your unique journey. We understand that reaching out for help can be daunting, which is why we focus on creating a comfortable and confidential environment.",
+  buttonText = "Learn More",
+  onLearnMore = () => {},
 }: WhoWeAreProps) {
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  }
+    transition: { duration: 0.6 },
+  };
 
   return (
     <section className="relative w-full max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-12 space-y-6 overflow-hidden">
@@ -119,5 +119,5 @@ export default function WhoWeAre({
         </div>
       </div>
     </section>
-  )
+  );
 }
