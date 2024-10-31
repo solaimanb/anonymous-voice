@@ -7,6 +7,7 @@
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": ["error", { "semi": true }],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "@typescript-eslint/no-empty-object-type": "off" // Disable this specific rule
   }
 }
