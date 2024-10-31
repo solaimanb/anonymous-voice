@@ -37,19 +37,24 @@ const navItems: NavItem[] = [
 ];
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+  console.log(handleLogin);
 
   return (
     <Sheet>
-      <header className="sticky top-0 left-0 w-full bg-white py-2 lg:py-1 z-50">
+      <header className="sticky top-0 left-0 w-full bg-white py-1 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center">
               <Link href="/" className="flex-shrink-0">
                 <Image
                   src="/images/av.png"
-                  alt="AV Logo"
+                  alt="AV"
                   width={100}
                   height={100}
                   className="w-auto h-12 sm:h-14"
@@ -108,10 +113,12 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Button variant="outline" onClick={() => setIsLoggedIn(true)}>
-                    Log In
+                  <Button variant="outline" className="border-soft-paste-hover">
+                    <Link href="/login">Login</Link>
                   </Button>
-                  <Button onClick={() => setIsLoggedIn(true)}>Sign Up</Button>
+                  <Button className="bg-soft-paste">
+                    <Link href="/signup">Sign Up</Link>
+                  </Button>
                 </>
               )}
             </div>
@@ -125,12 +132,11 @@ export default function Header() {
                   </SheetTrigger>
                 </div>
               ) : (
-                <Button
-                  variant="ghost"
-                  className="text-sm font-bold bg-soft-paste text-white"
-                >
-                  Login / Signup
-                </Button>
+                <div className="flex items-center text-sm bg-soft-paste text-white font-bold rounded-lg space-x-2 px-4 py-2">
+                  <Link href="/login">Login</Link>
+                  <span>/</span>
+                  <Link href="/signup">Sign Up</Link>
+                </div>
               )}
             </div>
           </div>
