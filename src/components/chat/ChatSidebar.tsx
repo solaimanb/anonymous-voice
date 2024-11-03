@@ -1,8 +1,13 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
-import { Heart } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { Heart } from "lucide-react";
+import Image from "next/image";
 
-export const ChatSidebar = ({ chats, activeChat, onChatSelect }: {
+export const ChatSidebar = ({
+  chats,
+  activeChat,
+  onChatSelect,
+}: {
   chats: Array<{
     id: string;
     name: string;
@@ -26,14 +31,16 @@ export const ChatSidebar = ({ chats, activeChat, onChatSelect }: {
               key={chat.id}
               className={cn(
                 "flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50",
-                activeChat === chat.id && "bg-blue-50"
+                activeChat === chat.id && "bg-blue-50",
               )}
               onClick={() => onChatSelect(chat.id)}
             >
               <div className="relative flex-shrink-0">
-                <img
+                <Image
                   src={chat.avatar}
                   alt={chat.name}
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full"
                 />
               </div>

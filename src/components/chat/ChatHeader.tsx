@@ -1,13 +1,13 @@
-import { Phone } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Phone } from "lucide-react";
+import Image from "next/image";
 
 export const ChatHeader = ({
   user,
-  callDuration,
-  callTime,
-  isActive,
-  onComplete,
-  onCancel
+  // callDuration,
+  // callTime,
+  // isActive,
+  // onComplete,
+  // onCancel,
 }: {
   user: { name: string; avatar: string };
   callDuration?: string;
@@ -19,16 +19,16 @@ export const ChatHeader = ({
   return (
     <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
       <div className="flex items-center">
-        <img
+        <Image
           src={user.avatar}
           alt={user.name}
+          width={32}
+          height={32}
           className="w-8 h-8 rounded-full"
         />
         <div className="ml-3">
           <h3 className="font-medium text-gray-900">{user.name}</h3>
-          <p className="text-xs text-gray-500">
-            Active 5m ago
-          </p>
+          <p className="text-xs text-gray-500">Active 5m ago</p>
         </div>
       </div>
       <div className="flex items-center space-x-3">

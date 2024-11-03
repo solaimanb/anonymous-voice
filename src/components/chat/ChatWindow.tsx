@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { ChatHeader } from './ChatHeader';
-import { ChatMessage } from './ChatMessage';
-import { ChatInput } from './ChatInput';
+import { useState } from "react";
+import { ChatHeader } from "./ChatHeader";
+import { ChatMessage } from "./ChatMessage";
+import { ChatInput } from "./ChatInput";
 
 export const ChatWindow = ({
   user,
   messages,
   onSendMessage,
   onComplete,
-  onCancel
+  onCancel,
 }: {
   user: { name: string; avatar: string };
   messages: Array<{ id: string; content: string; isOutgoing: boolean }>;
@@ -16,12 +16,12 @@ export const ChatWindow = ({
   onComplete?: () => void;
   onCancel?: () => void;
 }) => {
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
 
   const handleSend = () => {
     if (newMessage.trim()) {
       onSendMessage(newMessage);
-      setNewMessage('');
+      setNewMessage("");
     }
   };
 

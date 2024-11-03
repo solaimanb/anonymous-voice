@@ -1,9 +1,9 @@
-import { Send } from 'lucide-react';
+import { Send } from "lucide-react";
 
 export const ChatInput = ({
   value,
   onChange,
-  onSend
+  onSend,
 }: {
   value: string;
   onChange: (value: string) => void;
