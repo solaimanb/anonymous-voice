@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { SocialBar } from "./SocialBar";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const buttonVariants = {
   hover: {
@@ -81,10 +82,12 @@ export default function Hero() {
             whileHover="hover"
             whileTap="tap"
           >
-            <Button className="w-full md:w-auto bg-soft-paste text-white font-bold">
-              <MessageCircleMore />
-              Chat Now
-            </Button>
+            <Link href="/session">
+              <Button className="w-full md:w-auto bg-soft-paste text-white font-bold">
+                <MessageCircleMore />
+                Chat Now
+              </Button>
+            </Link>
           </motion.div>
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
@@ -99,14 +102,26 @@ export default function Hero() {
                 </Button>
               </motion.div>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent className="w-full md:w-auto space-y-2 py-3 px-2 font-bold bg-violet">
-              <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white px-4 lg:px-1">
-                <Phone className="w-4 h-4 mr-2" />
-                Call Now
+              <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white p-0">
+                <Link
+                  href="/session"
+                  className="flex items-center w-full h-full p-1"
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  Call Now
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white px-4 lg:px-1">
-                <PhoneOutgoing className="w-4 h-4 mr-2" />
-                Book A Call
+
+              <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white p-0">
+                <Link
+                  href="/session"
+                  className="flex items-center w-full h-full p-1"
+                >
+                  <PhoneOutgoing className="w-4 h-4 mr-2" />
+                  Book A Call
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
