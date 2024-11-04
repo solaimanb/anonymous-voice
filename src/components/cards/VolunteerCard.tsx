@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Expertise {
   name: string;
@@ -143,13 +144,15 @@ export default function Component({
           <MessageCircle className="w-4 h-4 mr-2" />
           Chat
         </Button>
-        <Button
-          className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
-          onClick={onBookCall}
-        >
-          <CalendarCheck className="w-4 h-4 mr-2" />
-          Book Call
-        </Button>
+        <Link href="/booking">
+          <Button
+            className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
+            onClick={onBookCall}
+          >
+            <CalendarCheck className="w-4 h-4 mr-2" />
+            Book Call
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
