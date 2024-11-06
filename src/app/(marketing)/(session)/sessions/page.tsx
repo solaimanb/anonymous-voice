@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import VolunteerCard from "@/components/cards/VolunteerCard";
 import useVolunteers from "@/hooks/useVolunteers";
+import { Volunteer } from "@/types/volunteer";
 
 export default function Session() {
-  const { volunteers, loading, error } = useVolunteers();
+  const { volunteers, loading, error } = useVolunteers<Volunteer[]>();
 
   if (loading) {
     return <div>Loading...</div>;
