@@ -1,11 +1,8 @@
 "use client";
 
+import React from "react";
 import { ChevronDown } from "lucide-react";
-
-interface TimeSlot {
-  time: string;
-  available: boolean;
-}
+import { TimeSlot } from "@/types/booking";
 
 interface AvailabilityProps {
   date?: string;
@@ -14,6 +11,56 @@ interface AvailabilityProps {
   setSelectedSlot: React.Dispatch<React.SetStateAction<string | null>>;
   onSlotSelect?: (time: string) => void;
 }
+
+const TimeSlotItem = ({
+  slot,
+  selectedSlot,
+  setSelectedSlot,
+  onSlotSelect,
+}: {
+  slot: TimeSlot;
+  selectedSlot: string | null;
+  setSelectedSlot: React.Dispatch<React.SetStateAction<string | null>>;
+  onSlotSelect?: (time: string) => void;
+}) => (
+  <div className="flex items-center justify-between">
+    {/* Time Dropdown */}
+    <div className="relative">
+      <div className="flex items-center gap-2 px-4 py-2 border border-[#7FCCCC]/30 rounded-lg bg-white min-w-[140px]">
+        <span className="font-mono text-[#374151]">{slot.time}</span>
+        <ChevronDown className="w-4 h-4 text-[#7FCCCC]" />
+      </div>
+      <div className="absolute bottom-1.5 left-4 right-4 h-px bg-[#7FCCCC]/30" />
+    </div>
+
+    {/* Status Badge */}
+    <div
+      className={`px-6 py-1.5 rounded-md text-white ${
+        slot.available ? "bg-[#34D399]" : "bg-[#E5E7EB]"
+      }`}
+    >
+      <span className="text-sm font-medium">
+        {slot.available ? "Available" : "Not Available"}
+      </span>
+    </div>
+
+    {/* Checkbox */}
+    <input
+      type="checkbox"
+      checked={selectedSlot === slot.time}
+      onChange={() => {
+        if (slot.available) {
+          setSelectedSlot(slot.time);
+          onSlotSelect?.(slot.time);
+        }
+      }}
+      disabled={!slot.available}
+      className="w-5 h-5 rounded-none border-gray-300 text-[#7FCCCC]
+                        focus:ring-[#7FCCCC] disabled:opacity-50 cursor-pointer
+                        checked:bg-[#7FCCCC] checked:border-[#7FCCCC]"
+    />
+  </div>
+);
 
 export default function Availability({
   date = "17 Oct 2024",
@@ -40,43 +87,13 @@ export default function Availability({
       {/* Time Slots */}
       <div className="space-y-4">
         {timeSlots.map((slot, index) => (
-          <div key={index} className="flex items-center justify-between">
-            {/* Time Dropdown */}
-            <div className="relative">
-              <div className="flex items-center gap-2 px-4 py-2 border border-[#7FCCCC]/30 rounded-lg bg-white min-w-[140px]">
-                <span className="font-mono text-[#374151]">{slot.time}</span>
-                <ChevronDown className="w-4 h-4 text-[#7FCCCC]" />
-              </div>
-              <div className="absolute bottom-1.5 left-4 right-4 h-px bg-[#7FCCCC]/30" />
-            </div>
-
-            {/* Status Badge */}
-            <div
-              className={`px-6 py-1.5 rounded-md text-white ${
-                slot.available ? "bg-[#34D399]" : "bg-[#E5E7EB]"
-              }`}
-            >
-              <span className="text-sm font-medium">
-                {slot.available ? "Available" : "Not Available"}
-              </span>
-            </div>
-
-            {/* Checkbox */}
-            <input
-              type="checkbox"
-              checked={selectedSlot === slot.time}
-              onChange={() => {
-                if (slot.available) {
-                  setSelectedSlot(slot.time);
-                  onSlotSelect(slot.time);
-                }
-              }}
-              disabled={!slot.available}
-              className="w-5 h-5 rounded-none border-gray-300 text-[#7FCCCC]
-                        focus:ring-[#7FCCCC] disabled:opacity-50 cursor-pointer
-                        checked:bg-[#7FCCCC] checked:border-[#7FCCCC]"
-            />
-          </div>
+          <TimeSlotItem
+            key={index}
+            slot={slot}
+            selectedSlot={selectedSlot}
+            setSelectedSlot={setSelectedSlot}
+            onSlotSelect={onSlotSelect}
+          />
         ))}
       </div>
     </div>

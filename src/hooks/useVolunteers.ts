@@ -1,25 +1,10 @@
-// hooks/useVolunteers.ts
+"use client";
+
+import { Volunteer } from "@/types/volunteer";
 import { useEffect, useState } from "react";
 
-interface Expertise {
-  name: string;
-}
-
-export interface Volunteer {
-  id: string;
-  name: string;
-  title: string;
-  imageUrl: string;
-  isActive: boolean;
-  rating: number;
-  yearsExperience: number;
-  sessionsCompleted: number;
-  expertise: Expertise[];
-  description: string;
-}
-
-const useVolunteers = () => {
-  const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
+const useVolunteers = <T extends Volunteer[]>() => {
+  const [volunteers, setVolunteers] = useState<T>([] as unknown as T);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
