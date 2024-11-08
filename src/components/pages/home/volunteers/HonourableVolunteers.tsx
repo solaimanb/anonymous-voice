@@ -56,7 +56,7 @@ export default function HonourableVolunteers() {
   if (!mounted) return null;
 
   return (
-    <section className="container mx-auto px-4 py-12 md:py-16">
+    <section className="container w-full mx-auto px-4 py-12 md:py-16">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -65,7 +65,7 @@ export default function HonourableVolunteers() {
         Honourable Volunteers
       </motion.h2>
 
-      <div className="relative">
+      <div className="relative w-[95vw] md:w-full">
         <Swiper
           modules={[Pagination, Navigation]}
           pagination={{
@@ -99,7 +99,7 @@ export default function HonourableVolunteers() {
           className="px-4 pb-12"
         >
           {volunteers.map((volunteer) => (
-            <SwiperSlide key={volunteer.id}>
+            <SwiperSlide key={volunteer.id} className="">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}

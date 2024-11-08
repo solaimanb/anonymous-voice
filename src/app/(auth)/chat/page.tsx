@@ -1,37 +1,37 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { ChatLayout } from "@/components/chat/ChatLayout";
-import { ChatSidebar } from "@/components/chat/ChatSidebar";
+// import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { Button } from "@/components/ui/button";
 
 const placeholderAvatar = "https://via.placeholder.com/150";
 
 export default function ChatPage() {
-  const [activeChat, setActiveChat] = useState<string>("3");
+  // const [activeChat, setActiveChat] = useState<string>("3");
 
-  const chats = [
-    {
-      id: "1",
-      name: "Adam West",
-      avatar: placeholderAvatar,
-      lastMessage: "4d",
-      hasHeart: true,
-    },
-    {
-      id: "2",
-      name: "Brian Griffin",
-      avatar: placeholderAvatar,
-      lastMessage: "Yay, this will be the best....",
-    },
-    {
-      id: "3",
-      name: "Lois Griffin",
-      avatar: placeholderAvatar,
-      lastMessage: "Yay, this will be the best....",
-    },
-  ];
+  // const chats = [
+  //   {
+  //     id: "1",
+  //     name: "Adam West",
+  //     avatar: placeholderAvatar,
+  //     lastMessage: "4d",
+  //     hasHeart: true,
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Brian Griffin",
+  //     avatar: placeholderAvatar,
+  //     lastMessage: "Yay, this will be the best....",
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Lois Griffin",
+  //     avatar: placeholderAvatar,
+  //     lastMessage: "Yay, this will be the best....",
+  //   },
+  // ];
 
   const messages = [
     {
@@ -71,11 +71,11 @@ export default function ChatPage() {
 
   return (
     <ChatLayout>
-      <ChatSidebar
+      {/* <ChatSidebar
         chats={chats}
         activeChat={activeChat}
         onChatSelect={setActiveChat}
-      />
+      /> */}
       <div className="flex-1 flex flex-col">
         <ChatWindow
           user={activeUser}
