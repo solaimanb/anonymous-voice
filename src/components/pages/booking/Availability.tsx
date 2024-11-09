@@ -23,10 +23,10 @@ const TimeSlotItem = ({
   setSelectedSlot: React.Dispatch<React.SetStateAction<string | null>>;
   onSlotSelect?: (time: string) => void;
 }) => (
-  <div className="flex items-center justify-between">
+  <div className="flex items-center justify-between gap-2">
     {/* Time Dropdown */}
     <div className="relative">
-      <div className="flex items-center gap-2 px-4 py-2 border border-[#7FCCCC]/30 rounded-lg bg-white min-w-[140px]">
+      <div className="flex items-center justify-center gap-2 px-2 py-1 border border-[#7FCCCC]/30 rounded-lg bg-white min-w-[140px]">
         <span className="font-mono text-[#374151]">{slot.time}</span>
         <ChevronDown className="w-4 h-4 text-[#7FCCCC]" />
       </div>
@@ -35,9 +35,7 @@ const TimeSlotItem = ({
 
     {/* Status Badge */}
     <div
-      className={`px-6 py-1.5 rounded-md text-white ${
-        slot.available ? "bg-[#34D399]" : "bg-[#E5E7EB]"
-      }`}
+      className={`px-4 py-1 min-w-32 text-center rounded-md text-white ${slot.available ? "bg-[#34D399]" : "bg-[#E5E7EB]"}`}
     >
       <span className="text-sm font-medium">
         {slot.available ? "Available" : "Not Available"}
@@ -62,7 +60,7 @@ const TimeSlotItem = ({
   </div>
 );
 
-export default function Availability({
+const Availability = ({
   date = "17 Oct 2024",
   timeSlots = [
     { time: "1:00 PM", available: true },
@@ -74,7 +72,7 @@ export default function Availability({
   selectedSlot,
   setSelectedSlot,
   onSlotSelect = () => {},
-}: AvailabilityProps) {
+}: AvailabilityProps) => {
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Header */}
@@ -86,16 +84,22 @@ export default function Availability({
 
       {/* Time Slots */}
       <div className="space-y-4">
-        {timeSlots.map((slot, index) => (
-          <TimeSlotItem
-            key={index}
-            slot={slot}
-            selectedSlot={selectedSlot}
-            setSelectedSlot={setSelectedSlot}
-            onSlotSelect={onSlotSelect}
-          />
-        ))}
+        {timeSlots.length > 0 ? (
+          timeSlots.map((slot, index) => (
+            <TimeSlotItem
+              key={index}
+              slot={slot}
+              selectedSlot={selectedSlot}
+              setSelectedSlot={setSelectedSlot}
+              onSlotSelect={onSlotSelect}
+            />
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No time slots available.</p>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default Availability;
