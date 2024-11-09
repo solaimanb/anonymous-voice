@@ -109,7 +109,7 @@ export default function BookingDetailsCard({
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
   return (
-    <div className="w-full lg:p-4">
+    <div className="w-full">
       <div className="bg-white rounded-xl shadow p-6">
         <div className="flex flex-col lg:flex-row gap-6">
           <ProfileSection
