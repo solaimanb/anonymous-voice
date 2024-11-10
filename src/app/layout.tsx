@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Providers } from "@/providers";
+import FirebaseTestComponent from "@/components/FirebaseTestComp";
 
 const comfortaa = localFont({
   src: [
@@ -86,7 +88,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${comfortaa.variable} antialiased`}>{children}</body>
+      <body className={`${comfortaa.variable} antialiased`}>
+        <Providers>{children}</Providers>
+        <FirebaseTestComponent />
+      </body>
     </html>
   );
 }
