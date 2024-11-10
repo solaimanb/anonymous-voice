@@ -1,17 +1,28 @@
-import { signInWithGoogle } from '@/lib/firebase/auth';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { signInWithGoogle } from "@/lib/firebase/auth";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function GoogleSignInButton() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignIn = async () => {
     setIsLoading(true);
     try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        console.error('Sign in error:', error);
+      const result = await signInWithGoogle();
+
+      if (result.error) {
+        console.error("Sign in error:", result.error);
+        return;
       }
+
+      if (result.user && result.isNewUser) {
+        router.push("/");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Unexpected error during sign in:", error);
     } finally {
       setIsLoading(false);
     }

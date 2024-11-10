@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 const FirebaseTestComponent = () => {
   const [testResult, setTestResult] = useState(null);
@@ -12,7 +12,7 @@ const FirebaseTestComponent = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/test-firebase');
+      const response = await fetch("/api/test-firebase");
       const data = await response.json();
 
       setTestResult(data);
@@ -30,7 +30,7 @@ const FirebaseTestComponent = () => {
         disabled={loading}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
       >
-        {loading ? 'Testing...' : 'Test Firebase Setup'}
+        {loading ? "Testing..." : "Test Firebase Setup"}
       </button>
 
       {error && (

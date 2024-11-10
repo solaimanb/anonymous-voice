@@ -1,13 +1,16 @@
-import { createContext, useContext, ReactNode } from 'react';
-import { User } from 'firebase/auth';
-import { useAuth } from '@/hooks/useAuth';
+import { createContext, useContext, ReactNode } from "react";
+import { User } from "firebase/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();

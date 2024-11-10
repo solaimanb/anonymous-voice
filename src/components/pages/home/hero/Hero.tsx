@@ -118,14 +118,20 @@ export default function Hero() {
 
             <DropdownMenuContent className="w-full md:w-auto space-y-2 py-3 px-2 font-bold bg-violet">
               <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white p-0">
-                <Link href="/sessions" className="flex items-center w-full h-full p-1">
+                <Link
+                  href="/sessions"
+                  className="flex items-center w-full h-full p-1"
+                >
                   <Phone className="w-4 h-4 mr-2" />
                   Call Now
                 </Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white p-0">
-                <Link href="/sessions" className="flex items-center w-full h-full p-1">
+                <Link
+                  href="/sessions"
+                  className="flex items-center w-full h-full p-1"
+                >
                   <PhoneOutgoing className="w-4 h-4 mr-2" />
                   Book A Call
                 </Link>
