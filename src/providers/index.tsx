@@ -1,9 +1,10 @@
-import React from "react";
+import { ReactNode } from "react";
+import { AuthProvider } from "./AuthProvider";
 
 interface ProvidersProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const Providers = ({ children }: ProvidersProps) => {
-  return <div>{children}</div>;
-};
+export function Providers({ children }: ProvidersProps) {
+  return <AuthProvider>{children}</AuthProvider>;
+}

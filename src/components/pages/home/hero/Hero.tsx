@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,7 +18,6 @@ import {
 } from "lucide-react";
 import { SocialBar } from "./SocialBar";
 import { motion } from "framer-motion";
-import Link from "next/link";
 
 const buttonVariants = {
   hover: {
@@ -38,6 +38,27 @@ const textVariants = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
+const ActionButton = ({
+  label,
+  link,
+  icon: Icon,
+  variant = "bg-soft-paste",
+}: {
+  label: string;
+  link: string;
+  icon: React.ComponentType<{ className?: string }>;
+  variant?: string;
+}) => (
+  <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+    <Link href={link}>
+      <Button className={`w-full md:w-auto ${variant} text-white font-bold`}>
+        <Icon className="w-4 h-4 mr-2" />
+        {label}
+      </Button>
+    </Link>
+  </motion.div>
+);
+
 export default function Hero() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -47,8 +68,6 @@ export default function Hero() {
         <Image
           src="/images/av-hero.webp"
           alt="A serene landscape representing mental health support"
-          // width={1920}
-          // height={1080}
           layout="fill"
           className="object-center w-full h-full"
           loading="lazy"
@@ -78,18 +97,11 @@ export default function Hero() {
         </motion.p>
 
         <div className="flex items-center w-full gap-4 flex-row justify-center">
-          <motion.div
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-          >
-            <Link href="/sessions">
-              <Button className="w-full md:w-auto bg-soft-paste text-white font-bold">
-                <MessageCircleMore />
-                Chat Now
-              </Button>
-            </Link>
-          </motion.div>
+          <ActionButton
+            label="Chat Now"
+            link="/sessions"
+            icon={MessageCircleMore}
+          />
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <motion.div

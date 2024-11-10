@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -59,7 +60,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+    <div className="flex flex-col space-y-4 max-w-md mx-auto min-h-screen items-center justify-center p-4 bg-gray-50">
       <Card className="w-full max-w-md bg-soft-paste-light-active border-2 border-violet-light">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold text-muted-foreground">
@@ -132,6 +133,7 @@ export default function Login() {
           </p>
         </CardFooter>
       </Card>
+      <GoogleSignInButton />
     </div>
   );
 }
