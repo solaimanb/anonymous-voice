@@ -1,55 +1,57 @@
-import { cert, initializeApp, getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+import { cert, getApps, initializeApp, App } from "firebase-admin/app";
+import { getAuth, Auth } from "firebase-admin/auth";
+import { AuthError } from "../utils/errors";
 
-// Create a function to validate environment variables
-function validateEnvVariables() {
-  const requiredVars = {
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY,
-  };
-
-  const missingVars = Object.entries(requiredVars)
-    .filter(([value]) => !value)
-    .map(([key]) => key);
-
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required Firebase Admin environment variables: ${missingVars.join(", ")}`,
-    );
-  }
-
-  return requiredVars as { [key: string]: string };
+interface FirebaseAdminConfig {
+  projectId: string;
+  clientEmail: string;
+  privateKey: string;
 }
 
-// Create a function to initialize Firebase Admin
-function initializeFirebaseAdmin() {
-  if (getApps().length > 0) {
-    return;
+class FirebaseAdmin {
+  private static instance: FirebaseAdmin;
+  private app: App;
+  private auth: Auth;
+
+  private constructor() {
+    const config = this.getConfig();
+
+    if (getApps().length === 0) {
+      this.app = initializeApp({
+        credential: cert(config),
+      });
+    } else {
+      this.app = getApps()[0];
+    }
+
+    this.auth = getAuth(this.app);
   }
 
-  try {
-    const { projectId, clientEmail, privateKey } = validateEnvVariables();
+  private getConfig(): FirebaseAdminConfig {
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
-    initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        // Ensure proper private key formatting
-        privateKey: privateKey.replace(/\\n/g, "\n"),
-      }),
-    });
-  } catch (error) {
-    console.error("Failed to initialize Firebase Admin:", error);
-    throw error;
+    if (!projectId || !clientEmail || !privateKey) {
+      throw new AuthError(
+        "missing-admin-credentials",
+        "Missing Firebase Admin credentials",
+      );
+    }
+
+    return { projectId, clientEmail, privateKey };
+  }
+
+  public static getInstance(): FirebaseAdmin {
+    if (!FirebaseAdmin.instance) {
+      FirebaseAdmin.instance = new FirebaseAdmin();
+    }
+    return FirebaseAdmin.instance;
+  }
+
+  public getAuth(): Auth {
+    return this.auth;
   }
 }
 
-// Initialize on module load
-initializeFirebaseAdmin();
-
-// Export the admin auth instance
-export const adminAuth = getAuth();
-
-// Export initialization function for explicit initialization if needed
-export { initializeFirebaseAdmin };
+export const adminAuth = FirebaseAdmin.getInstance().getAuth();

@@ -1,7 +1,7 @@
-import { signInWithGoogle } from "@/lib/firebase/auth";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { signInWithGoogle } from "@/lib/firebase/auth";
 
 export function GoogleSignInButton() {
   const router = useRouter();
@@ -17,8 +17,10 @@ export function GoogleSignInButton() {
         return;
       }
 
-      if (result.user && result.isNewUser) {
-        router.push("/");
+      if (result.user) {
+        const redirectTo =
+          new URLSearchParams(window.location.search).get("redirectTo") || "/";
+        router.push(redirectTo);
         router.refresh();
       }
     } catch (error) {

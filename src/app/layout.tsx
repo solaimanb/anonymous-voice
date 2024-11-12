@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/providers";
-import FirebaseTestComponent from "@/components/FirebaseTestComp";
 
 const comfortaa = localFont({
   src: [
@@ -18,10 +17,6 @@ const comfortaa = localFont({
       path: "./fonts/Comfortaa-Medium.woff",
       weight: "500",
     },
-    // {
-    //   path: "./fonts/Comfortaa-Semibold.woff",
-    //   weight: "600",
-    // },
     {
       path: "./fonts/Comfortaa-Bold.woff",
       weight: "800",
@@ -90,7 +85,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${comfortaa.variable} antialiased`}>
         <Providers>{children}</Providers>
-        <FirebaseTestComponent />
       </body>
     </html>
   );

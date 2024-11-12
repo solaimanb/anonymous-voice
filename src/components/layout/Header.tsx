@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,41 +8,55 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Mail, Bell, User, Menu } from "lucide-react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
 
 type NavItem = {
   name: string;
   href: string;
   dropdown?: string[];
+  onClick?: () => void;
 };
 
 const navItems: NavItem[] = [
   { name: "About", href: "/about" },
   { name: "How It Works", href: "/how-it-works" },
-  { name: "Apply", href: "/apply", dropdown: ["Option 1", "Option 2"] },
+  {
+    name: "Apply",
+    href: "/apply",
+    dropdown: ["Get a quote", "Appy for Volunteer"],
+  },
   { name: "Blog", href: "/blog" },
   { name: "Donate", href: "/donate" },
   { name: "More", href: "#", dropdown: ["FAQ", "Contact"] },
 ];
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
+  const { user, logOut } = useAuth();
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
-  console.log(handleLogin);
+  // userNavItems based on user authenticated state
+  const userNavItems: NavItem[] = user
+    ? [
+        { name: "Profile", href: "/profile" },
+        { name: "Logout", href: "", onClick: logOut },
+      ]
+    : [{ name: "Login", href: "/login" }];
+
+  const combinedNavItems = [...navItems, ...userNavItems];
 
   return (
     <Sheet>
@@ -98,19 +111,43 @@ export default function Header() {
                 </div>
               ))}
             </nav>
-            <div className="hidden md:flex items-center space-x-4">
-              {isLoggedIn ? (
-                <>
+
+            <div className="hidden md:flex items-center space-x-3">
+              {user ? (
+                <div className="text-soft-paste">
                   <Button variant="ghost" size="icon">
-                    <Mail className="h-5 w-5" />
+                    <Mail size={22} />
                   </Button>
                   <Button variant="ghost" size="icon">
-                    <Bell className="h-5 w-5" />
+                    <Bell size={22} />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
-                  </Button>
-                </>
+                  {/* User Dropdown Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <User size={22} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Link href="/dashboard" className="w-full text-left">
+                          Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href="/profile" className="w-full text-left">
+                          Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logOut}>
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               ) : (
                 <>
                   <Button variant="outline" className="border-soft-paste-hover">
@@ -123,7 +160,7 @@ export default function Header() {
               )}
             </div>
             <div className="md:hidden flex items-center">
-              {isLoggedIn ? (
+              {user ? (
                 <div className="flex items-center gap-4 text-soft-paste">
                   <Mail size={20} />
                   <Bell size={20} />
@@ -151,21 +188,32 @@ export default function Header() {
 
           <nav className="mt-1">
             <ul className="space-y-2">
-              {navItems.map((item) => (
+              {combinedNavItems.map((item) => (
                 <li
-                  key={item.href}
+                  key={item.name}
                   className="border rounded-md font-bold text-soft-paste-darker"
                 >
-                  <Link href={item.href} className="block px-2 py-2">
-                    {item.name}
-                  </Link>
+                  <SheetClose>
+                    {item.onClick ? (
+                      <div
+                        onClick={item.onClick}
+                        className="block px-2 py-2 w-full text-left"
+                      >
+                        {item.name}
+                      </div>
+                    ) : (
+                      <Link href={item.href} className="block px-2 py-2">
+                        {item.name}
+                      </Link>
+                    )}
+                  </SheetClose>
                 </li>
               ))}
             </ul>
           </nav>
 
           <SheetFooter className="mt-auto">
-            <p className="text-center text-xs text-gray-400">
+            <p className="text-xs text-gray-400">
               &copy; {new Date().getFullYear()} Anonymous Voice. All rights
               reserved.
             </p>

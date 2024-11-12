@@ -1,17 +1,46 @@
-import { User as firebaseUser } from "firebase/auth";
+import { UserRecord } from "firebase-admin/auth";
+import { ObjectId } from "mongodb";
+import { FirebaseApp } from "firebase/app";
 
-export interface UserCustomClaims {
-  role?: "user" | "admin" | "volunteer";
-  permissions?: string[];
-  [key: string]: string | string[] | undefined;
+export interface UserPreferences {
+  notifications: boolean;
+  newsletter: boolean;
 }
 
-export interface ExtendedUser extends firebaseUser {
-  claims?: UserCustomClaims;
+export type UserRole = "admin" | "volunteer" | "user";
+
+export interface BaseUser {
+  firebaseUID: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+  role: UserRole;
+  onboardingComplete: boolean;
+  createdAt: Date;
+  lastLoginAt: Date;
+  preferences: UserPreferences;
 }
 
-export interface AuthContextType {
-  user: ExtendedUser | null;
-  loading: boolean;
-  isAuthenticated: boolean;
+export interface UserProfile extends BaseUser {
+  _id: ObjectId;
 }
+
+export type NewUserProfile = Omit<UserProfile, "_id">;
+
+export interface AuthError {
+  code: string;
+  message: string;
+}
+
+export interface AuthResponse {
+  user: FirebaseApp | null;
+  profile: UserProfile | null;
+  isNewUser: boolean;
+  error: AuthError | null;
+}
+
+export interface SignOutResponse {
+  error: AuthError | null;
+}
+
+export type FirebaseUserRecord = UserRecord;
