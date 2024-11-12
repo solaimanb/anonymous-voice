@@ -115,9 +115,11 @@ export default function Header() {
             <div className="hidden md:flex items-center space-x-3">
               {user ? (
                 <div className="text-soft-paste">
-                  <Button variant="ghost" size="icon">
-                    <Mail size={22} />
-                  </Button>
+                  <Link href="/chat">
+                    <Button variant="ghost" size="icon">
+                      <Mail size={22} />
+                    </Button>
+                  </Link>
                   <Button variant="ghost" size="icon">
                     <Bell size={22} />
                   </Button>
