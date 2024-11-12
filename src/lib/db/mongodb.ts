@@ -1,36 +1,81 @@
-import { MongoClient, MongoClientOptions } from "mongodb";
+import { MongoClient, MongoClientOptions, Db } from "mongodb";
+import { DatabaseError } from "../utils/errors";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+interface MongoDBConfig {
+  uri: string;
+  dbName: string;
+  options: MongoClientOptions;
 }
 
-const uri = process.env.MONGODB_URI;
-const options: MongoClientOptions = {
-  maxPoolSize: 10,
-  minPoolSize: 5,
-  retryWrites: true,
-  w: "majority",
-  connectTimeoutMS: 5000,
-  socketTimeoutMS: 30000,
-};
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient>;
+}
 
-const client = new MongoClient(uri, options);
-let clientPromise: Promise<MongoClient>;
+class MongoDB {
+  private static instance: MongoDB;
+  private client: MongoClient | null = null;
+  private clientPromise: Promise<MongoClient>;
+  private config: MongoDBConfig;
 
-if (process.env.NODE_ENV === "development") {
-  // In development mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const globalWithMongo = global as typeof globalThis & {
-    _mongoClientPromise?: Promise<MongoClient>;
-  };
-
-  if (!globalWithMongo._mongoClientPromise) {
-    globalWithMongo._mongoClientPromise = client.connect();
+  private constructor() {
+    this.config = this.getConfig();
+    this.clientPromise = this.initialize();
   }
-  clientPromise = globalWithMongo._mongoClientPromise;
-} else {
-  clientPromise = client.connect();
+
+  private getConfig(): MongoDBConfig {
+    const uri = process.env.MONGODB_URI;
+    const dbName = process.env.MONGODB_DB;
+
+    if (!uri || !dbName) {
+      throw new DatabaseError(
+        "missing-mongodb-config",
+        "Missing MongoDB configuration",
+      );
+    }
+
+    return {
+      uri,
+      dbName,
+      options: {
+        maxPoolSize: 10,
+        minPoolSize: 5,
+        retryWrites: true,
+        w: "majority",
+        connectTimeoutMS: 5000,
+        socketTimeoutMS: 30000,
+      },
+    };
+  }
+
+  private initialize(): Promise<MongoClient> {
+    if (process.env.NODE_ENV === "development") {
+      if (!global._mongoClientPromise) {
+        this.client = new MongoClient(this.config.uri, this.config.options);
+        global._mongoClientPromise = this.client.connect();
+      }
+      return global._mongoClientPromise;
+    }
+
+    this.client = new MongoClient(this.config.uri, this.config.options);
+    return this.client.connect();
+  }
+
+  public static getInstance(): MongoDB {
+    if (!MongoDB.instance) {
+      MongoDB.instance = new MongoDB();
+    }
+    return MongoDB.instance;
+  }
+
+  public async getDb(): Promise<Db> {
+    const client = await this.clientPromise;
+    return client.db(this.config.dbName);
+  }
+
+  public getClient(): Promise<MongoClient> {
+    return this.clientPromise;
+  }
 }
 
-export { clientPromise };
+export const mongodb = MongoDB.getInstance();

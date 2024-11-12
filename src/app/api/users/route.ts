@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { createOrUpdateUser } from "@/lib/db/users";
 import { adminAuth } from "@/lib/firebase/admin";
 import { DecodedIdToken } from "firebase-admin/auth";
+import { userService } from "@/lib/db/users";
 
 // Custom error class for API errors
 class APIError extends Error {
@@ -51,10 +51,12 @@ export async function POST(request: Request) {
       });
 
     // Create or update user in MongoDB
-    const result = await createOrUpdateUser(firebaseUser).catch((error) => {
-      console.error("Database operation failed:", error);
-      throw new APIError("Failed to update user profile", 500, "db_error");
-    });
+    const result = await userService
+      .createOrUpdateUser(firebaseUser)
+      .catch((error) => {
+        console.error("Database operation failed:", error);
+        throw new APIError("Failed to update user profile", 500, "db_error");
+      });
 
     return NextResponse.json(result);
   } catch (error) {

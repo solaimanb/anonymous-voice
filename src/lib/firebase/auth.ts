@@ -31,7 +31,6 @@ export const signInWithGoogle = async (): Promise<AuthResponse> => {
 
     // Call your API route with the token
     const response = await fetch("/api/users", {
-      // Note: Changed from /api/user to /api/users
       method: "POST",
       headers: {
         Authorization: `Bearer ${idToken}`,
@@ -39,7 +38,6 @@ export const signInWithGoogle = async (): Promise<AuthResponse> => {
       },
     });
 
-    // Handle non-200 responses
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       throw new Error(
@@ -48,7 +46,6 @@ export const signInWithGoogle = async (): Promise<AuthResponse> => {
     }
 
     const data = await response.json();
-
     return {
       user: result.user,
       profile: data.user,
@@ -58,12 +55,9 @@ export const signInWithGoogle = async (): Promise<AuthResponse> => {
   } catch (error) {
     console.error("Sign in error:", error);
 
-    // Handle specific error types
     let errorMessage = "An unknown error occurred";
-
     if (error instanceof Error) {
       errorMessage = error.message;
-
       // Handle Firebase Auth specific errors
       if (errorMessage.includes("auth/popup-closed-by-user")) {
         errorMessage = "Sign-in popup was closed before completion";
@@ -96,6 +90,8 @@ export const signOut = async (): Promise<{ error: string | null }> => {
 };
 
 // Optional: Add auth state change listener
-export const setupAuthListener = (callback: (user: User | null) => void) => {
+export const setupAuthListener = (
+  callback: (user: User | null) => void,
+): (() => void) => {
   return auth.onAuthStateChanged(callback);
 };
