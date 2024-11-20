@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   userName: z.string().min(3, "Username must be at least 3 characters"),
@@ -36,8 +36,6 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  console.log("ROUTER: ", router, "SEARCH PARAMS: ", searchParams);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -49,11 +47,15 @@ export default function LoginPage() {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
+      form.reset({ userName: values.userName, password: values.password });
+
       await login(values.userName, values.password);
+
       toast({
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
+
       router.push("/");
     } catch (error) {
       toast({
@@ -115,7 +117,7 @@ export default function LoginPage() {
 
           <div className="mt-4 text-center text-sm">
             <p className="text-muted-foreground">
-              Don hat have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-primary hover:underline">
                 Sign up
               </Link>

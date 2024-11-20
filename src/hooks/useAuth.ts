@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import { AuthService } from "@/services/auth.service";
-
-interface UserInfo {
-  userName: string;
-  role: string;
-  userDetails: string;
-  isVerified: boolean;
-}
+import { AuthService, UserInfo } from "@/services/auth.service";
 
 export function useAuth() {
   const [user, setUser] = useState<UserInfo | null>(null);
@@ -47,10 +40,7 @@ export function useAuth() {
       const response = await AuthService.createMentee({
         userName,
         password,
-        mentee: {
-          gender,
-          age,
-        },
+        mentee: { gender, age },
       });
       return response;
     } catch (err) {
@@ -73,6 +63,6 @@ export function useAuth() {
     login,
     register,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: AuthService.isAuthenticated(),
   };
 }

@@ -13,7 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Expertise {
   name: string;
@@ -34,7 +35,7 @@ interface VolunteerProps {
   onBookCall?: () => void;
 }
 
-export default function Component({
+export default function VolunteerCard({
   name,
   title,
   imageUrl,
@@ -48,11 +49,42 @@ export default function Component({
   onChat,
   onBookCall,
 }: VolunteerProps) {
+  const { isAuthenticated } = useAuth();
+  console.log("isAuthenticated", isAuthenticated);
+  const router = useRouter();
+
+  const handleAction = (action: string) => {
+    if (!isAuthenticated) {
+      router.push(`/login?returnTo=${action}`);
+      return;
+    }
+
+    switch (action) {
+      case "quick-call":
+        if (onQuickCall) {
+          onQuickCall();
+        }
+        break;
+      case "chat":
+        if (onChat) {
+          onChat();
+        }
+        break;
+      case "booking":
+        if (onBookCall) {
+          onBookCall();
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <Card className="rounded-xl border border-gray-100 bg-white overflow-hidden">
       <CardContent className="p-6">
+        {/* Profile Section */}
         <div className="flex gap-6">
-          {/* Profile Section */}
           <div className="shrink-0">
             <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted-foreground/20">
               <Image
@@ -60,7 +92,7 @@ export default function Component({
                 alt={name}
                 width={200}
                 height={200}
-                className="w-full h-full object-cover text-xs"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -79,7 +111,7 @@ export default function Component({
               )}
             </div>
 
-            {/* Rating */}
+            {/* Rating Stars */}
             <div className="flex items-center gap-1 mb-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
@@ -102,12 +134,12 @@ export default function Component({
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-[#7FCCCC]" />
                 <span className="text-sm text-gray-600">
-                  Session Completed ({sessionsCompleted}+)
+                  {sessionsCompleted}+ sessions completed
                 </span>
               </div>
             </div>
 
-            {/* Expertise */}
+            {/* Expertise Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
               {expertise.map((item, index) => (
                 <div
@@ -120,7 +152,6 @@ export default function Component({
               ))}
             </div>
 
-            {/* Description */}
             <p className="text-sm text-gray-600 leading-relaxed">
               {description}
             </p>
@@ -132,27 +163,27 @@ export default function Component({
       <CardFooter className="grid grid-cols-3 gap-3 p-3">
         <Button
           className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
-          onClick={onQuickCall}
+          onClick={() => handleAction("quick-call")}
         >
           <Phone className="w-4 h-4 mr-2" />
           Quick Call
         </Button>
+
         <Button
           className="bg-[#B4A5E8] hover:bg-[#A394D7] text-white border-0 rounded-md h-11"
-          onClick={onChat}
+          onClick={() => handleAction("chat")}
         >
           <MessageCircle className="w-4 h-4 mr-2" />
           Chat
         </Button>
-        <Link href="/booking">
-          <Button
-            className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
-            onClick={onBookCall}
-          >
-            <CalendarCheck className="w-4 h-4 mr-2" />
-            Book Call
-          </Button>
-        </Link>
+
+        <Button
+          className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
+          onClick={() => handleAction("booking")}
+        >
+          <CalendarCheck className="w-4 h-4 mr-2" />
+          Book Call
+        </Button>
       </CardFooter>
     </Card>
   );
