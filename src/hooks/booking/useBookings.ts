@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Booking } from "@/types/booking";
-import { updateBookingStatus } from "@/app/api/booking/route";
+import { updateBookingStatus } from "@/services/booking.service";
 
 interface UseBookingsReturn {
   pendingBookings: Booking[];

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -60,22 +60,18 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupFormValues) => {
     setLoading(true);
     try {
-      await register(
-        data.userName,
-        data.password,
-        data.gender,
-        data.age
-      );
+      await register(data.userName, data.password, data.gender, data.age);
       toast({
         title: "Account created",
         description: "Your account has been created successfully.",
       });
-      router.push('/login');
+      router.push("/login");
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "Registration failed",
+        description:
+          error instanceof Error ? error.message : "Registration failed",
       });
     } finally {
       setLoading(false);
@@ -87,9 +83,7 @@ export default function SignupPage() {
       <Card className="w-[400px]">
         <CardHeader>
           <CardTitle>Create Account</CardTitle>
-          <CardDescription>
-            Sign up as a mentee to get started
-          </CardDescription>
+          <CardDescription>Sign up as a mentee to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -115,7 +109,11 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Enter password" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="Enter password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -128,7 +126,10 @@ export default function SignupPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select gender" />

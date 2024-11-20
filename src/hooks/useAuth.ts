@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { AuthService } from '@/services/auth.service';
+import { useState, useEffect } from "react";
+import { AuthService } from "@/services/auth.service";
 
 interface UserInfo {
   userName: string;
@@ -36,7 +36,12 @@ export function useAuth() {
     }
   };
 
-  const register = async (userName: string, password: string, gender: string, age: number) => {
+  const register = async (
+    userName: string,
+    password: string,
+    gender: string,
+    age: number,
+  ) => {
     try {
       setLoading(true);
       const response = await AuthService.createMentee({
@@ -44,8 +49,8 @@ export function useAuth() {
         password,
         mentee: {
           gender,
-          age
-        }
+          age,
+        },
       });
       return response;
     } catch (err) {
@@ -68,6 +73,6 @@ export function useAuth() {
     login,
     register,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 }

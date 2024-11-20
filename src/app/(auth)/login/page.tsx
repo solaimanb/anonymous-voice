@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,8 +37,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  console.log("ROUTER: ", router,
-    "SEARCH PARAMS: ", searchParams);
+  console.log("ROUTER: ", router, "SEARCH PARAMS: ", searchParams);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -53,7 +52,7 @@ export default function LoginPage() {
       await login(values.userName, values.password);
       toast({
         title: "Welcome back!",
-        description: "You've successfully logged in.",
+        description: "You have successfully logged in.",
       });
       router.push("/");
     } catch (error) {
@@ -62,6 +61,7 @@ export default function LoginPage() {
         title: "Login Failed",
         description: "Please check your credentials and try again.",
       });
+      console.error("Login failed:", error);
     }
   };
 
@@ -70,9 +70,7 @@ export default function LoginPage() {
       <Card className="w-[400px]">
         <CardHeader>
           <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>
-            Login to your account
-          </CardDescription>
+          <CardDescription>Login to your account</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -117,11 +115,8 @@ export default function LoginPage() {
 
           <div className="mt-4 text-center text-sm">
             <p className="text-muted-foreground">
-              Don't have an account?{" "}
-              <Link
-                href="/signup"
-                className="text-primary hover:underline"
-              >
+              Don hat have an account?{" "}
+              <Link href="/signup" className="text-primary hover:underline">
                 Sign up
               </Link>
             </p>

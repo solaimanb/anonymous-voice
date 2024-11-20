@@ -7,7 +7,10 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  return <AuthProvider>{children}
-    < Toaster />
-  </AuthProvider>;
+  return (
+    <AuthProvider>
+      {children}
+      <Toaster />
+    </AuthProvider>
+  );
 }
