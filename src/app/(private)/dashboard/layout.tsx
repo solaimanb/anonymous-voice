@@ -7,8 +7,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const [activeItem, setActiveItem] = useState("Profile")
-
   return (
     <div className="flex min-h-screen flex-col">
       <DashboardHeader />

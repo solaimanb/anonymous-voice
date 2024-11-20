@@ -21,7 +21,7 @@ const WhatWeDo = ({
   title = "What We Do",
   subtitle = "How Our Volunteers Are Trained",
   description = "A short paragraph introducing the work done by volunteers, highlighting the training they receive and how that equips them to help users.",
-  videoThumbnail = "/placeholder.svg?height=400&width=600",
+  videoThumbnail = "https://via.placeholder.com/600x400",
   trainingSteps = [
     {
       title: "Initial Screening",

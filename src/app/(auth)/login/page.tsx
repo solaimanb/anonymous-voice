@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import Link from "next/link";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
-  CardFooter,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -19,121 +18,116 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
+  userName: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function Login() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function LoginPage() {
+  const { login } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  console.log("ROUTER: ", router,
+    "SEARCH PARAMS: ", searchParams);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      userName: "",
       password: "",
     },
   });
 
-  async function onSubmit(data: LoginFormValues) {
-    setIsSubmitting(true);
-    setError(null);
+  const onSubmit = async (values: LoginFormValues) => {
     try {
-      // Handle form submission here
-      console.log(data);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await login(values.userName, values.password);
+      toast({
+        title: "Welcome back!",
+        description: "You've successfully logged in.",
+      });
+      router.push("/");
     } catch (error) {
-      console.log("Error:", error);
-      setError("Invalid username or password");
-    } finally {
-      setIsSubmitting(false);
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Please check your credentials and try again.",
+      });
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col space-y-4 max-w-md mx-auto min-h-screen items-center justify-center p-4 bg-gray-50">
-      <Card className="w-full max-w-md bg-soft-paste-light-active border-2 border-violet-light">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold text-muted-foreground">
-            Welcome To <span className="text-violet">Anonymous</span>{" "}
-            <span className="text-[#7fbecb]">Voice!</span>
-          </CardTitle>
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <Card className="w-[400px]">
+        <CardHeader>
+          <CardTitle>Welcome Back</CardTitle>
+          <CardDescription>
+            Login to your account
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-              noValidate
-            >
-              {error && (
-                <div className="text-sm text-red-500 text-center">{error}</div>
-              )}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="username"
+                name="userName"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Username"
-                        {...field}
-                        className="bg-white"
-                      />
+                      <Input placeholder="Enter your username" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Password"
+                        placeholder="Enter your password"
                         {...field}
-                        className="bg-white"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="w-full bg-[#7fbecb] hover:bg-[#6ca9b6]"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Logging in..." : "Log In"}
+
+              <Button type="submit" className="w-full">
+                Login
               </Button>
             </form>
           </Form>
+
+          <div className="mt-4 text-center text-sm">
+            <p className="text-muted-foreground">
+              Don't have an account?{" "}
+              <Link
+                href="/signup"
+                className="text-primary hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            {"Don't have an account? "}
-            <Link
-              href="/signup"
-              className="text-[#7fbecb] hover:text-[#6ca9b6] hover:underline"
-            >
-              Create an account
-            </Link>
-          </p>
-        </CardFooter>
       </Card>
-      <GoogleSignInButton />
     </div>
   );
 }

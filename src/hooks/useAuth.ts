@@ -1,31 +1,73 @@
-import { useEffect, useState } from "react";
-import { getAuth, signOut, User } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase/config";
+import { useState, useEffect } from 'react';
+import { AuthService } from '@/services/auth.service';
+
+interface UserInfo {
+  userName: string;
+  role: string;
+  userDetails: string;
+  isVerified: boolean;
+}
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    const storedUser = AuthService.getStoredUser();
+    if (storedUser) {
+      setUser(storedUser);
+    }
+    setLoading(false);
   }, []);
 
-  const logOut = async () => {
+  const login = async (userName: string, password: string) => {
     try {
-      await signOut(getAuth());
-      setUser(null);
-      router.push("/login");
-    } catch (error) {
-      console.error("Error signing out:", error);
+      setLoading(true);
+      const response = await AuthService.login({ userName, password });
+      const storedUser = AuthService.getStoredUser();
+      setUser(storedUser);
+      return response;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  return { user, loading, logOut };
+  const register = async (userName: string, password: string, gender: string, age: number) => {
+    try {
+      setLoading(true);
+      const response = await AuthService.createMentee({
+        userName,
+        password,
+        mentee: {
+          gender,
+          age
+        }
+      });
+      return response;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    AuthService.logout();
+    setUser(null);
+  };
+
+  return {
+    user,
+    loading,
+    error,
+    login,
+    register,
+    logout,
+    isAuthenticated: !!user
+  };
 }
