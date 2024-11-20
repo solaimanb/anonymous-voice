@@ -8,11 +8,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Mail, Bell, User, Menu } from "lucide-react";
+import { ChevronDown, Mail, Bell, Menu } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -24,6 +22,7 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import Loading from "@/app/loading";
+import { UserDropdown } from "./UserDropdown";
 
 type NavItem = {
   name: string;
@@ -128,31 +127,12 @@ export default function Header() {
                     <Bell size={22} />
                   </Button>
                   {/* User Dropdown Menu */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <User size={22} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Link href="/dashboard" className="w-full text-left">
-                          Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link href="/profile" className="w-full text-left">
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={logout}>
-                        Logout
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <UserDropdown
+                    user={{
+                      role: user.role,
+                      logout,
+                    }}
+                  />
                 </div>
               ) : (
                 <>
