@@ -23,6 +23,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
+import Loading from "@/app/loading";
 
 type NavItem = {
   name: string;
@@ -46,17 +47,20 @@ const navItems: NavItem[] = [
 
 export default function Header() {
   const pathname = usePathname();
-  const { user, logOut } = useAuth();
+  const { user, loading, logout } = useAuth();
 
-  // userNavItems based on user authenticated state
   const userNavItems: NavItem[] = user
     ? [
-        { name: "Profile", href: "/profile" },
-        { name: "Logout", href: "", onClick: logOut },
+        { name: "Dashboard", href: "/dashboard" },
+        { name: "Logout", href: "", onClick: logout },
       ]
     : [{ name: "Login", href: "/login" }];
 
   const combinedNavItems = [...navItems, ...userNavItems];
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <Sheet>
@@ -144,7 +148,7 @@ export default function Header() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={logOut}>
+                      <DropdownMenuItem onClick={logout}>
                         Logout
                       </DropdownMenuItem>
                     </DropdownMenuContent>

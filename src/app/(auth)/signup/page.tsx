@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import Link from "next/link";
-
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardFooter,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -19,9 +16,9 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -29,92 +26,92 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
 
 const signupSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(50, "Username must be less than 50 characters"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(100, "Password must be less than 100 characters"),
-  gender: z.enum(["male", "female", "other"], {
-    required_error: "Please select a gender",
-  }),
-  age: z
-    .number()
-    .min(18, "You must be at least 18 years old")
-    .max(120, "Please enter a valid age"),
+  userName: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  gender: z.enum(["male", "female"]),
+  age: z.number().min(18, "Must be at least 18").max(100, "Must be under 100"),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
-export default function SignUp() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function SignupPage() {
+  const router = useRouter();
+  const { register } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      username: "",
+      userName: "",
       password: "",
-      gender: undefined,
-      age: undefined,
+      gender: "male",
+      age: 18,
     },
   });
 
-  async function onSubmit(data: SignupFormValues) {
-    setIsSubmitting(true);
+  const onSubmit = async (data: SignupFormValues) => {
+    setLoading(true);
     try {
-      // Handle form submission here
-      console.log(data);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await register(data.userName, data.password, data.gender, data.age);
+      toast({
+        title: "Account created",
+        description: "Your account has been created successfully.",
+      });
+      router.push("/login");
     } catch (error) {
-      console.error("Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Registration failed",
+      });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <Card className="w-full max-w-md rounded-xl bg-soft-paste-light-active border-2 border-violet-light">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">First Time Here?</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            By creating an account, you confirm that you are 18 years of age or
-            older
-          </p>
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <Card className="w-[400px]">
+        <CardHeader>
+          <CardTitle>Create Account</CardTitle>
+          <CardDescription>Sign up as a mentee to get started</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-              noValidate
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="username"
+                name="userName"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="Username" {...field} />
+                      <Input placeholder="Enter username" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="Password"
+                        placeholder="Enter password"
                         {...field}
                       />
                     </FormControl>
@@ -122,104 +119,57 @@ export default function SignUp() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="gender"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Gender</FormLabel>
                     <Select
-                      value={field.value} // Set selected value directly from field
                       onValueChange={field.onChange}
+                      defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Gender" />
+                          <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="male">Male</SelectItem>
                         <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="age"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Age</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder="Age"
+                        placeholder="Enter age"
                         {...field}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          field.onChange(
-                            value ? parseInt(value, 10) : undefined,
-                          );
-                        }}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="w-full bg-[#7fbecb] hover:bg-[#6ca9b6]"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Signing up..." : "Sign Up"}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating account..." : "Sign up"}
               </Button>
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4 text-center text-xs text-muted-foreground">
-          <p>
-            By signing up, you agree to the{" "}
-            <Link href="/terms" className="underline hover:text-primary">
-              Terms of Service
-            </Link>
-            ,{" "}
-            <Link
-              href="/cookie-policy"
-              className="underline hover:text-primary"
-            >
-              Cookie Policy
-            </Link>
-            ,{" "}
-            <Link
-              href="/affiliate-policy"
-              className="underline hover:text-primary"
-            >
-              Affiliate Policy
-            </Link>
-            ,{" "}
-            <Link
-              href="/privacy-policy"
-              className="underline hover:text-primary"
-            >
-              Privacy Policy
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/official-rules"
-              className="underline hover:text-primary"
-            >
-              Official Rules
-            </Link>
-          </p>
-          <p>
-            Already have an account?{" "}
-            <Link href="/login" className="underline hover:text-primary">
-              Log in
-            </Link>
-          </p>
-        </CardFooter>
       </Card>
     </div>
   );
