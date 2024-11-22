@@ -27,7 +27,7 @@ import { UserDropdown } from "./UserDropdown";
 type NavItem = {
   name: string;
   href: string;
-  dropdown?: string[];
+  dropdown?: { label: string; link: string }[];
   onClick?: () => void;
 };
 
@@ -37,11 +37,21 @@ const navItems: NavItem[] = [
   {
     name: "Apply",
     href: "/apply",
-    dropdown: ["Get a quote", "Appy for Volunteer"],
+    dropdown: [
+      { label: "Get a quote", link: "/get-a-quote" },
+      { label: "Apply for Mentor", link: "/mentor-registration" },
+    ],
   },
   { name: "Blog", href: "/blog" },
   { name: "Donate", href: "/donate" },
-  { name: "More", href: "#", dropdown: ["FAQ", "Contact"] },
+  {
+    name: "More",
+    href: "#",
+    dropdown: [
+      { label: "FAQ", link: "/faq" },
+      { label: "Contact", link: "/contact" },
+    ],
+  },
 ];
 
 export default function Header() {
@@ -77,6 +87,7 @@ export default function Header() {
                 />
               </Link>
             </div>
+
             <nav className="hidden md:flex space-x-4 lg:space-x-8">
               {navItems.map((item) => (
                 <div key={item.name} className="relative group">
@@ -88,12 +99,12 @@ export default function Header() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         {item.dropdown.map((subItem) => (
-                          <DropdownMenuItem key={subItem}>
+                          <DropdownMenuItem key={subItem.label}>
                             <Link
-                              href="#"
+                              href={subItem.link}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
-                              {subItem}
+                              {subItem.label}
                             </Link>
                           </DropdownMenuItem>
                         ))}
