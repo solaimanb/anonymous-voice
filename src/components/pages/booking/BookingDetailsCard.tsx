@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Star, MessageCircle, Clock, Users, Award } from "lucide-react";
+import { Star, Clock, Users, Award } from "lucide-react";
 import { TimeSlot } from "@/types/booking";
 import Availability from "./Availability";
 
@@ -25,6 +25,7 @@ const ProfileSection = ({
   yearsExperience,
   bookingsCompleted,
   expertise,
+  description,
 }: BookingDetailsProps) => (
   <div className="flex-1 flex flex-col justify-between">
     <div className="flex gap-4 h-full">
@@ -83,7 +84,7 @@ const ProfileSection = ({
       </div>
     </div>
 
-    <div className="flex gap-3 mt-6">
+    {/* <div className="flex gap-3 mt-6">
       <button className="flex-1 h-11 bg-[#7FCCCC] text-white rounded-md flex items-center justify-center gap-2 hover:bg-[#6BBBBB] transition-colors">
         Book Call
       </button>
@@ -91,6 +92,11 @@ const ProfileSection = ({
         <MessageCircle className="w-4 h-4" />
         Chat
       </button>
+    </div> */}
+    <div>
+      <p className="text-sm text-[#6B7280] leading-relaxed mt-4 pr-6">
+        {description}
+      </p>
     </div>
   </div>
 );
@@ -133,16 +139,10 @@ export default function BookingDetailsCard({
             />
             <div className="flex gap-3 mt-6">
               <button className="flex-1 h-11 bg-[#7FCCCC] text-white rounded-md flex items-center justify-center gap-2 hover:bg-[#6BBBBB] transition-colors">
-                Book A Session
+                Book Session
               </button>
             </div>
           </div>
-        </div>
-
-        <div>
-          <p className="text-sm text-[#6B7280] leading-relaxed mt-4 pr-6">
-            {description}
-          </p>
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@
 
 import BookingDetailsCard from "@/components/pages/booking/BookingDetailsCard";
 import ChoosePlan from "@/components/pages/booking/ChoosePlan";
-import Pricing from "@/components/pages/booking/Pricing";
 import useVolunteers from "@/hooks/useVolunteers";
 import { Volunteer } from "@/types/volunteer";
 
@@ -13,7 +12,7 @@ export default function Booking() {
   if (error) return <div>Error Booking: {error}</div>;
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       {volunteers.slice(0, 1).map((volunteer) => (
         <BookingDetailsCard
           key={volunteer.id}
@@ -29,7 +28,7 @@ export default function Booking() {
         />
       ))}
       <ChoosePlan />
-      <Pricing />
+      {/* <Pricing /> */}
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,14 +9,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  ChevronDown,
-  Phone,
-  MessageCircleMore,
-  PhoneOutgoing,
-} from "lucide-react";
+import { ChevronDown, MessageCircleMore } from "lucide-react";
 import { SocialBar } from "./SocialBar";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const buttonVariants = {
   hover: {
@@ -38,29 +33,47 @@ const textVariants = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const ActionButton = ({
-  label,
-  link,
-  icon: Icon,
-  variant = "bg-soft-paste",
-}: {
+export type ActionType = "chat" | "quick-call" | "booking" | null;
+
+interface ActionButtonProps {
   label: string;
-  link: string;
   icon: React.ComponentType<{ className?: string }>;
   variant?: string;
-}) => (
-  <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-    <Link href={link}>
-      <Button className={`w-full md:w-auto ${variant} text-white font-bold`}>
+  onClick?: () => void;
+  actionType: ActionType;
+  className?: string;
+}
+
+export default function Hero() {
+  const router = useRouter();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleAction = (actionType: ActionType) => {
+    router.push(`/sessions?action=${actionType}`);
+  };
+
+  const ActionButton: React.FC<ActionButtonProps> = ({
+    label,
+    icon: Icon,
+    variant = "bg-soft-paste",
+    actionType,
+    className,
+  }) => (
+    <motion.div
+      variants={buttonVariants}
+      whileHover="hover"
+      whileTap="tap"
+      className={`${className}`}
+    >
+      <Button
+        className={`w-full md:w-auto ${variant} text-white font-bold`}
+        onClick={() => handleAction(actionType)}
+      >
         <Icon className="w-4 h-4 mr-2" />
         {label}
       </Button>
-    </Link>
-  </motion.div>
-);
-
-export default function Hero() {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    </motion.div>
+  );
 
   return (
     <section className="relative lg:min-h-[90vh] flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300">
@@ -99,8 +112,8 @@ export default function Hero() {
         <div className="flex items-center w-full gap-4 flex-row justify-center">
           <ActionButton
             label="Chat Now"
-            link="/sessions"
             icon={MessageCircleMore}
+            actionType="chat"
           />
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
@@ -117,24 +130,21 @@ export default function Hero() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="w-full md:w-auto space-y-2 py-3 px-2 font-bold bg-violet">
-              <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white p-0">
-                <Link
-                  href="/sessions"
-                  className="flex items-center w-full h-full p-1"
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Call Now
-                </Link>
+              <DropdownMenuItem className="p-0">
+                <ActionButton
+                  label="Call Now"
+                  icon={MessageCircleMore}
+                  actionType="quick-call"
+                  className="w-full"
+                />
               </DropdownMenuItem>
 
-              <DropdownMenuItem className="cursor-pointer bg-soft-paste text-white p-0">
-                <Link
-                  href="/sessions"
-                  className="flex items-center w-full h-full p-1"
-                >
-                  <PhoneOutgoing className="w-4 h-4 mr-2" />
-                  Book A Call
-                </Link>
+              <DropdownMenuItem className="p-0">
+                <ActionButton
+                  label="Book A Call"
+                  icon={MessageCircleMore}
+                  actionType="booking"
+                />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

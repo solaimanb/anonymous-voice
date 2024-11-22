@@ -15,6 +15,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { ActionType } from "../pages/home/hero/Hero";
+import Link from "next/link";
 
 interface Expertise {
   name: string;
@@ -33,6 +35,7 @@ interface VolunteerProps {
   onQuickCall?: () => void;
   onChat?: () => void;
   onBookCall?: () => void;
+  actionType: ActionType;
 }
 
 export default function VolunteerCard({
@@ -48,9 +51,10 @@ export default function VolunteerCard({
   onQuickCall,
   onChat,
   onBookCall,
+  actionType,
 }: VolunteerProps) {
   const { isAuthenticated } = useAuth();
-  console.log("isAuthenticated", isAuthenticated);
+  console.log("isAuthenticated", isAuthenticated, "activeAction", actionType);
   const router = useRouter();
 
   const handleAction = (action: string) => {
@@ -78,6 +82,10 @@ export default function VolunteerCard({
       default:
         break;
     }
+  };
+
+  const isButtonDisabled = (buttonType: ActionType): boolean => {
+    return actionType !== buttonType;
   };
 
   return (
@@ -164,6 +172,7 @@ export default function VolunteerCard({
         <Button
           className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
           onClick={() => handleAction("quick-call")}
+          disabled={isButtonDisabled("quick-call")}
         >
           <Phone className="w-4 h-4 mr-2" />
           Quick Call
@@ -172,18 +181,22 @@ export default function VolunteerCard({
         <Button
           className="bg-[#B4A5E8] hover:bg-[#A394D7] text-white border-0 rounded-md h-11"
           onClick={() => handleAction("chat")}
+          disabled={isButtonDisabled("chat")}
         >
           <MessageCircle className="w-4 h-4 mr-2" />
           Chat
         </Button>
 
-        <Button
-          className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
-          onClick={() => handleAction("booking")}
-        >
-          <CalendarCheck className="w-4 h-4 mr-2" />
-          Book Call
-        </Button>
+        <Link href="/booking">
+          <Button
+            className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
+            onClick={() => handleAction("booking")}
+            disabled={isButtonDisabled("booking")}
+          >
+            <CalendarCheck className="w-4 h-4 mr-2" />
+            Book Call
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
