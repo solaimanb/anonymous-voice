@@ -2,6 +2,9 @@ import { jwtDecode } from "jwt-decode";
 import { APIError } from "@/types/error";
 import { apiConfig } from "@/config/api.config";
 import { UserRole } from "@/types/user.types";
+import { CreateMentorData, MentorDataField } from "@/types/auth.types";
+import { getAuth, signInWithPopup } from "firebase/auth";
+import { googleProvider } from "@/lib/firebase";
 
 export interface UserInfo {
   userName: string;
@@ -115,4 +118,105 @@ export class AuthService {
     }
     return null;
   }
+
+  // ==============MENTOR SERVICE============== //
+
+  static async handleGoogleMentorSignUp() {
+    try {
+      googleProvider.addScope("profile");
+      googleProvider.addScope("email");
+
+      const result = await signInWithPopup(getAuth(), googleProvider);
+      const user = result.user;
+
+      if (!user) {
+        throw new Error("No user returned from Google Sign-In");
+      }
+
+      const idToken = await user.getIdToken();
+
+      return {
+        user: {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          idToken,
+        },
+      };
+    } catch (error) {
+      console.error("Google Sign-Up Error:", error);
+      throw error;
+    }
+  }
+
+  static async createMentor(data: CreateMentorData) {
+    try {
+      const response = await fetch(
+        `${apiConfig.apiUrl}/api/v1/users/create-mentor`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.getStoredToken()}`,
+          },
+          body: JSON.stringify(data),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new APIError(
+          errorData.message || "Failed to create mentor",
+          response.status,
+          "MENTOR_REGISTRATION_ERROR",
+        );
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Create Mentor Error Details:", error);
+      throw error;
+    }
+  }
+
+  // Updated getNestedValue
+  private static getNestedValue(
+    obj: CreateMentorData,
+    path: MentorDataField,
+  ): string | number | boolean {
+    const parts = path.split(".");
+    let result: unknown = obj;
+
+    for (const part of parts) {
+      if (result && typeof result === "object" && part in result) {
+        result = (result as Record<string, unknown>)[part];
+      } else {
+        return "";
+      }
+    }
+
+    return typeof result === "string" ||
+      typeof result === "number" ||
+      typeof result === "boolean"
+      ? result
+      : "";
+  }
+
+  // Validate mentor data method
+  static validateMentorData(data: Partial<CreateMentorData>): boolean {
+    const requiredFields: MentorDataField[] = [
+      "userName",
+      "mentor.name",
+      "mentor.email",
+      "mentor.gender",
+      "mentor.specialization",
+    ];
+
+    return requiredFields.every((field) => {
+      const value = this.getNestedValue(data as CreateMentorData, field);
+      return value !== undefined && value !== "";
+    });
+  }
 }
+
+export const authService = new AuthService();
