@@ -6,8 +6,12 @@ import useVolunteers from "@/hooks/useVolunteers";
 import { Volunteer } from "@/types/volunteer";
 import Loading from "@/app/loading";
 import VolunteerCard from "@/components/cards/VolunteerCard";
+import { useSearchParams } from "next/navigation";
+import { ActionType } from "@/components/pages/home/hero/Hero";
 
 export default function Session() {
+  const searchParams = useSearchParams();
+  const actionParam = searchParams.get("action");
   const { volunteers, loading, error } = useVolunteers<Volunteer[]>();
 
   if (loading) {
@@ -17,6 +21,28 @@ export default function Session() {
   if (error) {
     return <div>Error: {error}</div>;
   }
+
+  const validateActionType = (action: string | null): ActionType => {
+    if (action === "chat" || action === "quick-call" || action === "booking") {
+      return action;
+    }
+    return "chat";
+  };
+
+  const actionType = validateActionType(actionParam);
+
+  const getHeaderText = () => {
+    switch (actionType) {
+      case "chat":
+        return "Start a Chat Session";
+      case "quick-call":
+        return "Quick Call Session";
+      case "booking":
+        return "Book a Call Session";
+      default:
+        return "Make a Difference Today";
+    }
+  };
 
   return (
     <div className="container mx-auto bg-gray-50 px-4 py-8 md:px-6 lg:px-8">
@@ -34,7 +60,7 @@ export default function Session() {
           </div>
         </div>
         <h1 className="relative text-center text-white text-2xl md:text-3xl font-semibold py-6">
-          Make a Difference Today
+          {getHeaderText()}
         </h1>
       </div>
 
@@ -67,6 +93,7 @@ export default function Session() {
                 sessionsCompleted={volunteer.sessionsCompleted}
                 expertise={volunteer.expertise}
                 description={volunteer.description}
+                actionType={actionType}
               />
             </motion.div>
           ))}

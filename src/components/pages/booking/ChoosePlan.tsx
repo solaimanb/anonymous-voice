@@ -83,8 +83,8 @@ export default function ChoosePlan({
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      <h1 className="text-center text-2xl md:text-3xl font-normal text-[#B4A5E8] mb-8">
+    <div className="w-full mt-10">
+      <h1 className="text-center text-2xl md:text-3xl font-bold text-[#B4A5E8] mb-8">
         Choose Plan
       </h1>
 
