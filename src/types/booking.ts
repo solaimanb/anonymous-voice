@@ -19,6 +19,7 @@ export const BookingStatusSchema = z.enum([
 export const TimeSlotSchema = z.object({
   time: z.string(),
   available: z.boolean(),
+  date: z.string(),
 });
 
 export const BookingSchema = z.object({

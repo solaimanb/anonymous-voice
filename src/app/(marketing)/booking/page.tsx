@@ -1,18 +1,18 @@
 "use client";
 
+import Loading from "@/app/loading";
 import BookingDetailsCard from "@/components/pages/booking/BookingDetailsCard";
 import ChoosePlan from "@/components/pages/booking/ChoosePlan";
 import useVolunteers from "@/hooks/useVolunteers";
 import { Volunteer } from "@/types/volunteer";
 
 export default function Booking() {
-  const { volunteers, loading, error } = useVolunteers<Volunteer[]>();
+  const { volunteers, loading } = useVolunteers<Volunteer[]>();
 
-  if (loading) return <div>Booking...</div>;
-  if (error) return <div>Error Booking: {error}</div>;
+  if (loading) return <Loading />;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto mt-4">
       {volunteers.slice(0, 1).map((volunteer) => (
         <BookingDetailsCard
           key={volunteer.id}
@@ -28,7 +28,6 @@ export default function Booking() {
         />
       ))}
       <ChoosePlan />
-      {/* <Pricing /> */}
     </div>
   );
 }
