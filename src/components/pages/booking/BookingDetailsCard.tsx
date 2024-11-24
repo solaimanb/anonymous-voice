@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { Star, Clock, Users, Award } from "lucide-react";
 import { TimeSlot } from "@/types/booking";
 import Availability from "./Availability";
+import { useBookingStore } from "@/store/useBookingStore";
+import { Button } from "@/components/ui/button";
 
 interface BookingDetailsProps {
   name: string;
@@ -27,7 +28,7 @@ const ProfileSection = ({
   expertise,
   description,
 }: BookingDetailsProps) => (
-  <div className="flex-1 flex flex-col justify-between">
+  <div className="flex-1 flex flex-col justify-between lg:w-4/6">
     <div className="flex gap-4 h-full">
       <div className="w-2/5 bg-muted-foreground/20 rounded-lg">
         <div className="rounded-xl overflow-hidden shrink-0 h-full">
@@ -112,11 +113,15 @@ export default function BookingDetailsCard({
   date,
   timeSlots,
 }: BookingDetailsProps) {
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const { selectedTimeSlot, setShowPlanDetails } = useBookingStore();
+
+  const handleProceedToBook = () => {
+    setShowPlanDetails(true);
+  };
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-xl shadow p-6">
+      <div className="bg-white rounded-xl shadow p-4">
         <div className="flex flex-col lg:flex-row gap-6">
           <ProfileSection
             name={name}
@@ -130,17 +135,22 @@ export default function BookingDetailsCard({
             timeSlots={timeSlots}
           />
 
-          <div>
-            <Availability
-              date={date}
-              timeSlots={timeSlots}
-              selectedSlot={selectedSlot}
-              setSelectedSlot={setSelectedSlot}
-            />
-            <div className="flex gap-3 mt-6">
-              <button className="flex-1 h-11 bg-[#7FCCCC] text-white rounded-md flex items-center justify-center gap-2 hover:bg-[#6BBBBB] transition-colors">
-                Book Session
-              </button>
+          <div className="lg:w-2/6">
+            <Availability date={date} timeSlots={timeSlots} />
+
+            <div className="flex gap-3 mt-4">
+              <Button
+                onClick={handleProceedToBook}
+                disabled={!selectedTimeSlot}
+                className={`flex-1 h-11 rounded-md flex items-center justify-center gap-2 transition-colors
+                  ${
+                    selectedTimeSlot
+                      ? "bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+              >
+                {selectedTimeSlot ? "Proceed to Book" : "Select Time Slot"}
+              </Button>
             </div>
           </div>
         </div>

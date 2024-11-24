@@ -3,6 +3,6 @@ export interface PlanOption {
   time: string;
   date: string;
   validity: string;
-  price: number;
+  // price: number;
   type: "call" | "chat";
 }

@@ -4,6 +4,15 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlanOption } from "@/types/plan";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useBookingStore } from "@/store/useBookingStore";
+import { useBookSession } from "@/hooks/useBookSession";
 
 interface ChoosePlanProps {
   onPlanSelect?: (plan: PlanOption) => void;
@@ -13,125 +22,129 @@ interface PlanFieldProps {
   label: string;
   value: string;
   hasDropdown?: boolean;
+  onDurationChange?: (value: string) => void;
 }
 
-const PlanField = ({ label, value, hasDropdown = false }: PlanFieldProps) => (
-  <div className="space-y-2">
-    <label className="block text-[#7FCCCC] font-medium">{label}</label>
-    <div className="relative">
-      <div className="flex items-center gap-2 px-4 py-2 border border-[#7FCCCC]/30 rounded-lg bg-white">
-        <span className="font-mono text-[#374151]">{value}</span>
-        {hasDropdown && <ChevronDown className="w-4 h-4 text-[#7FCCCC]" />}
+const PlanField = ({
+  label,
+  value,
+  hasDropdown,
+  onDurationChange,
+}: PlanFieldProps) => {
+  if (label === "Call Duration") {
+    return (
+      <div className="space-y-2 text-sm">
+        <label className="block text-soft-paste font-semibold">{label}</label>
+        <Select onValueChange={onDurationChange} defaultValue="10">
+          <SelectTrigger className="border-soft-paste-light-active">
+            <SelectValue placeholder="Select duration" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="10">10 min call</SelectItem>
+            <SelectItem value="20">20 min call</SelectItem>
+            <SelectItem value="30">30 min call</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
-      <div className="absolute bottom-1.5 left-4 right-4 h-px bg-[#7FCCCC]/30" />
-    </div>
-  </div>
-);
+    );
+  }
 
-const PlanCard = ({
-  type,
-  onSelect,
-}: {
-  type: "call" | "chat";
-  onSelect: () => void;
-}) => (
-  <div className="bg-white rounded-2xl shadow-sm p-6">
-    <div className="grid grid-cols-5 gap-8 items-start mb-4">
-      <PlanField
-        label={`${type} Duration`}
-        value={`10 min ${type}`}
-        hasDropdown
-      />
-      <PlanField label="Time" value="1:00 PM" hasDropdown />
-      <PlanField label="Date" value="17 Oct 2024" hasDropdown />
-      <PlanField label="Validity" value="23h : 52min" />
-      <PlanField label="Price" value="$ 200" />
+  return (
+    <div className="space-y-2 text-sm">
+      <label className="block text-soft-paste font-semibold">{label}</label>
+      <div className="relative">
+        <div className="flex items-center justify-between gap-2 px-4 py-2 border border-soft-paste-light-active rounded-lg">
+          <span className="text-soft-paste-darker">{value}</span>
+          {hasDropdown && <ChevronDown className="w-4 h-4 text-soft-paste" />}
+        </div>
+      </div>
     </div>
-    <div className="flex justify-end">
-      <Button onClick={onSelect} className="bg-[#7FCCCC] hover:bg-[#6BBBBB]">
-        Choose The Plan
-      </Button>
-    </div>
-  </div>
-);
-
-const MobilePlanFields = ({ onSelect }: { onSelect: () => void }) => (
-  <div className="space-y-6">
-    <PlanField label="Call Duration" value="10 min Call" hasDropdown />
-    <PlanField label="Time" value="1:00 PM" hasDropdown />
-    <PlanField label="Date" value="17 Oct 2024" hasDropdown />
-    <PlanField label="Validity" value="23h : 52min" />
-    <PlanField label="Price" value="$ 200" />
-    <Button
-      onClick={onSelect}
-      className="w-full py-3 bg-[#7FCCCC] hover:bg-[#6BBBBB]"
-    >
-      Choose The Plan
-    </Button>
-  </div>
-);
+  );
+};
 
 export default function ChoosePlan({
   onPlanSelect = () => {},
 }: ChoosePlanProps) {
-  const [selectedPlan, setSelectedPlan] = useState<PlanOption | null>(null);
-  console.log(selectedPlan);
+  const { selectedTimeSlot, selectedDate, showPlanDetails } = useBookingStore();
+  const [duration, setDuration] = useState("10");
+  const { bookSession } = useBookSession();
+  const mentorUsername = "mentorUsername";
 
-  const handlePlanSelect = (plan: PlanOption) => {
-    setSelectedPlan(plan);
+  if (!showPlanDetails) {
+    return null;
+  }
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Selected date";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const calculateValidity = () => {
+    const now = new Date();
+    const validUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    const diffInMs = validUntil.getTime() - now.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInMinutes = Math.floor(
+      (diffInMs % (1000 * 60 * 60)) / (1000 * 60),
+    );
+
+    return `${diffInHours}h : ${diffInMinutes}min`;
+  };
+
+  const handleDurationChange = (value: string) => {
+    setDuration(value);
+  };
+
+  const handlePlanSelect = async () => {
+    const plan: PlanOption = {
+      type: "call",
+      duration: `${duration} min`,
+      time: selectedTimeSlot || "",
+      date: selectedDate || "",
+      validity: calculateValidity(),
+    };
     onPlanSelect(plan);
+
+    try {
+      await bookSession({ mentorUsername, plan });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <div className="w-full mt-10">
-      <h1 className="text-center text-2xl md:text-3xl font-bold text-[#B4A5E8] mb-8">
+    <div className="w-full my-10">
+      <h1 className="text-center text-xl md:text-2xl font-bold text-violet-hover mb-8">
         Choose Plan
       </h1>
 
-      {/* Desktop Layout */}
-      <div className="hidden md:block space-y-6">
-        <PlanCard
-          type="call"
-          onSelect={() =>
-            handlePlanSelect({
-              type: "call",
-              duration: "10 min",
-              time: "1:00 PM",
-              date: "17 Oct 2024",
-              validity: "23h : 52min",
-              price: 200,
-            })
-          }
-        />
-        <PlanCard
-          type="chat"
-          onSelect={() =>
-            handlePlanSelect({
-              type: "chat",
-              duration: "10 min",
-              time: "1:00 PM",
-              date: "17 Oct 2024",
-              validity: "23h : 52min",
-              price: 200,
-            })
-          }
-        />
-      </div>
-
-      {/* Mobile Layout */}
-      <div className="md:hidden bg-white rounded-2xl shadow-sm p-6">
-        <MobilePlanFields
-          onSelect={() =>
-            handlePlanSelect({
-              type: "call",
-              duration: "10 min",
-              time: "1:00 PM",
-              date: "17 Oct 2024",
-              validity: "23h : 52min",
-              price: 200,
-            })
-          }
-        />
+      <div className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-8 items-end">
+          <PlanField
+            label="Call Duration"
+            value={`${duration} min call`}
+            onDurationChange={handleDurationChange}
+          />
+          <PlanField
+            label="Time"
+            value={selectedTimeSlot || "Selected time slot"}
+          />
+          <PlanField label="Date" value={formatDate(selectedDate)} />
+          <PlanField label="Validity" value={calculateValidity()} />
+          <Button
+            onClick={handlePlanSelect}
+            className="w-full md:w-auto bg-soft-paste hover:bg-soft-paste-active"
+          >
+            Book The Session
+          </Button>
+        </div>
       </div>
     </div>
   );
