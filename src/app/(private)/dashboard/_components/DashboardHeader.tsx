@@ -1,26 +1,32 @@
 "use client";
 import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   CalendarClock,
-  ChevronDown,
-  LogOut,
   Mail,
   Menu,
   MessageSquare,
+  Settings,
   User,
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { Separator } from "@/components/ui/separator";
 
 type NavItem = {
   title: string;
@@ -28,7 +34,7 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
-const navItems: NavItem[] = [
+const getMentorNavItems = (): NavItem[] => [
   {
     title: "Booked Calls",
     href: "/dashboard/booked-calls",
@@ -51,8 +57,32 @@ const navItems: NavItem[] = [
   },
 ];
 
+const getAdminNavItems = (): NavItem[] => [
+  {
+    title: "Mentors",
+    href: "/dashboard/mentors",
+    icon: <User size={20} />,
+  },
+  {
+    title: "Analytics",
+    href: "/dashboard/analytics",
+    icon: <CalendarClock size={20} />,
+  },
+  {
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: <Settings size={20} />,
+  },
+];
+
 export default function DashboardHeader() {
   const [activeItem, setActiveItem] = useState("Profile");
+  const { user } = useAuth();
+
+  const navItems =
+    user?.role === "admin" ? getAdminNavItems() : getMentorNavItems();
+  const dashboardTitle =
+    user?.role === "admin" ? "Admin Dashboard" : "Mentor Dashboard";
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
@@ -65,13 +95,15 @@ export default function DashboardHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
-            <nav className="flex flex-col gap-4 p-4">
+            <SheetTitle className="p-4 text-lg">{dashboardTitle}</SheetTitle>
+            <Separator />
+            <nav className="flex flex-col gap-2 py-2">
               {navItems.map((item) => (
                 <Link
                   key={item.title}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-100",
+                    "flex items-center gap-2 rounded-lg px-3 py-3 text-sm transition-colors hover:bg-soft-paste-light-active text-soft-paste-dark font-bold",
                     activeItem === item.title && "bg-gray-100 font-medium",
                   )}
                   onClick={() => setActiveItem(item.title)}
@@ -83,9 +115,10 @@ export default function DashboardHeader() {
             </nav>
           </SheetContent>
         </Sheet>
-        <div className="text-lg font-semibold">Volunteer Dashboard</div>
+        <div className="text-lg font-semibold">{dashboardTitle}</div>
       </div>
-      <DropdownMenu>
+
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-full">
             <Avatar className="h-8 w-8">
@@ -105,7 +138,7 @@ export default function DashboardHeader() {
             Log out
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </header>
   );
 }
