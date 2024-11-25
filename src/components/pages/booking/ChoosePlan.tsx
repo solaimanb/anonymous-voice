@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/select";
 import { useBookingStore } from "@/store/useBookingStore";
 import { useBookSession } from "@/hooks/useBookSession";
+import { useRouter } from "next/navigation";
+import { AuthService } from "@/services/auth.service";
 
 interface ChoosePlanProps {
   onPlanSelect?: (plan: PlanOption) => void;
@@ -65,20 +67,19 @@ const PlanField = ({
 export default function ChoosePlan({
   onPlanSelect = () => {},
 }: ChoosePlanProps) {
+  const router = useRouter();
   const { selectedTimeSlot, selectedDate, showPlanDetails } = useBookingStore();
   const [duration, setDuration] = useState("10");
-  const { bookSession } = useBookSession();
+  const { bookSession, isLoading } = useBookSession();
   const mentorUsername = "mentorUsername";
 
-  if (!showPlanDetails) {
-    return null;
-  }
+  if (!showPlanDetails) return null;
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Selected date";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      weekday: "short",
+      // weekday: "short",
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -103,6 +104,13 @@ export default function ChoosePlan({
   };
 
   const handlePlanSelect = async () => {
+    const currentUser = AuthService.getStoredUser();
+
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
+
     const plan: PlanOption = {
       type: "call",
       duration: `${duration} min`,
@@ -110,12 +118,16 @@ export default function ChoosePlan({
       date: selectedDate || "",
       validity: calculateValidity(),
     };
-    onPlanSelect(plan);
 
     try {
-      await bookSession({ mentorUsername, plan });
+      const bookingResponse = await bookSession(mentorUsername, plan);
+      onPlanSelect(plan);
+      // TODO: Create a booked calls page and fetch details via API
+      // router.push(`/booking/confirmation?id=${bookingResponse.data.id}`);
+      console.log("Booking successful:", bookingResponse);
+      router.push(`/booking/confirmation/${currentUser.userName}`);
     } catch (error) {
-      console.log(error);
+      console.error("Booking failed:", error);
     }
   };
 
@@ -140,9 +152,10 @@ export default function ChoosePlan({
           <PlanField label="Validity" value={calculateValidity()} />
           <Button
             onClick={handlePlanSelect}
+            disabled={isLoading}
             className="w-full md:w-auto bg-soft-paste hover:bg-soft-paste-active"
           >
-            Book The Session
+            {isLoading ? "Booking..." : "Book The Session"}
           </Button>
         </div>
       </div>

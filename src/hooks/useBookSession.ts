@@ -1,37 +1,53 @@
 import { useState } from "react";
 import { PlanOption } from "@/types/plan";
-
-interface BookSessionParams {
-  mentorUsername: string;
-  plan: PlanOption;
-}
+import { AuthService } from "@/services/auth.service";
+import { useToast } from "./use-toast";
+import api from "@/config/axios.config";
+import axios from "axios";
 
 export const useBookSession = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const bookSession = async ({ mentorUsername, plan }: BookSessionParams) => {
+  const bookSession = async (mentorUsername: string, plan: PlanOption) => {
     setIsLoading(true);
+    const currentUser = AuthService.getStoredUser();
+
     try {
-      const response = await fetch("/api/bookings/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          mentorUsername,
+      // TODO: Implement API call to book session
+      const { data } = await api.post("/api/v1/bookings", {
+        mentorUsername,
+        menteeUsername: currentUser?.userName,
+        sessionDetails: {
           duration: plan.duration,
           time: plan.time,
           date: plan.date,
-          validity: plan.validity,
           type: plan.type,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error("Booking failed");
-      }
+      toast({
+        title: "Session Booked!",
+        description: `Your ${plan.duration} session is scheduled for ${plan.date} at ${plan.time}`,
+      });
 
-      return await response.json();
+      return data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast({
+          title: "Booking Failed",
+          description:
+            error.response?.data?.message || "Unable to book session",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Booking Failed",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+      throw error;
     } finally {
       setIsLoading(false);
     }
