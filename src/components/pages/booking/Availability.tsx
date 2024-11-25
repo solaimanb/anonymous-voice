@@ -61,7 +61,7 @@ export default function Availability({ timeSlots = [] }: AvailabilityProps) {
 
   const today = new Date();
   const formattedDate = today.toLocaleDateString("en-US", {
-    weekday: "short",
+    // weekday: "short",
     day: "numeric",
     month: "short",
     year: "numeric",

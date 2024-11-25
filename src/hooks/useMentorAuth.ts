@@ -3,6 +3,17 @@ import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth.service";
 import { toast } from "sonner";
 
+interface GoogleAuthResponse {
+  user: {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+    idToken: string;
+  };
+  existingUser?: boolean;
+}
+
 export const useMentorAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +24,8 @@ export const useMentorAuth = () => {
       setLoading(true);
       setError(null);
 
-      const googleAuthResponse = await AuthService.handleGoogleMentorSignUp();
+      const googleAuthResponse =
+        (await AuthService.handleGoogleMentorSignUp()) as GoogleAuthResponse;
 
       // Store temporary data in localStorage
       localStorage.setItem("tempMentorUid", googleAuthResponse.user.uid);

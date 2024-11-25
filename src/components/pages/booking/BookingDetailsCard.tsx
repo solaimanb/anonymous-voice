@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Star, Clock, Users, Award } from "lucide-react";
+import { Star, Clock, Users, Award, CheckCheck } from "lucide-react";
 import { TimeSlot } from "@/types/booking";
 import Availability from "./Availability";
 import { useBookingStore } from "@/store/useBookingStore";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface BookingDetailsProps {
   name: string;
@@ -114,9 +115,11 @@ export default function BookingDetailsCard({
   timeSlots,
 }: BookingDetailsProps) {
   const { selectedTimeSlot, setShowPlanDetails } = useBookingStore();
+  const [isBooked, setIsBooked] = useState(false);
 
   const handleProceedToBook = () => {
     setShowPlanDetails(true);
+    setIsBooked(true);
   };
 
   return (
@@ -149,7 +152,16 @@ export default function BookingDetailsCard({
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
               >
-                {selectedTimeSlot ? "Proceed to Book" : "Select Time Slot"}
+                {isBooked ? (
+                  <>
+                    <CheckCheck className="w-4 h-4" />
+                    <span>Slot Booked</span>
+                  </>
+                ) : selectedTimeSlot ? (
+                  "Proceed to Book"
+                ) : (
+                  "Select Time Slot"
+                )}
               </Button>
             </div>
           </div>

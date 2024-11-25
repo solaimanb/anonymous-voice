@@ -10,6 +10,7 @@ interface UseApprovedMentorsReturn {
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  approveMentor: (userName: string) => Promise<void>;
   meta: {
     page: number;
     limit: number;
@@ -57,7 +58,24 @@ export function useApprovedMentors(): UseApprovedMentorsReturn {
     fetchApprovedMentors();
   }, [fetchApprovedMentors]);
 
+  const approveMentor = async (userName: string) => {
+    try {
+      setIsLoading(true);
+      await api.patch(`/api/v1/mentors/${userName}`, {
+        adminApproval: true,
+      });
+
+      await fetchApprovedMentors();
+    } catch (err) {
+      setError(handleAxiosError(err));
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
+    approveMentor,
     approvedMentors,
     isLoading,
     error,

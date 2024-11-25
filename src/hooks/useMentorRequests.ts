@@ -9,8 +9,8 @@ interface UseMentorRequestsReturn {
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-  approveMentor: (id: string) => Promise<void>;
-  rejectMentor: (id: string) => Promise<void>;
+  approveMentor: (userName: string) => Promise<void>;
+  rejectMentor: (userName: string) => Promise<void>;
   meta: {
     page: number;
     limit: number;
@@ -33,32 +33,15 @@ export function useMentorRequests(): UseMentorRequestsReturn {
     return "An unexpected error occurred";
   };
 
-  // const fetchMentorRequests = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     setError(null);
-  //     const response = await api.get<ApiResponse<MentorRequest>>('/api/v1/mentors');
-  //     setMentorRequests(response.data.data);
-  //     setMeta(response.data.meta);
-  //   } catch (err) {
-  //     setError(handleAxiosError(err));
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const fetchMentorRequests = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-
       const response =
         await api.get<ApiResponse<MentorRequest>>("/api/v1/mentors");
-
       const pendingMentors = response.data.data.filter(
         (mentor) => !mentor.adminApproval,
       );
-
       setMentorRequests(pendingMentors);
       setMeta(response.data.meta);
     } catch (err) {
@@ -71,13 +54,8 @@ export function useMentorRequests(): UseMentorRequestsReturn {
   const approveMentor = async (userName: string) => {
     try {
       await api.patch(`/api/v1/mentors/${userName}`, { adminApproval: true });
-      // Update local state
       setMentorRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request.id === userName
-            ? { ...request, adminApproval: true }
-            : request,
-        ),
+        prevRequests.filter((request) => request.userName !== userName),
       );
     } catch (err) {
       setError(handleAxiosError(err));
@@ -85,18 +63,14 @@ export function useMentorRequests(): UseMentorRequestsReturn {
     }
   };
 
-  const rejectMentor = async (id: string) => {
+  const rejectMentor = async (userName: string) => {
     try {
-      await api.post(`/api/v1/mentors/${id}/reject`);
-      // Optimistically update UI
+      await api.post(`/api/v1/mentors/${userName}/reject`);
       setMentorRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request.id === id ? { ...request, status: "rejected" } : request,
-        ),
+        prevRequests.filter((request) => request.userName !== userName),
       );
     } catch (err) {
       setError(handleAxiosError(err));
-      // Rollback optimistic update on error
       await fetchMentorRequests();
     }
   };
@@ -105,13 +79,17 @@ export function useMentorRequests(): UseMentorRequestsReturn {
     fetchMentorRequests();
   }, [fetchMentorRequests]);
 
+  const refetch = useCallback(async () => {
+    await fetchMentorRequests();
+  }, [fetchMentorRequests]);
+
   return {
     mentorRequests,
     isLoading,
     error,
-    refetch: fetchMentorRequests,
     approveMentor,
     rejectMentor,
     meta,
+    refetch,
   };
 }
