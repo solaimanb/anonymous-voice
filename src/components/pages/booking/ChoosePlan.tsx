@@ -18,6 +18,7 @@ import { AuthService } from "@/services/auth.service";
 
 interface ChoosePlanProps {
   onPlanSelect?: (plan: PlanOption) => void;
+  mentorUsername: string;
 }
 
 interface PlanFieldProps {
@@ -66,12 +67,13 @@ const PlanField = ({
 
 export default function ChoosePlan({
   onPlanSelect = () => {},
+  mentorUsername,
 }: ChoosePlanProps) {
   const router = useRouter();
   const { selectedTimeSlot, selectedDate, showPlanDetails } = useBookingStore();
   const [duration, setDuration] = useState("10");
   const { bookSession, isLoading } = useBookSession();
-  const mentorUsername = "mentorUsername";
+  console.log("Mentor username in ChoosePlan:", mentorUsername);
 
   if (!showPlanDetails) return null;
 
@@ -124,7 +126,7 @@ export default function ChoosePlan({
       onPlanSelect(plan);
       // TODO: Create a booked calls page and fetch details via API
       // router.push(`/booking/confirmation?id=${bookingResponse.data.id}`);
-      console.log("Booking successful:", bookingResponse);
+      console.log("Booking Response:", bookingResponse);
       router.push(`/booking/confirmation/${currentUser.userName}`);
     } catch (error) {
       console.error("Booking failed:", error);

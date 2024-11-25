@@ -85,8 +85,9 @@ export default function Session() {
             >
               <VolunteerCard
                 name={volunteer.name}
+                userName={volunteer.userName}
                 title={volunteer.title}
-                imageUrl={volunteer.imageUrl}
+                avatarUrl={volunteer.avatarUrl}
                 isActive={volunteer.isActive}
                 rating={volunteer.rating}
                 yearsExperience={volunteer.yearsExperience}

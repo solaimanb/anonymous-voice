@@ -5,9 +5,12 @@ import BookingDetailsCard from "@/components/pages/booking/BookingDetailsCard";
 import ChoosePlan from "@/components/pages/booking/ChoosePlan";
 import useVolunteers from "@/hooks/useVolunteers";
 import { Volunteer } from "@/types/volunteer";
+import { useSearchParams } from "next/navigation";
 
 export default function Booking() {
   const { volunteers, loading } = useVolunteers<Volunteer[]>();
+  const searchParams = useSearchParams();
+  const mentorUserName = searchParams.get("mentor") || "";
 
   if (loading) return <Loading />;
 
@@ -17,8 +20,9 @@ export default function Booking() {
         <BookingDetailsCard
           key={volunteer.id}
           name={volunteer.name}
+          userName={volunteer.userName}
           title={volunteer.title}
-          imageUrl={volunteer.imageUrl}
+          avatarUrl={volunteer.avatarUrl}
           yearsExperience={volunteer.yearsExperience}
           bookingsCompleted={volunteer.bookingsCompleted}
           expertise={volunteer.expertise}
@@ -27,7 +31,7 @@ export default function Booking() {
           timeSlots={volunteer.timeSlots}
         />
       ))}
-      <ChoosePlan />
+      <ChoosePlan mentorUsername={mentorUserName} />
     </div>
   );
 }

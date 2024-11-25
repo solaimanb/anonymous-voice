@@ -10,8 +10,9 @@ import { useState } from "react";
 
 interface BookingDetailsProps {
   name: string;
+  userName: string;
   title: string;
-  imageUrl: string;
+  avatarUrl: string;
   yearsExperience: number;
   bookingsCompleted: number;
   expertise: { name: string }[];
@@ -23,7 +24,7 @@ interface BookingDetailsProps {
 const ProfileSection = ({
   name,
   title,
-  imageUrl,
+  avatarUrl,
   yearsExperience,
   bookingsCompleted,
   expertise,
@@ -34,7 +35,7 @@ const ProfileSection = ({
       <div className="w-2/5 bg-muted-foreground/20 rounded-lg">
         <div className="rounded-xl overflow-hidden shrink-0 h-full">
           <Image
-            src={imageUrl}
+            src={avatarUrl}
             alt={name}
             width={400}
             height={400}
@@ -105,8 +106,9 @@ const ProfileSection = ({
 
 export default function BookingDetailsCard({
   name,
+  userName,
   title,
-  imageUrl,
+  avatarUrl,
   yearsExperience,
   bookingsCompleted,
   expertise,
@@ -128,8 +130,9 @@ export default function BookingDetailsCard({
         <div className="flex flex-col lg:flex-row gap-6">
           <ProfileSection
             name={name}
+            userName={userName}
             title={title}
-            imageUrl={imageUrl}
+            avatarUrl={avatarUrl}
             yearsExperience={yearsExperience}
             bookingsCompleted={bookingsCompleted}
             expertise={expertise}
