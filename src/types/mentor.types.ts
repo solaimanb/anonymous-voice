@@ -1,7 +1,7 @@
 export interface MentorRequest {
   id: string;
   name: string;
-  username: string;
+  userName: string;
   designation: string;
   status: "pending" | "approved" | "rejected";
   avatarUrl: string;

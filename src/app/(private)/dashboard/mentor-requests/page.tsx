@@ -46,8 +46,14 @@ const LoadingTableRow = () => (
 );
 
 export default function MentorRequests() {
-  const { mentorRequests, isLoading, error, approveMentor, rejectMentor } =
-    useMentorRequests();
+  const {
+    mentorRequests,
+    isLoading,
+    error,
+    approveMentor,
+    rejectMentor,
+    refetch,
+  } = useMentorRequests();
   const [selectedMentor, setSelectedMentor] = useState<MentorRequest | null>(
     null,
   );
@@ -66,7 +72,8 @@ export default function MentorRequests() {
 
   const handleConfirmApprove = async () => {
     if (selectedMentor) {
-      await approveMentor(selectedMentor.id);
+      await approveMentor(selectedMentor.userName);
+      refetch();
       setApproveDialogOpen(false);
       setSelectedMentor(null);
     }
@@ -75,6 +82,7 @@ export default function MentorRequests() {
   const handleConfirmReject = async () => {
     if (selectedMentor) {
       await rejectMentor(selectedMentor.id);
+      refetch();
       setRejectDialogOpen(false);
       setSelectedMentor(null);
     }

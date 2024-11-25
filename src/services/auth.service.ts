@@ -5,6 +5,7 @@ import { UserRole } from "@/types/user.types";
 import { CreateMentorData, MentorDataField } from "@/types/auth.types";
 import { getAuth, signInWithPopup } from "firebase/auth";
 import { googleProvider } from "@/lib/firebase";
+import api from "@/config/axios.config";
 
 export interface UserInfo {
   userName: string;
@@ -119,8 +120,6 @@ export class AuthService {
     return null;
   }
 
-  // ==============MENTOR SERVICE============== //
-
   static async handleGoogleMentorSignUp() {
     try {
       googleProvider.addScope("profile");
@@ -135,7 +134,45 @@ export class AuthService {
 
       const idToken = await user.getIdToken();
 
+      //TODO: Check if user exists in our database
+      try {
+        const { data: verificationData } = await api.post<{
+          exists: boolean;
+          role?: UserRole;
+          userData?: LoginResponse;
+        }>("/api/v1/auth/verify-token", {
+          email: user.email,
+          firebaseToken: idToken,
+        });
+
+        if (verificationData.exists && verificationData.userData) {
+          const { userData } = verificationData;
+          const decodedToken = jwtDecode<UserInfo>(userData.data.accessToken);
+
+          // Store auth data
+          if (typeof window !== "undefined") {
+            localStorage.setItem("authToken", userData.data.accessToken);
+            localStorage.setItem(
+              "needsPasswordChange",
+              String(userData.data.needsPasswordChange),
+            );
+            localStorage.setItem("user", JSON.stringify(decodedToken));
+            localStorage.setItem("isAuthenticated", "true");
+            localStorage.setItem("userRole", verificationData.role || "");
+          }
+
+          return {
+            existingUser: true,
+            user: decodedToken,
+            role: verificationData.role,
+          };
+        }
+      } catch (error) {
+        console.error("Error verifying user:", error);
+      }
+
       return {
+        existingUser: false,
         user: {
           uid: user.uid,
           email: user.email,
