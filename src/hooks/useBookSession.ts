@@ -1,57 +1,107 @@
 import { useState } from "react";
-import { PlanOption } from "@/types/plan";
-import { AuthService } from "@/services/auth.service";
 import { useToast } from "./use-toast";
-import api from "@/config/axios.config";
-import axios from "axios";
+import { AppointmentPayload } from "@/types/plan";
+import { AuthService } from "@/services/auth.service";
+import { AppointmentService } from "@/services/appointment.service";
+import { BookingError } from "@/services/error-handler";
+import { useRouter } from "next/navigation";
+import { useBookingStore } from "@/store/useBookingStore";
+import { AxiosError } from "axios";
 
 export const useBookSession = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
+  const bookingStore = useBookingStore();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const bookSession = async (mentorUsername: string, plan: PlanOption) => {
+  const validateBookingData = () => {
+    const validationRules = [
+      {
+        condition: !bookingStore.mentorUsername,
+        message: "Mentor username is required",
+      },
+      {
+        condition: !bookingStore.selectedTimeSlot,
+        message: "Time slot must be selected",
+      },
+      {
+        condition: !bookingStore.selectedDate,
+        message: "Date must be selected",
+      },
+    ];
+
+    return validationRules
+      .filter((rule) => rule.condition)
+      .map((rule) => rule.message);
+  };
+
+  const bookSession = async () => {
+    if (isLoading) return null;
     setIsLoading(true);
-    const currentUser = AuthService.getStoredUser();
 
     try {
-      // TODO: Implement API call to book session
-      const { data } = await api.post("/api/v1/bookings", {
-        mentorUsername,
-        menteeUsername: currentUser?.userName,
-        sessionDetails: {
-          duration: plan.duration,
-          time: plan.time,
-          date: plan.date,
-          type: plan.type,
+      const currentUser = AuthService.getStoredUser();
+      if (!currentUser) {
+        router.push("/login");
+        return;
+      }
+
+      const validationErrors = validateBookingData();
+      if (validationErrors.length > 0) {
+        throw new BookingError("VALIDATION_ERROR", validationErrors.join(", "));
+      }
+
+      const appointmentPayload: AppointmentPayload = {
+        appointmentType: bookingStore.appointmentType,
+        status: "confirmed",
+        content: `${bookingStore.appointmentType} on ${bookingStore.selectedDate} at ${bookingStore.selectedTimeSlot} (${bookingStore.selectedDuration} min)`,
+        selectedSlot: {
+          time: bookingStore.selectedTimeSlot!,
+          isAvailable: true,
         },
-      });
+        mentorUserName: bookingStore.mentorUsername!,
+        menteeUserName: currentUser.userName,
+      };
+
+      const response =
+        await AppointmentService.createAppointment(appointmentPayload);
 
       toast({
-        title: "Session Booked!",
-        description: `Your ${plan.duration} session is scheduled for ${plan.date} at ${plan.time}`,
+        title: "Session Booked Successfully!",
+        description: `Your ${bookingStore.appointmentType} is scheduled for ${bookingStore.selectedDate} at ${bookingStore.selectedTimeSlot}`,
       });
 
-      return data;
+      return response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast({
-          title: "Booking Failed",
-          description:
-            error.response?.data?.message || "Unable to book session",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Booking Failed",
-          description: "An unexpected error occurred",
-          variant: "destructive",
+      console.error("Booking Error Caught:", error);
+
+      if (error instanceof AxiosError) {
+        console.error("Booking Error Details:", {
+          message: error.message,
+          status: error.response?.status,
+          data: error.response?.data,
         });
       }
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred during booking";
+
+      toast({
+        title: "Booking Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { bookSession, isLoading };
+  return {
+    bookSession,
+    isLoading,
+  };
 };

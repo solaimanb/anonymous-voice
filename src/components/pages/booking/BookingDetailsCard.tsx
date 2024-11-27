@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Star, Clock, Users, Award, CheckCheck } from "lucide-react";
+import { Star, Clock, Users, Award } from "lucide-react";
 import { TimeSlot } from "@/types/booking";
 import Availability from "./Availability";
-import { useBookingStore } from "@/store/useBookingStore";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+// import { useBookingStore } from "@/store/useBookingStore";
+// import { Button } from "@/components/ui/button";
+// import { useState } from "react";
 
 interface BookingDetailsProps {
   name: string;
@@ -116,13 +116,12 @@ export default function BookingDetailsCard({
   date,
   timeSlots,
 }: BookingDetailsProps) {
-  const { selectedTimeSlot, setShowPlanDetails } = useBookingStore();
-  const [isBooked, setIsBooked] = useState(false);
+  // const { selectedTimeSlot, setShowPlanDetails } = useBookingStore();
+  // const [isBooked, setIsBooked] = useState(false);
 
-  const handleProceedToBook = () => {
-    setShowPlanDetails(true);
-    setIsBooked(true);
-  };
+  // const handleProceedToBook = () => {
+  //   setShowPlanDetails(true);
+  // };
 
   return (
     <div className="w-full">
@@ -144,15 +143,14 @@ export default function BookingDetailsCard({
           <div className="lg:w-2/6">
             <Availability date={date} timeSlots={timeSlots} />
 
-            <div className="flex gap-3 mt-4">
+            {/* <div className="flex gap-3 mt-4">
               <Button
                 onClick={handleProceedToBook}
                 disabled={!selectedTimeSlot}
                 className={`flex-1 h-11 rounded-md flex items-center justify-center gap-2 transition-colors
-                  ${
-                    selectedTimeSlot
-                      ? "bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ${selectedTimeSlot
+                    ? "bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
               >
                 {isBooked ? (
@@ -166,7 +164,7 @@ export default function BookingDetailsCard({
                   "Select Time Slot"
                 )}
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

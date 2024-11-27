@@ -10,10 +10,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
 import { UserRole } from "@/types/user.types";
+import { useAuth } from "@/hooks/useAuth";
+import { Separator } from "@/components/ui/separator";
 
 // Define dropdown items for each role
 const roleDropdownItems = {
-  mentee: [{ label: "Settings", href: "/settings" }],
+  mentee: [],
   mentor: [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Settings", href: "/settings" },
@@ -27,14 +29,15 @@ const roleDropdownItems = {
 };
 
 interface UserDropdownProps {
-  user: {
+  userRole: {
     role: UserRole;
     logout: () => void;
   };
 }
 
-export function UserDropdown({ user }: UserDropdownProps) {
-  const dropdownItems = roleDropdownItems[user.role] || [];
+export function UserDropdown({ userRole }: UserDropdownProps) {
+  const dropdownItems = roleDropdownItems[userRole.role] || [];
+  const { user } = useAuth();
 
   return (
     <DropdownMenu>
@@ -44,7 +47,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        {userRole.role !== "mentee" ? (
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        ) : (
+          <DropdownMenuLabel className="capitalize">
+            {user?.userName}
+          </DropdownMenuLabel>
+        )}
+        <Separator />
         <DropdownMenuSeparator />
 
         {dropdownItems.map((item) => (
@@ -56,7 +66,9 @@ export function UserDropdown({ user }: UserDropdownProps) {
         ))}
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={user.logout}>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={userRole.logout} className="cursor-pointer">
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -139,7 +139,7 @@ export default function Header() {
                   </Button>
                   {/* User Dropdown Menu */}
                   <UserDropdown
-                    user={{
+                    userRole={{
                       role: user.role,
                       logout,
                     }}
