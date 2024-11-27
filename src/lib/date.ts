@@ -15,3 +15,18 @@ export const calculateValidity = (): string => {
   const diffInMinutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
   return `${diffInHours}h : ${diffInMinutes}min`;
 };
+
+export const formatTimeForAppointment = (): string => {
+  const now = new Date();
+  const endTime = new Date(now.getTime() + 60 * 60 * 1000);
+
+  const formatTime = (date: Date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes.toString().padStart(2, "0")}${ampm}`;
+  };
+
+  return `${formatTime(now)}-${formatTime(endTime)}`;
+};

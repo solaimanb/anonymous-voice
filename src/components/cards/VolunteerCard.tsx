@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { ActionType } from "../pages/home/hero/Hero";
 import Link from "next/link";
+import { useBookingStore } from "@/store/useBookingStore";
+import { SessionConfirmDialog } from "@/app/(marketing)/(session)/sessions/_components/SessionConfirmDialog";
 
 interface Expertise {
   name: string;
@@ -50,8 +52,6 @@ export default function VolunteerCard({
   sessionsCompleted,
   expertise,
   description,
-  onQuickCall,
-  onChat,
   onBookCall,
   actionType,
 }: VolunteerProps) {
@@ -67,14 +67,15 @@ export default function VolunteerCard({
 
     switch (action) {
       case "quick-call":
-        if (onQuickCall) {
-          onQuickCall();
-        }
+        useBookingStore.getState().setMentorUsername(userName);
+        useBookingStore.getState().setAppointmentType("Quick Call");
+        useBookingStore.getState().setShowPlanDetails(true);
         break;
+
       case "chat":
-        if (onChat) {
-          onChat();
-        }
+        useBookingStore.getState().setMentorUsername(userName);
+        useBookingStore.getState().setAppointmentType("Chat");
+        useBookingStore.getState().setShowPlanDetails(true);
         break;
       case "booking":
         if (onBookCall) {
@@ -200,6 +201,7 @@ export default function VolunteerCard({
           </Button>
         </Link>
       </CardFooter>
+      <SessionConfirmDialog />
     </Card>
   );
 }
