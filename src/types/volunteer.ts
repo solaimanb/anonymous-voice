@@ -3,8 +3,9 @@ import { TimeSlot } from "./booking";
 export interface Volunteer {
   id: string;
   name: string;
+  userName: string;
   title: string;
-  imageUrl: string;
+  avatarUrl: string;
   yearsExperience: number;
   bookingsCompleted: number;
   expertise: { name: string }[];

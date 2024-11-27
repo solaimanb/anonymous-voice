@@ -9,7 +9,7 @@ import { mockTimeSlots } from "../../../../public/data/availabilitySlots";
 
 interface AvailabilityProps {
   date?: string;
-  timeSlots?: TimeSlot[];
+  timeSlots: TimeSlot[];
 }
 
 const TimeSlotItem = ({
@@ -54,18 +54,17 @@ const TimeSlotItem = ({
   </div>
 );
 
-export default function Availability({ timeSlots = [] }: AvailabilityProps) {
+export default function Availability({ timeSlots }: AvailabilityProps) {
+  console.log("Time slots: ", timeSlots);
   const { selectedTimeSlot, setSelectedTimeSlot, setSelectedDate } =
     useBookingStore();
-  console.log("Time Slots: ", timeSlots);
 
   const today = new Date();
-  const formattedDate = today.toLocaleDateString("en-US", {
-    // weekday: "short",
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
     day: "numeric",
     month: "short",
     year: "numeric",
-  });
+  }).format(today);
 
   const handleSlotSelect = (time: string) => {
     setSelectedTimeSlot(time);

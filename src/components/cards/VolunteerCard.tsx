@@ -24,8 +24,9 @@ interface Expertise {
 
 interface VolunteerProps {
   name: string;
+  userName: string;
   title: string;
-  imageUrl: string;
+  avatarUrl: string;
   isActive?: boolean;
   rating: number;
   yearsExperience: number;
@@ -40,8 +41,9 @@ interface VolunteerProps {
 
 export default function VolunteerCard({
   name,
+  userName,
   title,
-  imageUrl,
+  avatarUrl,
   isActive,
   rating,
   yearsExperience,
@@ -89,14 +91,14 @@ export default function VolunteerCard({
   };
 
   return (
-    <Card className="rounded-xl border border-gray-100 bg-white overflow-hidden">
+    <Card className="rounded-xl border overflow-hidden">
       <CardContent className="p-6">
         {/* Profile Section */}
         <div className="flex gap-6">
           <div className="shrink-0">
             <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted-foreground/20">
               <Image
-                src={imageUrl}
+                src={avatarUrl}
                 alt={name}
                 width={200}
                 height={200}
@@ -187,7 +189,7 @@ export default function VolunteerCard({
           Chat
         </Button>
 
-        <Link href="/booking">
+        <Link href={`/booking?mentor=${userName}`}>
           <Button
             className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
             onClick={() => handleAction("booking")}
