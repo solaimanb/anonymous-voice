@@ -9,6 +9,15 @@ export interface User {
   mentee?: Mentee;
 }
 
+export interface CurrentUser extends User {
+  isVerified: boolean;
+  role: string;
+  userDetails: string;
+  isActive: boolean;
+  iat: number;
+  exp: number;
+}
+
 export interface LoginCredentials {
   userName: string;
   password: string;
