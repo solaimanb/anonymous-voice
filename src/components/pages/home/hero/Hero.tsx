@@ -81,7 +81,9 @@ export default function Hero() {
         <Image
           src="/images/av-hero.webp"
           alt="A serene landscape representing mental health support"
-          layout="fill"
+          // layout="fill"
+          width={1920}
+          height={1080}
           className="object-center w-full h-full"
           loading="lazy"
         />

@@ -69,6 +69,7 @@ export const useBookSession = () => {
       toast({
         title: "Session Booked Successfully!",
         description: `Your ${bookingStore.appointmentType} is scheduled for ${bookingStore.selectedDate} at ${bookingStore.selectedTimeSlot}`,
+        duration: 1000,
       });
 
       return response;
