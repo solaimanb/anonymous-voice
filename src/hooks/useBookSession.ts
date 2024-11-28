@@ -7,11 +7,7 @@ import { AppointmentService } from "@/services/appointment.service";
 import { BookingError } from "@/services/error-handler";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "@/store/useBookingStore";
-import {
-  calculateValidity,
-  formatDateToLocale,
-  formatTimeForAppointment,
-} from "@/lib/date";
+import { calculateValidity, formatDateToLocale } from "@/lib/date";
 
 type AppointmentType = "Booking Call" | "Quick Call" | "Chat";
 
@@ -67,10 +63,9 @@ export const useBookSession = () => {
       return `${appointmentType} on ${bookingStore.selectedDate} at ${bookingStore.selectedTimeSlot} (${bookingStore.selectedDuration} min)`;
     }
 
-    const timeSlot = formatTimeForAppointment();
     const currentDate = formatDateToLocale(new Date().toISOString());
     const validity = calculateValidity();
-    return `${appointmentType} on ${currentDate} at ${timeSlot} (Valid for: ${validity})`;
+    return `${appointmentType} on ${currentDate} (Valid for: ${validity})`;
   };
 
   const createAppointmentPayload = (
@@ -83,7 +78,7 @@ export const useBookSession = () => {
       time:
         bookingStore.appointmentType === "Booking Call"
           ? bookingStore.selectedTimeSlot!
-          : formatTimeForAppointment(),
+          : `${bookingStore.selectedDuration} minutes`,
       isAvailable: true,
     },
     mentorUserName: bookingStore.mentorUsername!,

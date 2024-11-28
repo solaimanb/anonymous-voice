@@ -4,11 +4,13 @@ import Image from "next/image";
 import { Star, Clock, Users, Award } from "lucide-react";
 import { TimeSlot } from "@/types/booking";
 import Availability from "./Availability";
+import { Card } from "@/components/ui/card";
 // import { useBookingStore } from "@/store/useBookingStore";
 // import { Button } from "@/components/ui/button";
 // import { useState } from "react";
 
 interface BookingDetailsProps {
+  showAvailability?: boolean;
   name: string;
   userName: string;
   title: string;
@@ -105,45 +107,22 @@ const ProfileSection = ({
 );
 
 export default function BookingDetailsCard({
-  name,
-  userName,
-  title,
-  avatarUrl,
-  yearsExperience,
-  bookingsCompleted,
-  expertise,
-  description,
-  date,
-  timeSlots,
+  showAvailability = false,
+  ...props
 }: BookingDetailsProps) {
-  // const { selectedTimeSlot, setShowPlanDetails } = useBookingStore();
-  // const [isBooked, setIsBooked] = useState(false);
-
-  // const handleProceedToBook = () => {
-  //   setShowPlanDetails(true);
-  // };
-
   return (
-    <div className="w-full">
+    <Card className="w-full border">
       <div className="bg-white rounded-xl shadow p-4">
         <div className="flex flex-col lg:flex-row gap-6">
-          <ProfileSection
-            name={name}
-            userName={userName}
-            title={title}
-            avatarUrl={avatarUrl}
-            yearsExperience={yearsExperience}
-            bookingsCompleted={bookingsCompleted}
-            expertise={expertise}
-            description={description}
-            date={date}
-            timeSlots={timeSlots}
-          />
+          <ProfileSection {...props} />
 
           <div className="lg:w-2/6">
-            <Availability date={date} timeSlots={timeSlots} />
+            {showAvailability && (
+              <Availability date={props.date} timeSlots={props.timeSlots} />
+            )}
+          </div>
 
-            {/* <div className="flex gap-3 mt-4">
+          {/* <div className="flex gap-3 mt-4">
               <Button
                 onClick={handleProceedToBook}
                 disabled={!selectedTimeSlot}
@@ -165,9 +144,8 @@ export default function BookingDetailsCard({
                 )}
               </Button>
             </div> */}
-          </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

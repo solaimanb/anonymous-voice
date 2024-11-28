@@ -42,19 +42,9 @@ export default function BookingConfirmationPage() {
   const { toast } = useToast();
   const [booking, setBooking] = useState<BookingConfirmation | null>(null);
   const searchParams = useSearchParams();
-  const bookingId = searchParams.get("booking_id");
+  const bookingId = searchParams.get("id");
 
   useEffect(() => {
-    if (!bookingId) {
-      toast({
-        title: "Invalid Booking",
-        description: "No booking ID provided",
-        duration: 3000,
-      });
-      router.push("/");
-      return;
-    }
-
     const fetchBookingDetails = async () => {
       try {
         const { data } = await api.get(`/api/v1/appointments/${bookingId}`);
@@ -99,7 +89,11 @@ export default function BookingConfirmationPage() {
               <SessionDetail
                 icon={<Calendar size={20} className="text-soft-paste" />}
                 label="Date"
-                value={new Date(booking.createdAt).toLocaleDateString()}
+                value={new Date(booking.createdAt).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
               />
               <SessionDetail
                 icon={<Clock size={20} className="text-soft-paste" />}
