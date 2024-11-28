@@ -1,59 +1,105 @@
-import { useState, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useBookingStore } from "@/store/useBookingStore";
 import { useBookSession } from "@/hooks/useBookSession";
-import { useToast } from "@/hooks/use-toast";
-import { BookingError } from "@/services/error-handler";
+import { AppointmentType } from "@/types/booking";
 
-export const useBookingLogic = (mentorUsername: string) => {
+export const useBookingLogic = (
+  mentorUsername: string,
+  sessionType: AppointmentType,
+) => {
   const router = useRouter();
   const bookingStore = useBookingStore();
+  const setMentorUsername = useBookingStore((state) => state.setMentorUsername);
+  const setAppointmentType = useBookingStore(
+    (state) => state.setAppointmentType,
+  );
   const { bookSession, isLoading } = useBookSession();
-  const { toast } = useToast();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [duration, setDuration] = useState(
-    bookingStore.selectedDuration || "10",
-  );
-  console.log("[useBookingLogic] mentorUsername: ", mentorUsername);
 
-  const handleDurationChange = useCallback(
-    (value: string) => {
-      setDuration(value);
-      bookingStore.setDuration(value);
-    },
-    [bookingStore],
-  );
+  useEffect(() => {
+    setMentorUsername(mentorUsername);
+    setAppointmentType(
+      sessionType === "Booking Call"
+        ? "Booking Call"
+        : sessionType === "Quick Call"
+          ? "Quick Call"
+          : "Chat",
+    );
+  }, [mentorUsername, sessionType, setMentorUsername, setAppointmentType]);
 
-  const handleConfirmBooking = useCallback(async () => {
-    try {
-      const response = await bookSession();
-      if (response?.data?.data._id) {
-        bookingStore.resetBooking();
-        router.push(
-          `/booking/confirmation?status=${response.data.data.status}&user=${response.data.data.menteeUserName}&booking_id=${response.data.data._id}`,
-        );
-      }
-    } catch (error) {
-      if (!(error instanceof BookingError)) {
-        toast({
-          title: "Unexpected Error",
-          description: "Failed to complete booking. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } finally {
+  const handleDurationChange = (value: string) => {
+    bookingStore.setDuration(value);
+  };
+
+  const handleConfirmBooking = async () => {
+    const response = await bookSession();
+    if (response?.data?.data._id) {
       setShowConfirmDialog(false);
+      bookingStore.resetBooking();
+      router.push(`/booking/confirmation?id=${response.data.data._id}`);
     }
-  }, [bookSession, bookingStore, router, toast]);
+  };
+
+  const isBookingDisabled = useMemo(() => {
+    if (!bookingStore.mentorUsername) return true;
+
+    return sessionType === "Booking Call"
+      ? !bookingStore.selectedTimeSlot || !bookingStore.selectedDate
+      : false;
+  }, [
+    sessionType,
+    bookingStore.mentorUsername,
+    bookingStore.selectedTimeSlot,
+    bookingStore.selectedDate,
+  ]);
 
   return {
-    duration,
+    duration: bookingStore.selectedDuration,
     isLoading,
     showConfirmDialog,
     setShowConfirmDialog,
     handleDurationChange,
     handleConfirmBooking,
-    isBookingDisabled:
-      isLoading || !bookingStore.selectedTimeSlot || !bookingStore.selectedDate,
+    isBookingDisabled,
   };
 };
+
+// import { useState, useMemo } from "react";
+// import { useBookingStore } from "@/store/useBookingStore";
+// import { useBookSession } from "@/hooks/useBookSession";
+// import { AppointmentType, SESSION_CONFIG } from "@/types/booking";
+
+// export const useBookingLogic = (mentorUsername: string, sessionType: AppointmentType) => {
+//   const bookingStore = useBookingStore();
+//   const { bookSession, isLoading } = useBookSession();
+//   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+//   const [duration, setDuration] = useState("30");
+
+//   const handleDurationChange = (value: string) => {
+//     setDuration(value);
+//     bookingStore.setDuration(value);
+//   };
+
+//   const handleConfirmBooking = async () => {
+//     await bookSession();
+//     setShowConfirmDialog(false);
+//   };
+
+//   const isBookingDisabled = useMemo(() => {
+//     const config = SESSION_CONFIG[sessionType];
+//     if (config.requiresTimeSlot && !bookingStore.selectedTimeSlot) return true;
+//     if (config.requiresDate && !bookingStore.selectedDate) return true;
+//     return false;
+//   }, [sessionType, bookingStore.selectedTimeSlot, bookingStore.selectedDate]);
+
+//   return {
+//     duration,
+//     isLoading,
+//     showConfirmDialog,
+//     setShowConfirmDialog,
+//     handleDurationChange,
+//     handleConfirmBooking,
+//     isBookingDisabled
+//   };
+// };

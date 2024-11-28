@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { ActionType } from "../pages/home/hero/Hero";
 import Link from "next/link";
-import { useBookingStore } from "@/store/useBookingStore";
 import { SessionConfirmDialog } from "@/app/(marketing)/(session)/sessions/_components/SessionConfirmDialog";
 
 interface Expertise {
@@ -52,7 +51,6 @@ export default function VolunteerCard({
   sessionsCompleted,
   expertise,
   description,
-  onBookCall,
   actionType,
 }: VolunteerProps) {
   const { isAuthenticated } = useAuth();
@@ -65,26 +63,15 @@ export default function VolunteerCard({
       return;
     }
 
-    switch (action) {
-      case "quick-call":
-        useBookingStore.getState().setMentorUsername(userName);
-        useBookingStore.getState().setAppointmentType("Quick Call");
-        useBookingStore.getState().setShowPlanDetails(true);
-        break;
+    const actionMap = {
+      "quick-call": "Quick Call",
+      chat: "Chat",
+      booking: "Booking Call",
+    };
 
-      case "chat":
-        useBookingStore.getState().setMentorUsername(userName);
-        useBookingStore.getState().setAppointmentType("Chat");
-        useBookingStore.getState().setShowPlanDetails(true);
-        break;
-      case "booking":
-        if (onBookCall) {
-          onBookCall();
-        }
-        break;
-      default:
-        break;
-    }
+    // router.push(`/booking?mentor=${userName}&type=${action.toLowerCase()}`);
+    const appointmentType = actionMap[action as keyof typeof actionMap];
+    router.push(`/booking?mentor=${userName}&type=${appointmentType}`);
   };
 
   const isButtonDisabled = (buttonType: ActionType): boolean => {

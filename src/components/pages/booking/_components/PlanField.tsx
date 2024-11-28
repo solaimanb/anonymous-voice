@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,7 +13,7 @@ export const PlanField = ({
   hasDropdown = false,
   onDurationChange,
 }: PlanFieldProps) => {
-  if (label === "Call Duration") {
+  if (hasDropdown) {
     return (
       <div className="space-y-2 text-sm">
         <label className="block text-soft-paste font-semibold">{label}</label>
@@ -40,7 +39,6 @@ export const PlanField = ({
       <div className="relative">
         <div className="flex items-center justify-between gap-2 px-4 py-2 border border-soft-paste-light-active rounded-lg">
           <span className="text-soft-paste-darker">{value}</span>
-          {hasDropdown && <ChevronDown className="w-4 h-4 text-soft-paste" />}
         </div>
       </div>
     </div>

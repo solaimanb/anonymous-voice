@@ -2,25 +2,24 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useBookingStore } from "@/store/useBookingStore";
 import { useBookingLogic } from "@/hooks/booking/useBookingLogic";
 import { PlanField } from "./_components/PlanField";
-import { calculateValidity, formatDateToLocale } from "@/lib/date";
-import { ChoosePlanProps } from "@/types/booking";
+import { formatDateToLocale } from "@/lib/date";
+import { AppointmentType, SessionConfig } from "@/types/booking";
+import { BookingConfirmationDialog } from "./_components/ConfirmationDialog";
 
-export default function ChoosePlan({ mentorUsername }: ChoosePlanProps) {
-  const setMentorUsername = useBookingStore((state) => state.setMentorUsername);
-  const selectedTimeSlot = useBookingStore((state) => state.selectedTimeSlot);
-  const selectedDate = useBookingStore((state) => state.selectedDate);
+interface ChoosePlanProps {
+  mentorUsername: string;
+  sessionType: AppointmentType;
+  sessionConfig: SessionConfig;
+}
 
+export default function ChoosePlan({
+  mentorUsername,
+  sessionType,
+  sessionConfig,
+}: ChoosePlanProps) {
   const {
     duration,
     isLoading,
@@ -29,7 +28,10 @@ export default function ChoosePlan({ mentorUsername }: ChoosePlanProps) {
     handleDurationChange,
     handleConfirmBooking,
     isBookingDisabled,
-  } = useBookingLogic(mentorUsername);
+  } = useBookingLogic(mentorUsername, sessionType);
+  const setMentorUsername = useBookingStore((state) => state.setMentorUsername);
+  const selectedTimeSlot = useBookingStore((state) => state.selectedTimeSlot);
+  const selectedDate = useBookingStore((state) => state.selectedDate);
 
   useEffect(() => {
     setMentorUsername(mentorUsername);
@@ -42,52 +44,35 @@ export default function ChoosePlan({ mentorUsername }: ChoosePlanProps) {
       </h1>
       <div className="p-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-8 items-end">
-          <PlanField
-            label="Call Duration"
-            value={`${duration} min call`}
-            onDurationChange={handleDurationChange}
-          />
-          <PlanField
-            label="Time"
-            value={selectedTimeSlot || "Selected time slot"}
-          />
-          <PlanField label="Date" value={formatDateToLocale(selectedDate)} />
-          <PlanField label="Validity" value={calculateValidity()} />
+          {sessionConfig.requiresDuration && (
+            <PlanField
+              label="Duration"
+              value={`${duration} min`}
+              onDurationChange={handleDurationChange}
+              hasDropdown={true}
+            />
+          )}
+          {sessionConfig.requiresTimeSlot && (
+            <PlanField label="Time" value={selectedTimeSlot || "Select time"} />
+          )}
+          {sessionConfig.requiresDate && (
+            <PlanField label="Date" value={formatDateToLocale(selectedDate)} />
+          )}
           <Button
             onClick={() => setShowConfirmDialog(true)}
             disabled={isBookingDisabled}
-            className="w-full md:w-auto bg-soft-paste hover:bg-soft-paste-active"
           >
-            {isLoading ? "Booking..." : "Book The Session"}
+            Book {sessionType}
           </Button>
 
-          <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Booking</DialogTitle>
-                <DialogDescription>
-                  You are about to book a {duration} minute session for{" "}
-                  {formatDateToLocale(selectedDate)} at {selectedTimeSlot}.
-                  Would you like to proceed?
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowConfirmDialog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleConfirmBooking}
-                  className="bg-soft-paste hover:bg-soft-paste-active"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Confirming..." : "Confirm Booking"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <BookingConfirmationDialog
+            isOpen={showConfirmDialog}
+            onClose={() => setShowConfirmDialog(false)}
+            onConfirm={handleConfirmBooking}
+            sessionType={sessionType}
+            duration={duration}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </div>

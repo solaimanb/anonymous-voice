@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { SmoothScrollProvider } from "@/context/smooth-scroll";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -8,7 +9,7 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <>
-      {children}
+      <SmoothScrollProvider>{children}</SmoothScrollProvider>
       <Toaster />
     </>
   );
