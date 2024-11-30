@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth.service";
 import { toast } from "sonner";
+import { handleAuthError } from "@/services/error-handler";
 
 interface GoogleAuthResponse {
   user: {
@@ -18,6 +19,23 @@ export const useMentorAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const signInWithGoogle = async () => {
+    try {
+      const result = await AuthService.googleSignIn("mentor");
+      console.log("Mentor Sign-In Result:", result);
+
+      // Check if mentor is approved
+      // if (!result.data.isApproved) {
+      //   toast.error("Your mentor account is pending approval.");
+      //   return;
+      // }
+
+      router.push("/mentor-dashboard");
+    } catch (error) {
+      handleAuthError(error);
+    }
+  };
 
   const handleGoogleSignUp = async () => {
     try {
@@ -62,5 +80,5 @@ export const useMentorAuth = () => {
     }
   };
 
-  return { handleGoogleSignUp, loading, error };
+  return { signInWithGoogle, handleGoogleSignUp, loading, error };
 };
