@@ -233,11 +233,15 @@ const Header: React.FC = () => {
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
-        {
-          id: "dashboard",
-          name: "Dashboard",
-          href: "/dashboard",
-        },
+        ...(user.role === "admin" || user.role === "mentor"
+          ? [
+              {
+                id: "dashboard",
+                name: "Dashboard",
+                href: "/dashboard",
+              },
+            ]
+          : []),
         {
           id: "logout",
           name: "Logout",
@@ -261,7 +265,7 @@ const Header: React.FC = () => {
 
   // Mobile Navigation Trigger
   const MobileNavTrigger = () => (
-    <div className="md:hidden flex items-center">
+    <div className="lg:hidden flex items-center">
       {user ? (
         <div className="flex items-center gap-4 text-soft-paste">
           <Link href="/chat">
@@ -332,7 +336,7 @@ const Header: React.FC = () => {
 
   // Desktop Navigation
   const DesktopNavigation = () => (
-    <nav className="hidden md:flex space-x-4 lg:space-x-8">
+    <nav className="hidden lg:flex space-x-4 lg:space-x-8">
       {mainNavItems.map((item) => (
         <div key={item.name} className="relative group">
           {hasDropdown(item) ? (
@@ -373,7 +377,7 @@ const Header: React.FC = () => {
 
   // Desktop User Actions
   const DesktopUserActions = () => (
-    <div className="hidden md:flex items-center space-x-3">
+    <div className="hidden lg:flex items-center space-x-3">
       {user ? (
         <div className="flex items-center space-x-2">
           <Link href="/chat">
