@@ -233,25 +233,29 @@ const Header: React.FC = () => {
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
-        {
-          id: "dashboard",
-          name: "Dashboard",
-          href: "/dashboard",
-        },
-        {
-          id: "logout",
-          name: "Logout",
-          href: "",
-          onClick: logout,
-        },
-      ]
+      ...(user.role === 'admin' || user.role === 'mentor'
+        ? [
+          {
+            id: 'dashboard',
+            name: 'Dashboard',
+            href: '/dashboard',
+          },
+        ]
+        : []),
+      {
+        id: 'logout',
+        name: 'Logout',
+        href: '',
+        onClick: logout,
+      },
+    ]
     : [
-        {
-          id: "login",
-          name: "Login",
-          href: "/login",
-        },
-      ];
+      {
+        id: 'login',
+        name: 'Login',
+        href: '/login',
+      },
+    ];
 
   const combinedNavItems = [...mainNavItems, ...userNavItems];
 
@@ -261,7 +265,7 @@ const Header: React.FC = () => {
 
   // Mobile Navigation Trigger
   const MobileNavTrigger = () => (
-    <div className="md:hidden flex items-center">
+    <div className="lg:hidden flex items-center">
       {user ? (
         <div className="flex items-center gap-4 text-soft-paste">
           <Link href="/chat">
@@ -332,7 +336,7 @@ const Header: React.FC = () => {
 
   // Desktop Navigation
   const DesktopNavigation = () => (
-    <nav className="hidden md:flex space-x-4 lg:space-x-8">
+    <nav className="hidden lg:flex space-x-4 lg:space-x-8">
       {mainNavItems.map((item) => (
         <div key={item.name} className="relative group">
           {hasDropdown(item) ? (
@@ -357,11 +361,10 @@ const Header: React.FC = () => {
           ) : (
             <Link
               href={item.href}
-              className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${
-                pathname === item.href
-                  ? "text-gray-900"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${pathname === item.href
+                ? "text-gray-900"
+                : "text-gray-500 hover:text-gray-700"
+                }`}
             >
               {item.name}
             </Link>
@@ -373,7 +376,7 @@ const Header: React.FC = () => {
 
   // Desktop User Actions
   const DesktopUserActions = () => (
-    <div className="hidden md:flex items-center space-x-3">
+    <div className="hidden lg:flex items-center space-x-3">
       {user ? (
         <div className="flex items-center space-x-2">
           <Link href="/chat">
