@@ -24,6 +24,7 @@ import {
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { MentorLogin } from "./MentorLogin";
 
 const loginSchema = z.object({
   userName: z.string().min(3, "Username must be at least 3 characters"),
@@ -125,6 +126,8 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
+
+      <MentorLogin />
     </div>
   );
 }

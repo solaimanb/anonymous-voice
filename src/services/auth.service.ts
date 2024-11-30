@@ -35,10 +35,71 @@ interface LoginResponse {
   data: {
     accessToken: string;
     needsPasswordChange: boolean;
+    user: {
+      email: string;
+      role: string;
+    };
   };
 }
 
 export class AuthService {
+  // Role-based Google authentication
+  static async googleSignIn(role: "admin" | "mentor") {
+    try {
+      const result = await signInWithPopup(getAuth(), googleProvider);
+      const idToken = await result.user.getIdToken();
+
+      // Verify with backend based on role
+      const response = await api.post<LoginResponse>(
+        `/api/v1/auth/${role}/google-signin`,
+        {
+          email: result.user.email,
+          idToken,
+        },
+      );
+
+      if (response.data.success) {
+        this.setAuthData(response.data.data.accessToken);
+        return response.data;
+      }
+      throw new APIError("Authentication failed", 401, "AUTH_ERROR");
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      throw new APIError("Google Sign-In Error", 500, "AUTH_ERROR");
+    }
+  }
+
+  static async checkExistingGoogleUser(
+    email: string,
+    role: "admin" | "mentor",
+  ) {
+    try {
+      const { data } = await api.post("/api/v1/auth/verify-google-user", {
+        email,
+        role,
+      });
+
+      return {
+        exists: data.exists,
+        isApproved: data.isApproved,
+        userData: data.userData,
+      };
+    } catch (error) {
+      console.error("Check Existing Google User Error:", error);
+      throw new APIError("Check Existing Google User Error", 500, "AUTH_ERROR");
+    }
+  }
+
+  private static setAuthData(token: string) {
+    const decodedToken = jwtDecode<UserInfo>(token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("user", JSON.stringify(decodedToken));
+    }
+  }
+
+  // ================================= //
   static async createMentee(data: CreateMenteeData) {
     const response = await fetch(
       `${apiConfig.apiUrl}/api/v1/users/create-mentee`,

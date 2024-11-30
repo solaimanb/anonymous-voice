@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { toast } from "sonner";
 
 export class BookingError extends Error {
   constructor(
@@ -21,3 +22,20 @@ export function handleBookingError(error: Error | AxiosError): BookingError {
   }
   return new BookingError("UNKNOWN", "An unexpected error occurred", error);
 }
+
+export const handleAuthError = (error: unknown) => {
+  let errorMessage = "Authentication failed. Please try again.";
+
+  if (error instanceof Error) {
+    errorMessage = error.message;
+    console.error("Auth Error:", {
+      message: error.message,
+      stack: error.stack,
+    });
+  } else {
+    console.error("Unknown Auth Error:", error);
+  }
+
+  toast.error(errorMessage);
+  return errorMessage;
+};
