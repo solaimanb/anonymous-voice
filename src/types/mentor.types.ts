@@ -23,3 +23,25 @@ export interface ApiResponse<T> {
   };
   data: T[];
 }
+
+export interface DialogState {
+  type: "approve" | "reject" | null;
+  mentor: MentorRequest | null;
+}
+
+export interface MentorTableProps {
+  mentorRequests: MentorRequest[];
+  isLoading: boolean;
+  onApprove: (mentor: MentorRequest) => void;
+  onReject: (mentor: MentorRequest) => void;
+}
+
+export interface MentorDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description: string;
+  onConfirm: () => Promise<void>;
+  confirmLabel: string;
+  confirmVariant: "default" | "destructive";
+}
