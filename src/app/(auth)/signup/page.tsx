@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 const signupSchema = z.object({
   userName: z.string().min(3, "Username must be at least 3 characters"),
@@ -79,11 +80,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Card className="w-[400px]">
-        <CardHeader>
-          <CardTitle>Create Account</CardTitle>
-          <CardDescription>Sign up as a mentee to get started</CardDescription>
+    <div className="flex h-screen flex-col items-center justify-center ">
+      <Card className="max-w-sm rounded-2xl bg-soft-paste-light shadow-sm">
+        <CardHeader className="text-center">
+          <CardTitle className="text-lg">First Time Here?</CardTitle>
+          <CardDescription className="text-xs">
+            By creating an account, you confirm that you are 18 years of age or
+            older
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -93,7 +97,9 @@ export default function SignupPage() {
                 name="userName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel className="text-xs font-semibold">
+                      Username
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Enter username" {...field} />
                     </FormControl>
@@ -107,7 +113,9 @@ export default function SignupPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-xs font-semibold">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -124,8 +132,10 @@ export default function SignupPage() {
                 control={form.control}
                 name="gender"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender</FormLabel>
+                  <FormItem className="text-xs">
+                    <FormLabel className="text-xs font-semibold">
+                      Gender
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -150,7 +160,7 @@ export default function SignupPage() {
                 name="age"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Age</FormLabel>
+                    <FormLabel className="text-xs font-semibold">Age</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -169,6 +179,16 @@ export default function SignupPage() {
               </Button>
             </form>
           </Form>
+
+          <div className="mt-6 text-center text-xs">
+            <p className="text-muted-foreground">
+              Already have an account?
+              <Link href="/login" className="text-primary hover:underline">
+                {" "}
+                Log in
+              </Link>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
