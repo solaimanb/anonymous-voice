@@ -14,7 +14,7 @@ interface BookingDetailsProps {
   name: string;
   userName: string;
   title: string;
-  avatarUrl: string;
+  profileImage: string;
   yearsExperience: number;
   bookingsCompleted: number;
   expertise: { name: string }[];
@@ -26,7 +26,7 @@ interface BookingDetailsProps {
 const ProfileSection = ({
   name,
   title,
-  avatarUrl,
+  profileImage,
   yearsExperience,
   bookingsCompleted,
   expertise,
@@ -37,7 +37,7 @@ const ProfileSection = ({
       <div className="w-2/5 bg-muted-foreground/20 rounded-lg">
         <div className="rounded-xl overflow-hidden shrink-0 h-full">
           <Image
-            src={avatarUrl}
+            src={profileImage}
             alt={name}
             width={400}
             height={400}
@@ -75,7 +75,7 @@ const ProfileSection = ({
             </div>
           </div>
           <div className="flex flex-wrap gap-2 mt-3">
-            {expertise.map((item, index) => (
+            {expertise?.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center gap-1.5 px-2.5 py-1 bg-[#7FCCCC]/10 rounded-md"

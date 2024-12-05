@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { Booking } from "@/types/booking";
 import { Check, X, MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface BookingCallsCardProps {
   booking: Booking;
@@ -91,15 +92,14 @@ export const BookingCallsCard = memo(function BookingCallsCard({
           ) : (
             <>
               {onChat && (
-                <Button
+                <Badge
                   variant="secondary"
-                  size="sm"
-                  className="h-8"
+                  className="border border-dashed rounded-full bg-soft-paste-light-hover h-6 text-xs font-semibold cursor-pointer flex items-center"
                   onClick={() => handleAction(onChat, booking.id)}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" />
                   Chat
-                </Button>
+                </Badge>
               )}
               <StatusBadge status={booking.status} />
             </>

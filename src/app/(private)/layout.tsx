@@ -17,10 +17,10 @@ export default function PrivateLayout({
       return null;
     }
 
-    if (user.role === "mentee") {
-      redirect("/mentee-profile");
-      return null;
-    }
+    // if (user.role === "mentee") {
+    //   redirect("/mentee-profile");
+    //   return null;
+    // }
   }
 
   if (loading) {

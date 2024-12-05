@@ -73,14 +73,14 @@ const adminNavItems: NavItem[] = [
 ];
 
 export default function DashboardSidebar() {
-  const [activeItem, setActiveItem] = React.useState("Profile");
+  const [activeItem, setActiveItem] = React.useState("Booked Calls");
   const { user } = useAuth();
 
   const navItems = user?.role === "admin" ? adminNavItems : mentorNavItems;
   const dashboardTitle = "Dashboard";
 
   return (
-    <aside className="sticky top-0 left-0 hidden w-64 flex-col border-r bg-white md:flex">
+    <aside className="sticky top-0 left-0 hidden w-60 flex-col border-r bg-white md:flex">
       <div className="p-4 font-bold text-xl">{dashboardTitle}</div>
       <Separator className="mt-1" />
       <nav className="flex-1">

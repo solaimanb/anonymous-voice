@@ -5,7 +5,7 @@ export interface Volunteer {
   name: string;
   userName: string;
   title: string;
-  avatarUrl: string;
+  profileImage: string;
   yearsExperience: number;
   bookingsCompleted: number;
   expertise: { name: string }[];
@@ -15,4 +15,5 @@ export interface Volunteer {
   rating: number;
   sessionsCompleted: number;
   isActive: boolean | undefined;
+  adminApproval: boolean;
 }

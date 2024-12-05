@@ -49,20 +49,31 @@ export class AuthService {
       const result = await signInWithPopup(getAuth(), googleProvider);
       const idToken = await result.user.getIdToken();
 
-      // Verify with backend based on role
-      const response = await api.post<LoginResponse>(
-        `/api/v1/auth/${role}/google-signin`,
-        {
-          email: result.user.email,
-          idToken,
-        },
-      );
-
-      if (response.data.success) {
-        this.setAuthData(response.data.data.accessToken);
-        return response.data;
+      // Set auth data directly from Firebase
+      if (typeof window !== "undefined") {
+        localStorage.setItem("authToken", idToken);
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            email: result.user.email,
+            role: role,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+          }),
+        );
       }
-      throw new APIError("Authentication failed", 401, "AUTH_ERROR");
+
+      return {
+        data: {
+          accessToken: idToken,
+          needsPasswordChange: false,
+          user: {
+            email: result.user.email,
+            role: role,
+          },
+        },
+      };
     } catch (error) {
       console.error("Google Sign-In Error:", error);
       throw new APIError("Google Sign-In Error", 500, "AUTH_ERROR");
@@ -195,45 +206,12 @@ export class AuthService {
 
       const idToken = await user.getIdToken();
 
-      //TODO: Check if user exists in our database
-      try {
-        const { data: verificationData } = await api.post<{
-          exists: boolean;
-          role?: UserRole;
-          userData?: LoginResponse;
-        }>("/api/v1/auth/verify-token", {
-          email: user.email,
-          firebaseToken: idToken,
-        });
-
-        if (verificationData.exists && verificationData.userData) {
-          const { userData } = verificationData;
-          const decodedToken = jwtDecode<UserInfo>(userData.data.accessToken);
-
-          // Store auth data
-          if (typeof window !== "undefined") {
-            localStorage.setItem("authToken", userData.data.accessToken);
-            localStorage.setItem(
-              "needsPasswordChange",
-              String(userData.data.needsPasswordChange),
-            );
-            localStorage.setItem("user", JSON.stringify(decodedToken));
-            localStorage.setItem("isAuthenticated", "true");
-            localStorage.setItem("userRole", verificationData.role || "");
-          }
-
-          return {
-            existingUser: true,
-            user: decodedToken,
-            role: verificationData.role,
-          };
-        }
-      } catch (error) {
-        console.error("Error verifying user:", error);
-      }
+      // Check if user has previously signed in (using Firebase auth state)
+      const existingUser =
+        user.metadata.lastSignInTime !== user.metadata.creationTime;
 
       return {
-        existingUser: false,
+        existingUser,
         user: {
           uid: user.uid,
           email: user.email,

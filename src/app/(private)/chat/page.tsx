@@ -11,6 +11,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Heart, Menu, Phone, Send, Undo2 } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useChat } from "@/hooks/useChat";
 
 interface ChatMessage {
   id: string;
@@ -90,23 +92,27 @@ export default function ResponsiveChatInterface() {
     },
   ];
 
-  const [newMessage, setNewMessage] = React.useState("");
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
+  const { roomId } = useParams();
+  const { messages, sendMessage } = useChat(roomId);
+  const [newMessage, setNewMessage] = React.useState("");
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const message: ChatMessage = {
-      id: Date.now().toString(),
-      content: newMessage,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, message]);
+    sendMessage(newMessage);
     setNewMessage("");
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        id: Date.now().toString(),
+        content: newMessage,
+        sender: "user",
+        timestamp: new Date(),
+      },
+    ]);
   };
 
   return (
