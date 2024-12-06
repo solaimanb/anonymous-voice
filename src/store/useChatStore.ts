@@ -1,12 +1,21 @@
 import { create } from "zustand";
 
+interface ChatMessage {
+  id: string;
+  content: string;
+  senderId: string;
+  roomId: string;
+  status: string;
+  timestamp: string;
+}
+
 interface ChatState {
   messages: ChatMessage[];
   activeRoom: string | null;
   addMessage: (message: ChatMessage) => void;
   setMessages: (messages: ChatMessage[]) => void;
   setActiveRoom: (roomId: string | null) => void;
-  updateMessageStatus: (messageId: string, status: MessageStatus) => void;
+  updateMessageStatus: (messageId: string, status: string) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({

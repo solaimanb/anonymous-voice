@@ -144,7 +144,10 @@ export default function ApprovedMentors() {
                 <TableRow key={mentor.id}>
                   <TableCell className="flex items-center gap-3">
                     <Avatar>
-                      <AvatarImage src={mentor.avatarUrl} alt={mentor.name} />
+                      <AvatarImage
+                        src={mentor.profileImage}
+                        alt={mentor.name}
+                      />
                       <AvatarFallback>{mentor.name[0]}</AvatarFallback>
                     </Avatar>
                     <div>

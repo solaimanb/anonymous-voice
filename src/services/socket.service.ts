@@ -20,6 +20,24 @@ class SocketService {
     return this.socket;
   }
 
+  on<T>(event: string, callback: (data: T) => void) {
+    if (this.socket) {
+      this.socket.on(event, callback);
+    }
+  }
+
+  emit<T>(event: string, data: T) {
+    if (this.socket) {
+      this.socket.emit(event, data);
+    }
+  }
+
+  off<T>(event: string, callback: (data: T) => void) {
+    if (this.socket) {
+      this.socket.off(event, callback);
+    }
+  }
+
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();

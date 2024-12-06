@@ -1,66 +1,74 @@
-// import { useEffect } from "react";
-// import { useChatStore } from "@/store/useChatStore";
-// import { socketService } from "@/services/socket.service";
-// import { ChatService } from "@/services/chat.service";
-// import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
+import { useChatStore } from "@/store/useChatStore";
+import { socketService } from "@/services/socket.service";
+import { useAuth } from "@/hooks/useAuth";
+import { v4 as uuidv4 } from "uuid";
 
-// export function useChat(roomId: string) {
-//   const { user } = useAuth();
-//   const { messages, addMessage, setMessages, updateMessageStatus } =
-//     useChatStore();
+interface ChatMessage {
+  id: string;
+  content: string;
+  senderId: string;
+  roomId: string;
+  status: string;
+  timestamp: string;
+}
 
-//   useEffect(() => {
-//     const socket = socketService.getSocket();
-//     if (!socket || !roomId) return;
+export function useChat(roomId: string) {
+  const { user } = useAuth();
+  const { messages, addMessage, updateMessageStatus } = useChatStore();
 
-//     socket.emit("join_room", roomId);
+  useEffect(() => {
+    const socket = socketService.getSocket();
+    if (!socket || !roomId) return;
 
-//     const handleNewMessage = (message: ChatMessage) => {
-//       addMessage(message);
-//     };
+    socket.emit("join_room", roomId);
 
-//     const handleMessageStatus = (data: {
-//       messageId: string;
-//       status: MessageStatus;
-//     }) => {
-//       updateMessageStatus(data.messageId, data.status);
-//     };
+    const handleNewMessage = (message: ChatMessage) => {
+      addMessage(message);
+    };
 
-//     socket.on("new_message", handleNewMessage);
-//     socket.on("message_status", handleMessageStatus);
+    const handleMessageStatus = (data: {
+      messageId: string;
+      status: string;
+    }) => {
+      updateMessageStatus(data.messageId, data.status);
+    };
 
-//     return () => {
-//       socket.off("new_message", handleNewMessage);
-//       socket.off("message_status", handleMessageStatus);
-//       socket.emit("leave_room", roomId);
-//     };
-//   }, [roomId]);
+    socket.on("new_message", handleNewMessage);
+    socket.on("message_status", handleMessageStatus);
 
-//   const sendMessage = async (content: string) => {
-//     const socket = socketService.getSocket();
-//     if (!socket || !roomId) return;
+    return () => {
+      socket.off("new_message", handleNewMessage);
+      socket.off("message_status", handleMessageStatus);
+      socket.emit("leave_room", roomId);
+    };
+  }, [roomId, addMessage, updateMessageStatus]);
 
-//     const messageId = uuidv4();
-//     const message = {
-//       id: messageId,
-//       content,
-//       senderId: user!.id,
-//       roomId,
-//       status: "sending",
-//       timestamp: new Date().toISOString(),
-//     };
+  const sendMessage = async (content: string) => {
+    const socket = socketService.getSocket();
+    if (!socket || !roomId) return;
 
-//     addMessage(message);
+    const messageId = uuidv4();
+    const message = {
+      id: messageId,
+      content,
+      senderId: user!.id,
+      roomId,
+      status: "sending",
+      timestamp: new Date().toISOString(),
+    };
 
-//     socket.emit("send_message", {
-//       messageId,
-//       content,
-//       roomId,
-//     });
-//   };
+    addMessage(message);
 
-//   return {
-//     messages,
-//     sendMessage,
-//   };
-// }
+    socket.emit("send_message", {
+      messageId,
+      content,
+      roomId,
+    });
+  };
+
+  return {
+    messages,
+    sendMessage,
+  };
+}

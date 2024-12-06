@@ -8,10 +8,11 @@ import { googleProvider } from "@/lib/firebase";
 import api from "@/config/axios.config";
 
 export interface UserInfo {
+  id: string;
   userName: string;
+  isVerified: boolean;
   role: UserRole;
   userDetails: string;
-  isVerified: boolean;
 }
 
 interface CreateMenteeData {

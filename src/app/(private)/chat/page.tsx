@@ -14,13 +14,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useChat } from "@/hooks/useChat";
 
-interface ChatMessage {
-  id: string;
-  content: string;
-  sender: "user" | "them";
-  timestamp: Date;
-}
-
 interface ChatContact {
   id: string;
   name: string;
@@ -32,42 +25,6 @@ interface ChatContact {
 }
 
 export default function ResponsiveChatInterface() {
-  const [messages, setMessages] = React.useState<ChatMessage[]>([
-    {
-      id: "1",
-      content:
-        "Hahaha it's all good! I'm here another 10 days. Just house/dog sitting today through Saturday still. Then here another week after that before I come home.",
-      sender: "them",
-      timestamp: new Date(),
-    },
-    {
-      id: "2",
-      content:
-        "Nice! Let's try and grab lunch next week. What's in Colorado for you?",
-      sender: "user",
-      timestamp: new Date(),
-    },
-    {
-      id: "3",
-      content: "Peter, you know my family lives here.",
-      sender: "them",
-      timestamp: new Date(),
-    },
-    {
-      id: "4",
-      content:
-        "You're welcome to join me next time. It would be nice for you to see them. It's been years. But you need to behave...",
-      sender: "them",
-      timestamp: new Date(),
-    },
-    {
-      id: "5",
-      content: "Gosh, it's not like me to do anything crazy or stupid.",
-      sender: "user",
-      timestamp: new Date(),
-    },
-  ]);
-
   const contacts: ChatContact[] = [
     {
       id: "1",
@@ -95,7 +52,7 @@ export default function ResponsiveChatInterface() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const { roomId } = useParams();
-  const { messages, sendMessage } = useChat(roomId);
+  const { messages: chatMessages, sendMessage } = useChat(roomId as string);
   const [newMessage, setNewMessage] = React.useState("");
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -104,15 +61,6 @@ export default function ResponsiveChatInterface() {
 
     sendMessage(newMessage);
     setNewMessage("");
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      {
-        id: Date.now().toString(),
-        content: newMessage,
-        sender: "user",
-        timestamp: new Date(),
-      },
-    ]);
   };
 
   return (
@@ -185,7 +133,7 @@ export default function ResponsiveChatInterface() {
         {/* Messages */}
         <ScrollArea className="flex-1 p-4">
           <AnimatePresence initial={false}>
-            {messages.map((message) => (
+            {chatMessages.map((message) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -193,20 +141,20 @@ export default function ResponsiveChatInterface() {
                 exit={{ opacity: 0, y: -10 }}
                 className={cn(
                   "flex mb-4",
-                  message.sender === "user" ? "justify-end" : "justify-start",
+                  message.senderId === "user" ? "justify-end" : "justify-start",
                 )}
               >
                 <div
                   className={cn(
                     "max-w-[80%] rounded-lg px-4 py-2",
-                    message.sender === "user"
+                    message.senderId === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted",
                   )}
                 >
                   <p className="text-sm">{message.content}</p>
                   <span className="text-xs opacity-50 mt-1 block">
-                    {message.timestamp.toLocaleTimeString([], {
+                    {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
