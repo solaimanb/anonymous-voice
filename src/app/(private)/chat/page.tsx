@@ -24,7 +24,7 @@ interface ChatContact {
   hasHeart?: boolean;
 }
 
-export default function ResponsiveChatInterface() {
+export default function ChatInterface() {
   const contacts: ChatContact[] = [
     {
       id: "1",

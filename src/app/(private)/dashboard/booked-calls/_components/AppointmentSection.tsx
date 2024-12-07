@@ -1,3 +1,4 @@
+import React from "react";
 import { BookingCallsCard } from "@/components/cards/BookingCallsCard";
 import {
   Card,
@@ -6,6 +7,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 interface Appointment {
   _id: string;
@@ -21,6 +23,7 @@ interface AppointmentSectionProps {
   title: string;
   description: string;
   appointments: Appointment[];
+  appointmentType: string;
   onAccept?: (id: string) => Promise<void>;
   onReject?: (id: string) => Promise<void>;
   emptyMessage: string;
@@ -49,16 +52,20 @@ export const AppointmentSection = ({
   title,
   description,
   appointments,
+  appointmentType,
   onAccept,
   onReject,
   emptyMessage,
 }: AppointmentSectionProps) => {
+  const router = useRouter();
+
   const filteredAppointments = appointments.filter(
-    (appointment) => appointment.appointmentType === "Booking Call",
+    (appointment) => appointment.appointmentType === appointmentType,
   );
 
   const handleChat = async (id: string) => {
     // Implement chat functionality
+    router.push(`/chat/${id}`);
     console.log("Starting chat for:", id);
   };
 

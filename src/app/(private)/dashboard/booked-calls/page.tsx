@@ -56,6 +56,7 @@ export default function BookedCallsPage() {
         title="User Request"
         description="Pending call requests from users"
         appointments={appointmentsByStatus.pending}
+        appointmentType="Booking Call"
         onAccept={handleAccept}
         onReject={handleReject}
         emptyMessage="No pending requests"
@@ -65,6 +66,7 @@ export default function BookedCallsPage() {
         title="Confirmed User"
         description="List of confirmed and running calls"
         appointments={appointmentsByStatus.confirmed}
+        appointmentType="Booking Call"
         emptyMessage="No confirmed bookings"
       />
 
