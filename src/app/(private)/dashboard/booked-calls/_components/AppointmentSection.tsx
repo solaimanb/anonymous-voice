@@ -8,12 +8,14 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { useChatStore } from "@/store/useChatStore";
 
 interface Appointment {
   _id: string;
   appointmentType: string;
   status: string;
   menteeUserName: string;
+  menteeEmail?: string;
   selectedSlot: { time: string }[];
   createdAt: string;
   updatedAt: string;
@@ -58,15 +60,26 @@ export const AppointmentSection = ({
   emptyMessage,
 }: AppointmentSectionProps) => {
   const router = useRouter();
+  const setChatUser = useChatStore((state) => state.setActiveUser);
+  const setActiveRoom = useChatStore((state) => state.setActiveRoom);
 
   const filteredAppointments = appointments.filter(
     (appointment) => appointment.appointmentType === appointmentType,
   );
 
-  const handleChat = async (id: string) => {
-    // Implement chat functionality
-    router.push(`/chat/${id}`);
-    console.log("Starting chat for:", id);
+  const handleChat = async (appointment: Appointment) => {
+    const chatUser = {
+      id: appointment._id,
+      name: appointment.menteeUserName,
+      avatar: "/placeholder.svg",
+      status: "online",
+      lastActive: "9m ago",
+      email: appointment.menteeEmail || "",
+    };
+    setChatUser(chatUser);
+    setActiveRoom(appointment._id);
+    router.push(`/chat/${appointment._id}`);
+    console.log("Starting chat for:", appointment._id);
   };
 
   return (
@@ -87,7 +100,7 @@ export const AppointmentSection = ({
                   id: appointment.menteeUserName,
                   username: appointment.menteeUserName,
                   name: appointment.menteeUserName,
-                  email: "",
+                  email: appointment.menteeEmail || "",
                   avatarUrl: null,
                 },
                 schedule: appointment.selectedSlot[0].time,
@@ -98,7 +111,7 @@ export const AppointmentSection = ({
               onAccept={onAccept}
               onReject={onReject}
               onChat={
-                appointment.status === "confirmed" ? handleChat : undefined
+                appointment.status === "confirmed" ? () => handleChat(appointment) : undefined
               }
               isPending={appointment.status === "pending"}
             />
