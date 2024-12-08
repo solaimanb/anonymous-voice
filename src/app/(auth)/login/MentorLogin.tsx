@@ -3,7 +3,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useMentorAuth } from "@/hooks/useMentorAuth";
@@ -14,7 +13,6 @@ export const MentorLogin = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mentor Login</CardTitle>
         <CardDescription>
           Sign in with your approved mentor account
         </CardDescription>

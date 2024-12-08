@@ -69,11 +69,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Card className="w-[400px]">
-        <CardHeader>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Login to your account</CardDescription>
+    <div className="flex h-screen flex-col items-center justify-center">
+      <Card className="max-w-sm rounded-2xl bg-soft-paste-light shadow-sm">
+        <CardHeader className="text-center">
+          <CardTitle className="text-lg text-muted-foreground">
+            Welcome To <span className="text-violet">Anonymous </span>{" "}
+            <span className="text-soft-paste-hover">Voice!</span>
+          </CardTitle>
+          <CardDescription className="text-xs text-muted-foreground"></CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -83,7 +86,9 @@ export default function LoginPage() {
                 name="userName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel className="text-xs font-semibold">
+                      Username
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Enter your username" {...field} />
                     </FormControl>
@@ -97,7 +102,9 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-xs font-semibold">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -116,7 +123,7 @@ export default function LoginPage() {
             </form>
           </Form>
 
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-6 text-center text-xs">
             <p className="text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-primary hover:underline">

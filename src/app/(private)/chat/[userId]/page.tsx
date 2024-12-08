@@ -7,9 +7,10 @@ import { useAuth } from "@/hooks/useAuth";
 import MessageList from "./_components/MessageList";
 import CallInterface from "./_components/CallInterface";
 import ChatHeader from "./_components/ChatHeader";
-import { ChatMessage, ChatUser, Message } from "@/types/chat.types";
+import { ChatMessage, Message } from "@/types/chat.types";
 import MessageInput from "./_components/MessageInput";
 import Loading from "@/app/loading";
+import { useChatStore } from "@/store/useChatStore";
 
 interface ChatState {
   isLoading: boolean;
@@ -18,7 +19,6 @@ interface ChatState {
 
 export default function OneToOneChatInterface() {
   const { user: currentUser } = useAuth();
-  const [chatUser, setChatUser] = useState<ChatUser | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [chatState, setChatState] = useState<ChatState>({
     isLoading: true,
@@ -26,6 +26,8 @@ export default function OneToOneChatInterface() {
   });
   const { userId } = useParams();
   const { messages: chatMessages, sendMessage } = useChat(userId as string);
+  const activeUser = useChatStore((state) => state.activeUser);
+  const setActiveUser = useChatStore((state) => state.setActiveUser);
 
   useEffect(() => {
     const fetchChatData = async () => {
@@ -40,15 +42,7 @@ export default function OneToOneChatInterface() {
 
     const fetchUserData = async () => {
       try {
-        const mockUserData: ChatUser = {
-          id: String(userId),
-          name: "Griffin",
-          avatar: "/placeholder.svg",
-          status: "online",
-          lastActive: "9m ago",
-          email: "griffin@example.com",
-        };
-        setChatUser(mockUserData);
+        setActiveUser(activeUser);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
@@ -58,13 +52,19 @@ export default function OneToOneChatInterface() {
       fetchChatData();
       fetchUserData();
     }
-  }, [userId]);
+  }, [userId, setActiveUser, activeUser]);
+
+  useEffect(() => {
+    if (activeUser) {
+      console.log("Active user:", activeUser);
+    }
+  }, [activeUser]);
 
   const handleSendMessage = (message: string) => {
     sendMessage(message);
   };
 
-  if (chatState.isLoading || !chatUser) {
+  if (chatState.isLoading || !activeUser) {
     return <Loading />;
   }
 
@@ -86,7 +86,7 @@ export default function OneToOneChatInterface() {
     <div className="flex min-h-screen bg-background">
       <main className="lg:w-3/4 flex-1 flex flex-col">
         <ChatHeader
-          user={chatUser}
+          user={activeUser}
           isProfileOpen={isProfileOpen}
           setIsProfileOpen={setIsProfileOpen}
         />
@@ -99,7 +99,7 @@ export default function OneToOneChatInterface() {
         <MessageInput onSendMessage={handleSendMessage} />
       </main>
 
-      <CallInterface user={chatUser} />
+      <CallInterface user={activeUser} />
     </div>
   );
 }

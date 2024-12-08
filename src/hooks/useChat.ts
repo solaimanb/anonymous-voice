@@ -15,7 +15,8 @@ interface ChatMessage {
 
 export function useChat(roomId: string) {
   const { user } = useAuth();
-  const { messages, addMessage, updateMessageStatus } = useChatStore();
+  const { messages, addMessage, updateMessageStatus, activeUser } =
+    useChatStore();
 
   useEffect(() => {
     const socket = socketService.getSocket();
@@ -70,5 +71,6 @@ export function useChat(roomId: string) {
   return {
     messages,
     sendMessage,
+    activeUser,
   };
 }
