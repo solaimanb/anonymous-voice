@@ -1,4 +1,4 @@
-import {create} from 'zustand';
+import { create } from "zustand";
 
 interface ChatMessage {
   id: string;
@@ -41,7 +41,7 @@ export const useChatStore = create<ChatState>((set) => ({
   updateMessageStatus: (messageId, status) =>
     set((state) => ({
       messages: state.messages.map((msg) =>
-        msg.id === messageId ? { ...msg, status } : msg
+        msg.id === messageId ? { ...msg, status } : msg,
       ),
     })),
 }));

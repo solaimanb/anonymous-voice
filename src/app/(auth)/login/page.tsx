@@ -135,6 +135,6 @@ export default function LoginPage() {
       </Card>
 
       {/* <MentorLogin /> */}
-    </div >
+    </div>
   );
 }

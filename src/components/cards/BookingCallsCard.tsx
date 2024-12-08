@@ -1,16 +1,16 @@
-import { memo } from "react";
-import { StatusBadge } from "../../app/(private)/dashboard/booked-calls/_components/StatusBadge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React from "react";
+import { useChatStore } from "@/store/useChatStore";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { Booking } from "@/types/booking";
 import { Check, X, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useChatStore } from "@/store/useChatStore";
+import { StatusBadge } from "../../app/(private)/dashboard/booked-calls/_components/StatusBadge";
+import { BookingStatus } from "@/types/booking";
 
 interface BookingCallsCardProps {
   booking: {
     id: string;
-    status: string;
+    status: BookingStatus;
     user: {
       id: string;
       username: string;
@@ -70,9 +70,7 @@ export const BookingCallsCard = ({
             src={booking.user.avatarUrl ?? ""}
             alt={booking.user.username}
           />
-          <AvatarFallback>
-            {booking.user.name}
-          </AvatarFallback>
+          <AvatarFallback>{booking.user.name}</AvatarFallback>
         </Avatar>
         <div>
           <p className="font-semibold">{booking.user.name}</p>

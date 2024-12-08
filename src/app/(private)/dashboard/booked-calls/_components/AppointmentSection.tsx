@@ -111,7 +111,9 @@ export const AppointmentSection = ({
               onAccept={onAccept}
               onReject={onReject}
               onChat={
-                appointment.status === "confirmed" ? () => handleChat(appointment) : undefined
+                appointment.status === "confirmed"
+                  ? () => handleChat(appointment)
+                  : undefined
               }
               isPending={appointment.status === "pending"}
             />

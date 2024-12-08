@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import MessageList from "./_components/MessageList";
 import CallInterface from "./_components/CallInterface";
 import ChatHeader from "./_components/ChatHeader";
-import { ChatMessage, ChatUser, Message } from "@/types/chat.types";
+import { ChatMessage, Message } from "@/types/chat.types";
 import MessageInput from "./_components/MessageInput";
 import Loading from "@/app/loading";
 import { useChatStore } from "@/store/useChatStore";
@@ -52,7 +52,7 @@ export default function OneToOneChatInterface() {
       fetchChatData();
       fetchUserData();
     }
-  }, [userId, setActiveUser]);
+  }, [userId, setActiveUser, activeUser]);
 
   useEffect(() => {
     if (activeUser) {
