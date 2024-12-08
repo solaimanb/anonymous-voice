@@ -7,7 +7,6 @@ import {
   CalendarCheck,
   Clock,
   Users,
-  Award,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ interface VolunteerProps {
   name: string;
   userName: string;
   title: string;
-  avatarUrl: string;
+  profileImage: string;
   isActive?: boolean;
   rating: number;
   yearsExperience: number;
@@ -44,12 +43,11 @@ export default function VolunteerCard({
   name,
   userName,
   title,
-  avatarUrl,
+  profileImage,
   isActive,
   rating,
   yearsExperience,
   sessionsCompleted,
-  expertise,
   description,
   actionType,
 }: VolunteerProps) {
@@ -86,7 +84,7 @@ export default function VolunteerCard({
           <div className="shrink-0">
             <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted-foreground/20">
               <Image
-                src={avatarUrl}
+                src={profileImage}
                 alt={name}
                 width={200}
                 height={200}
@@ -138,17 +136,16 @@ export default function VolunteerCard({
             </div>
 
             {/* Expertise Tags */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            {/* <div className="flex flex-wrap gap-2 mb-4">
               {expertise.map((item, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7FCCCC]/10 text-sm text-[#7FCCCC]"
                 >
-                  <Award className="w-3.5 h-3.5" />
                   {item.name}
                 </div>
               ))}
-            </div>
+            </div> */}
 
             <p className="text-sm text-gray-600 leading-relaxed">
               {description}

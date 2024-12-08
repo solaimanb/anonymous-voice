@@ -31,7 +31,7 @@ export const useMentorAuth = () => {
       //   return;
       // }
 
-      router.push("/mentor-dashboard");
+      router.push("/dashboard");
     } catch (error) {
       handleAuthError(error);
     }
@@ -60,8 +60,15 @@ export const useMentorAuth = () => {
         googleAuthResponse.user.photoURL || "",
       );
 
-      // Navigate to onboarding
-      router.push("/mentor-registration/onboarding");
+      // Handle existing user logic
+      if (googleAuthResponse.existingUser) {
+        // If user exists, sign them in and redirect to dashboard
+        await signInWithGoogle();
+        router.push("/dashboard");
+      } else {
+        // If new user, redirect to onboarding
+        router.push("/mentor-registration/onboarding");
+      }
     } catch (err: unknown) {
       let errorMessage = "Failed to sign up with Google. Please try again.";
       if (err instanceof Error) {

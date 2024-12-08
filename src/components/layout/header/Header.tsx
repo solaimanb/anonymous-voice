@@ -233,15 +233,23 @@ const Header: React.FC = () => {
   // User navigation items
   const userNavItems: NavItem[] = user
     ? [
-        ...(user.role === "admin" || user.role === "mentor"
+        ...(user.role === "admin"
           ? [
               {
                 id: "dashboard",
                 name: "Dashboard",
-                href: "/dashboard",
+                href: "/dashboard/mentors",
               },
             ]
-          : []),
+          : user.role === "mentor"
+            ? [
+                {
+                  id: "dashboard",
+                  name: "Dashboard",
+                  href: "/dashboard/booked-calls",
+                },
+              ]
+            : []),
         {
           id: "logout",
           name: "Logout",

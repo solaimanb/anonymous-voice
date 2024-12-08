@@ -101,7 +101,8 @@ export default function MentorOnboardingForm() {
       localStorage.removeItem("tempMentorProfileImage");
 
       toast.success("Mentor registration submitted successfully");
-      router.push("/mentor-registration/pending-approval");
+      // router.push("/mentor-registration/pending-approval");
+      router.push("/");
     } catch (error) {
       if (error instanceof APIError) {
         toast.error(error.message);

@@ -139,6 +139,12 @@ export interface BookingDetailsProps extends VolunteerDetails {
   showAvailability: boolean;
 }
 
+export interface ChatBooking extends Booking {
+  chatRoomId?: string;
+  lastMessageAt?: string;
+  isActive: boolean;
+}
+
 // ====================================== //
 // export const UserSchema = z.object({
 //   id: z.string(),

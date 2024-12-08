@@ -12,7 +12,8 @@ import { ActionType } from "@/components/pages/home/hero/Hero";
 export default function Session() {
   const searchParams = useSearchParams();
   const actionParam = searchParams.get("action");
-  const { volunteers, loading, error } = useVolunteers<Volunteer[]>();
+  const { approvedVolunteers, loading, error } = useVolunteers<Volunteer[]>();
+  console.log(approvedVolunteers, loading, error);
 
   if (loading) {
     return <Loading />;
@@ -76,7 +77,7 @@ export default function Session() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {volunteers.map((volunteer, index) => (
+          {approvedVolunteers.map((volunteer, index) => (
             <motion.div
               key={volunteer.id}
               initial={{ opacity: 0, y: 20 }}
@@ -87,7 +88,7 @@ export default function Session() {
                 name={volunteer.name}
                 userName={volunteer.userName}
                 title={volunteer.title}
-                avatarUrl={volunteer.avatarUrl}
+                profileImage={volunteer.profileImage}
                 isActive={volunteer.isActive}
                 rating={volunteer.rating}
                 yearsExperience={volunteer.yearsExperience}

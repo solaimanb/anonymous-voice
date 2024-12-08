@@ -76,7 +76,7 @@ const getAdminNavItems = (): NavItem[] => [
 ];
 
 export default function DashboardHeader() {
-  const [activeItem, setActiveItem] = useState("Profile");
+  const [activeItem, setActiveItem] = useState("Booked Calls");
   const { user } = useAuth();
 
   const navItems =
@@ -85,7 +85,7 @@ export default function DashboardHeader() {
     user?.role === "admin" ? "Admin Dashboard" : "Mentor Dashboard";
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
+    <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:px-6">
       <div className="flex items-center gap-4">
         <Sheet>
           <SheetTrigger asChild>

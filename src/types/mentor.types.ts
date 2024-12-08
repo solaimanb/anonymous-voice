@@ -4,7 +4,7 @@ export interface MentorRequest {
   userName: string;
   designation: string;
   status: "pending" | "approved" | "rejected";
-  avatarUrl: string;
+  profileImage: string;
   adminApproval: boolean;
   email: string;
   availability: string;
