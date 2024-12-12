@@ -1,7 +1,12 @@
 "use client";
 
-import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Heart, Menu, Phone, Send, Undo2 } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import * as React from "react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,10 +14,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Heart, Menu, Phone, Send, Undo2 } from "lucide-react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useChat } from "@/hooks/useChat";
+import socket from "@/lib/socket";
 
 interface ChatContact {
   id: string;
@@ -53,15 +56,61 @@ export default function ChatInterface() {
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   const { roomId } = useParams();
   const { messages: chatMessages, sendMessage } = useChat(roomId as string);
-  const [newMessage, setNewMessage] = React.useState("");
+  const [newMessage, setNewMessage] = useState<any>([]);
+  const [users] = useState([
+    { userID: "user1", username: "John Doe", key: "user1" },
+    { userID: "user2", username: "Jane Smith", key: "user2" },
+    { userID: "user3", username: "Alice Johnson", key: "user3" },
+  ]);
+  const [messages, setMessages] = useState<any>([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [messageInput, setMessageInput] = useState("");
 
   const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (selectedUser && messageInput.trim()) {
+      socket.emit("private message", {
+        to: selectedUser.userID,
+        message: messageInput,
+      });
 
-    sendMessage(newMessage);
-    setNewMessage("");
+      // Add the message to the local state
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          from: socket.id,
+          fromUsername: "TestUser1",
+          message: messageInput,
+        },
+      ]);
+
+      setMessageInput("");
+    }
   };
+
+  useEffect(() => {
+    // Listen for private messages
+    socket.on("private message", (data) => {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          from: data.from,
+          fromUsername: data.fromUsername,
+          message: data.message,
+        },
+      ]);
+    });
+
+    // Listen for private message errors
+    socket.on("private message error", (error) => {
+      console.error("Private message error:", error);
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      socket.off("private message");
+      socket.off("private message error");
+    };
+  }, []);
 
   return (
     <div className="flex h-screen bg-background">
@@ -133,7 +182,7 @@ export default function ChatInterface() {
         {/* Messages */}
         <ScrollArea className="flex-1 p-4">
           <AnimatePresence initial={false}>
-            {chatMessages.map((message) => (
+            {newMessage.map((message: any) => (
               <motion.div
                 key={message.id}
                 initial={{ opacity: 0, y: 10 }}
