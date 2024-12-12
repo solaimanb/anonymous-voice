@@ -90,27 +90,7 @@ const Home = () => {
 
   // If no user is selected, show user selection
   if (!currentActiveUser?.userName) {
-    handleUserSelection({ username: currentActiveUser?.userName });
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded shadow-md">
-          <h2 className="text-2xl mb-4">Select Your User</h2>
-          {["John Doe", "Jane Smith", "Alice Johnson"].map(
-            (username, index) => (
-              <button
-                key={index}
-                onClick={() =>
-                  handleUserSelection({ username: currentActiveUser?.userName })
-                }
-                className="block w-full py-2 px-4 mb-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                {username}
-              </button>
-            ),
-          )}
-        </div>
-      </div>
-    );
+    return <h1>Loading</h1>;
   }
 
   return (
