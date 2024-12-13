@@ -10,7 +10,7 @@ const UserDetailSheet = ({ user }: { user: ChatUser }) => {
       <div className="flex flex-col items-center gap-4">
         <Avatar className="h-24 w-24">
           <AvatarImage src={user.avatar} alt={user.name} />
-          <AvatarFallback>{user.name[0]}</AvatarFallback>
+          <AvatarFallback>{user.username[0]}</AvatarFallback>
         </Avatar>
         <DialogTitle>
           <h3 className="font-semibold text-lg">{user.name}</h3>

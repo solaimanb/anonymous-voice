@@ -16,11 +16,6 @@ export default function PrivateLayout({
       redirect("/login");
       return null;
     }
-
-    // if (user.role === "mentee") {
-    //   redirect("/mentee-profile");
-    //   return null;
-    // }
   }
 
   if (loading) {

@@ -1,21 +1,23 @@
 import api from "@/config/axios.config";
 import { socketService } from "./socket.service";
-
-interface ChatMessage {
-  id: string;
-  content: string;
-  senderId: string;
-  timestamp: string;
-}
+import { useChatStore } from "@/store/useChatStore";
+import { ChatMessage } from "@/types/chat.types";
 
 interface TypingStatus {
   roomId: string;
+  userId: string;
+  username: string;
   isTyping: boolean;
 }
 
 interface PresenceUpdate {
   roomId: string;
-  status: string;
+  userId: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  status: "online" | "offline" | "away";
+  lastActive: string;
 }
 
 interface SocketData {
@@ -32,15 +34,13 @@ export class ChatService {
     socketService.on(`chat:${room.id}`, (data: SocketData) => {
       switch (data.type) {
         case "message":
-          this.handleNewMessage(data.message!);
+          this.handleNewMessage(room.id, data.message!);
           break;
         case "typing":
           this.handleTypingStatus(data.status!);
           break;
         case "presence":
           this.handlePresenceUpdate(data.presence!);
-          break;
-        default:
           break;
       }
     });
@@ -59,33 +59,59 @@ export class ChatService {
   }
 
   static async sendMessage(roomId: string, message: ChatMessage) {
-    // Encrypt message
     const encrypted = await this.encryptMessage(message);
 
-    // Send via socket
     socketService.emit("chat:message", {
       roomId,
       message: encrypted,
     });
+
+    useChatStore.getState().addMessage(roomId, {
+      ...message,
+      from: message.fromUsername,
+      status: "sent",
+    });
   }
 
   static async encryptMessage(message: ChatMessage) {
-    // Implement encryption logic here
     return message;
   }
 
-  static handleNewMessage(message: ChatMessage) {
-    // Handle new message
-    console.log("New message:", message);
+  private static handleNewMessage(roomId: string, message: ChatMessage) {
+    useChatStore.getState().addMessage(roomId, message);
   }
 
-  static handleTypingStatus(status: TypingStatus) {
-    // Handle typing status
-    console.log("Typing status:", status);
+  private static handleTypingStatus(status: TypingStatus) {
+    useChatStore.getState().setTypingStatus(status.roomId, status.isTyping);
   }
 
-  static handlePresenceUpdate(presence: PresenceUpdate) {
-    // Handle presence update
-    console.log("Presence update:", presence);
+  private static handlePresenceUpdate(presence: PresenceUpdate) {
+    const store = useChatStore.getState();
+    store.setActiveUser(
+      presence.status === "offline"
+        ? null
+        : {
+            id: presence.userId,
+            key: presence.userId,
+            username: presence.username,
+            email: presence.email,
+            status: presence.status,
+            lastActive: presence.lastActive,
+            avatar: presence.avatar,
+          },
+    );
+  }
+
+  static setTypingStatus(roomId: string, isTyping: boolean) {
+    socketService.emit("chat:typing", { roomId, isTyping });
+  }
+
+  static updateMessageStatus(
+    roomId: string,
+    messageId: string,
+    status: ChatMessage["status"],
+  ) {
+    useChatStore.getState().updateMessageStatus(roomId, messageId, status);
+    socketService.emit("chat:status", { roomId, messageId, status });
   }
 }

@@ -1,73 +1,152 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { Heart } from "lucide-react";
-import Image from "next/image";
+"use client";
 
-export const ChatSidebar = ({
-  chats,
-  activeChat,
-  onChatSelect,
-}: {
-  chats: Array<{
-    id: string;
-    name: string;
-    avatar: string;
-    lastMessage?: string;
-    hasHeart?: boolean;
-    time?: string;
-  }>;
-  activeChat?: string;
-  onChatSelect: (chatId: string) => void;
-}) => {
+import { useEffect } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useChatStore } from "@/store/useChatStore";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Undo2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAppointmentsStore } from "@/store/useAppointmentsStore";
+import { ChatService } from "@/services/chat.service";
+import { ChatUser } from "@/types/chat.types";
+import { useAuth } from "@/hooks/useAuth";
+
+interface TimeSlot {
+  time: string;
+  isAvailable: boolean;
+  _id: string;
+}
+
+interface Appointment {
+  _id: string;
+  appointmentType: "Chat" | "Quick Call";
+  status: "confirmed";
+  selectedSlot: TimeSlot[];
+  mentorUserName: string;
+  menteeUserName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ChatSidebarProps {
+  setSelectedUser: (user: ChatUser) => void;
+}
+
+export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
+  const { user } = useAuth();
+  const { appointments, loading, fetchAppointments } = useAppointmentsStore();
+  const { setActiveRoom, activeRoomId } = useChatStore();
+
+  const chatAppointments = Array.isArray(appointments)
+    ? appointments.filter(
+        (appointment) =>
+          appointment.status === "confirmed" &&
+          (appointment.appointmentType === "Chat" ||
+            appointment.appointmentType === "Quick Call"),
+      )
+    : [];
+
+  console.log("Chat appointments:", chatAppointments);
+
+  useEffect(() => {
+    fetchAppointments({
+      status: "confirmed",
+      types: ["Chat", "Quick Call"],
+    });
+  }, [fetchAppointments]);
+
+  const handleUserSelect = async (appointment: Appointment): Promise<void> => {
+    const displayName =
+      user?.role === "mentor"
+        ? appointment.menteeUserName
+        : appointment.mentorUserName;
+
+    const selectedUser: ChatUser = {
+      id: appointment._id,
+      key: appointment._id,
+      username: displayName,
+      status: "online",
+      lastActive: appointment.updatedAt,
+      email: "",
+      appointmentTime: appointment.selectedSlot[0].time,
+      appointmentDuration: "30",
+    };
+
+    setSelectedUser(selectedUser);
+    await ChatService.initializeSession(appointment._id);
+    setActiveRoom(appointment._id);
+  };
+
   return (
-    <div className="w-72 border-r border-gray-200">
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-gray-400 text-lg">Chats</h2>
+    <div className="flex flex-col h-full">
+      <div className="p-2.5 flex items-center gap-4">
+        <Link href="/">
+          <Button variant="ghost" size="icon">
+            <Undo2 size={20} />
+          </Button>
+        </Link>
+        <h1 className="text-xl font-semibold text-muted-foreground">Chats</h1>
       </div>
-      <ScrollArea className="h-[calc(100vh-4rem)]">
-        <div className="space-y-1">
-          {chats.map((chat) => (
-            <div
-              key={chat.id}
-              className={cn(
-                "flex items-center px-4 py-3 cursor-pointer hover:bg-gray-50",
-                activeChat === chat.id && "bg-blue-50",
-              )}
-              onClick={() => onChatSelect(chat.id)}
-            >
-              <div className="relative flex-shrink-0">
-                <Image
-                  src={chat.avatar}
-                  alt={chat.name}
-                  width={40}
-                  height={40}
-                  className="w-10 h-10 rounded-full"
-                />
-              </div>
-              <div className="ml-3 flex-1 min-w-0">
-                <div className="flex items-center">
-                  <p className="font-medium text-gray-900 truncate">
-                    {chat.name}
-                  </p>
-                  {chat.hasHeart && (
-                    <Heart className="h-4 w-4 ml-2 text-red-500 fill-current" />
-                  )}
-                  {chat.time && (
-                    <span className="ml-auto text-xs text-gray-500">
-                      {chat.time}
-                    </span>
-                  )}
-                </div>
-                {chat.lastMessage && (
-                  <p className="text-sm text-gray-500 truncate">
-                    {chat.lastMessage}
-                  </p>
+
+      <ScrollArea className="flex-1 border-t mt-3">
+        {loading ? (
+          <div className="p-4 text-muted-foreground">
+            Loading appointments...
+          </div>
+        ) : chatAppointments.length === 0 ? (
+          <div className="p-4 text-muted-foreground">
+            No chat appointments found
+          </div>
+        ) : (
+          chatAppointments.map((appointment) => {
+            const displayName =
+              user?.role === "mentor"
+                ? appointment.menteeUserName
+                : appointment.mentorUserName;
+
+            return (
+              <div
+                key={appointment._id}
+                className={cn(
+                  "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors",
+                  appointment._id === activeRoomId && "bg-accent",
                 )}
+                onClick={() => handleUserSelect(appointment)}
+              >
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback>
+                    {displayName[0].toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium truncate">{displayName}</span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {appointment.selectedSlot[0].time}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-muted-foreground truncate">
+                      {appointment.appointmentType}
+                    </p>
+                    {/* <span
+                      className={cn(
+                        "h-2 w-2 rounded-full ml-auto",
+                        onlineUsers.includes(appointment._id)
+                          ? "bg-green-500"
+                          : "bg-gray-400",
+                      )}
+                    /> */}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            );
+          })
+        )}
       </ScrollArea>
     </div>
   );
-};
+}
