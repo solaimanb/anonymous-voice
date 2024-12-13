@@ -85,6 +85,7 @@ export default function Session() {
               transition={{ delay: index * 0.1 }}
             >
               <VolunteerCard
+                mentorId={volunteer.id}
                 name={volunteer.name}
                 userName={volunteer.userName}
                 title={volunteer.title}

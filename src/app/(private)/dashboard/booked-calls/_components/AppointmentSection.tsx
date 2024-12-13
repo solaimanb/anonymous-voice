@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useChatStore } from "@/store/useChatStore";
+import { ChatUser } from "@/types/chat.types";
 
 interface Appointment {
   _id: string;
@@ -68,8 +69,10 @@ export const AppointmentSection = ({
   );
 
   const handleChat = async (appointment: Appointment) => {
-    const chatUser = {
+    const chatUser: ChatUser = {
       id: appointment._id,
+      key: appointment._id,
+      username: appointment.menteeUserName,
       name: appointment.menteeUserName,
       avatar: "/placeholder.svg",
       status: "online",

@@ -3,15 +3,7 @@ import { useChatStore } from "@/store/useChatStore";
 import { socketService } from "@/services/socket.service";
 import { useAuth } from "@/hooks/useAuth";
 import { v4 as uuidv4 } from "uuid";
-
-interface ChatMessage {
-  id: string;
-  content: string;
-  senderId: string;
-  roomId: string;
-  status: string;
-  timestamp: string;
-}
+import { ChatMessage } from "@/types/chat.types";
 
 export function useChat(roomId: string) {
   const { user } = useAuth();
@@ -25,14 +17,24 @@ export function useChat(roomId: string) {
     socket.emit("join_room", roomId);
 
     const handleNewMessage = (message: ChatMessage) => {
-      addMessage(message);
+      addMessage(roomId, {
+        id: message.id,
+        content: message.content,
+        senderId: message.senderId,
+        from: message.from || "",
+        fromUsername: message.fromUsername || "",
+        message: message.content,
+        timestamp: Date.now(),
+        status: message.status as "sent" | "delivered" | "read",
+        roomId: message.roomId,
+      });
     };
 
     const handleMessageStatus = (data: {
       messageId: string;
-      status: string;
+      status: "sent" | "delivered" | "read";
     }) => {
-      updateMessageStatus(data.messageId, data.status);
+      updateMessageStatus(roomId, data.messageId, data.status);
     };
 
     socket.on("new_message", handleNewMessage);
@@ -50,16 +52,20 @@ export function useChat(roomId: string) {
     if (!socket || !roomId) return;
 
     const messageId = uuidv4();
-    const message = {
+
+    const message: ChatMessage = {
       id: messageId,
       content,
       senderId: user!.id,
+      from: user!.userName || "",
+      fromUsername: user!.userName || "",
+      message: content,
+      timestamp: Date.now(),
+      status: "sent",
       roomId,
-      status: "sending",
-      timestamp: new Date().toISOString(),
     };
 
-    addMessage(message);
+    addMessage(roomId, message);
 
     socket.emit("send_message", {
       messageId,

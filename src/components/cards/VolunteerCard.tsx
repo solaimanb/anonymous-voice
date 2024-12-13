@@ -23,6 +23,7 @@ interface Expertise {
 }
 
 interface VolunteerProps {
+  mentorId: string;
   name: string;
   userName: string;
   title: string;
@@ -54,6 +55,27 @@ export default function VolunteerCard({
   const { isAuthenticated } = useAuth();
   console.log("isAuthenticated", isAuthenticated, "activeAction", actionType);
   const router = useRouter();
+
+  // const handleAction = (action: string) => {
+  //   if (!isAuthenticated) {
+  //     router.push(`/login?returnTo=${action}`);
+  //     return;
+  //   }
+
+  //   if (action === "chat") {
+  //     router.push(`/chat/${mentorId}`);
+  //     return;
+  //   }
+
+  //   const actionMap = {
+  //     "quick-call": "Quick Call",
+  //     chat: "Chat",
+  //     booking: "Booking Call",
+  //   };
+
+  //   const appointmentType = actionMap[action as keyof typeof actionMap];
+  //   router.push(`/booking?mentor=${mentorId}&type=${appointmentType}`);
+  // };
 
   const handleAction = (action: string) => {
     if (!isAuthenticated) {

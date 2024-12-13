@@ -10,7 +10,7 @@ const CallInterface = ({ user }: { user: ChatUser }) => {
       <div className="flex flex-col items-center text-center space-y-4">
         <Avatar className="h-16 w-16">
           <AvatarImage src={user.avatar} alt={user.name} />
-          <AvatarFallback>{user.name[0]}</AvatarFallback>
+          <AvatarFallback>{user.username[0]}</AvatarFallback>
         </Avatar>
 
         <div className="space-y-1">

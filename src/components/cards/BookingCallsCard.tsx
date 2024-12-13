@@ -52,6 +52,8 @@ export const BookingCallsCard = ({
   const handleChat = () => {
     const chatUser = {
       id: booking.user.id,
+      key: booking.id,
+      username: booking.user.username,
       name: booking.user.name,
       avatar: booking.user.avatarUrl ?? "/placeholder.svg",
       status: "online",

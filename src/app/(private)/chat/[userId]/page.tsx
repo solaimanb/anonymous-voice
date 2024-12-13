@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useChat } from "@/hooks/useChat";
 import { useAuth } from "@/hooks/useAuth";
-import MessageList from "./_components/MessageList";
 import CallInterface from "./_components/CallInterface";
 import ChatHeader from "./_components/ChatHeader";
 import { ChatMessage, Message } from "@/types/chat.types";
 import MessageInput from "./_components/MessageInput";
 import Loading from "@/app/loading";
 import { useChatStore } from "@/store/useChatStore";
+import { MessageList } from "@/components/chat/MessageList";
 
 interface ChatState {
   isLoading: boolean;
@@ -29,6 +29,8 @@ export default function OneToOneChatInterface() {
   const activeUser = useChatStore((state) => state.activeUser);
   const setActiveUser = useChatStore((state) => state.setActiveUser);
 
+  console.log("OneToOneChatInterface", userId);
+
   useEffect(() => {
     const fetchChatData = async () => {
       try {
@@ -40,19 +42,10 @@ export default function OneToOneChatInterface() {
       }
     };
 
-    const fetchUserData = async () => {
-      try {
-        setActiveUser(activeUser);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
-
     if (userId) {
       fetchChatData();
-      fetchUserData();
     }
-  }, [userId, setActiveUser, activeUser]);
+  }, [userId, setActiveUser]);
 
   useEffect(() => {
     if (activeUser) {
@@ -77,10 +70,12 @@ export default function OneToOneChatInterface() {
   }
 
   // Map ChatMessage to Message
-  const messages: Message[] = chatMessages.map((msg: ChatMessage) => ({
-    ...msg,
-    timestamp: new Date(msg.timestamp).getTime(),
-  }));
+  const messages: Message[] = Array.isArray(chatMessages)
+    ? chatMessages.map((msg: ChatMessage) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp).getTime(),
+      }))
+    : [];
 
   return (
     <div className="flex min-h-screen bg-background">
