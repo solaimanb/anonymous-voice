@@ -1,3 +1,176 @@
+// "use client";
+
+// import { useEffect } from "react";
+// import { ScrollArea } from "@/components/ui/scroll-area";
+// import { useChatStore } from "@/store/useChatStore";
+// import Link from "next/link";
+// import { Button } from "@/components/ui/button";
+// import { Undo2 } from "lucide-react";
+// import { cn } from "@/lib/utils";
+// import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+// import { useAppointmentsStore } from "@/store/useAppointmentsStore";
+// import { ChatService } from "@/services/chat.service";
+// import { ChatUser } from "@/types/chat.types";
+// import { useAuth } from "@/hooks/useAuth";
+
+// interface TimeSlot {
+//   time: string;
+//   isAvailable: boolean;
+//   _id: string;
+// }
+
+// interface Appointment {
+//   _id: string;
+//   appointmentType: "Chat" | "Quick Call";
+//   status: "confirmed";
+//   selectedSlot: TimeSlot[];
+//   mentorUserName: string;
+//   menteeUserName: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// interface ChatSidebarProps {
+//   setSelectedUser: (user: ChatUser) => void;
+// }
+
+// export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
+//   const { user } = useAuth();
+//   const { appointments, loading, fetchAppointments } = useAppointmentsStore();
+//   const { setActiveRoom, activeRoomId } = useChatStore();
+
+//   const uniqueChatAppointments = Array.isArray(appointments)
+//     ? appointments.filter((appointment) => {
+//         if (!user) return false;
+
+//         const isValidAppointment =
+//           appointment.status === "confirmed" &&
+//           (appointment.appointmentType === "Chat" ||
+//             appointment.appointmentType === "Quick Call");
+
+//         if (user.role === "mentor") {
+//           return (
+//             isValidAppointment && appointment.mentorUserName === user.userName
+//           );
+//         } else {
+//           return (
+//             isValidAppointment && appointment.menteeUserName === user.userName
+//           );
+//         }
+//       })
+//     : [];
+
+//   useEffect(() => {
+//     fetchAppointments({
+//       status: "confirmed",
+//       types: ["Chat", "Quick Call"],
+//     });
+//   }, [fetchAppointments]);
+
+//   const handleUserSelect = async (appointment: Appointment): Promise<void> => {
+//     const displayName =
+//       user?.role === "mentor"
+//         ? appointment.menteeUserName
+//         : appointment.mentorUserName;
+
+//     const selectedUser: ChatUser = {
+//       id: user?.userName || "",
+//       key: appointment._id,
+//       username: displayName,
+//       status: "online",
+//       lastActive: appointment.updatedAt,
+//       appointmentTime: appointment.selectedSlot[0].time,
+//       appointmentDuration: "30",
+//     };
+
+//     setSelectedUser(selectedUser);
+//     const room = await ChatService.initializeSession(appointment._id);
+//     console.log("Room:", room);
+//     const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
+//     setActiveRoom(roomId);
+//     console.log("Selected User ID:", appointment._id);
+//   };
+
+//   return (
+//     <div className="flex flex-col h-full">
+//       <div className="p-2.5 flex items-center gap-4">
+//         <Link href="/">
+//           <Button variant="ghost" size="icon">
+//             <Undo2 size={20} />
+//           </Button>
+//         </Link>
+//         <h1 className="text-xl font-semibold text-muted-foreground">Chats</h1>
+//       </div>
+
+//       <ScrollArea className="flex-1 border-t mt-3">
+//         {loading ? (
+//           <div className="p-4 text-muted-foreground">
+//             Loading appointments...
+//           </div>
+//         ) : uniqueChatAppointments.length === 0 ? (
+//           <div className="p-4 text-muted-foreground">
+//             No chat appointments found
+//           </div>
+//         ) : (
+//           uniqueChatAppointments.map((appointment) => {
+//             const displayName =
+//               user?.role === "mentor"
+//                 ? appointment.menteeUserName
+//                 : appointment.mentorUserName;
+
+//             const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
+//             const isActive = roomId === activeRoomId;
+
+//             return (
+//               <div
+//                 key={appointment._id}
+//                 className={cn(
+//                   "flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors",
+//                   isActive
+//                     ? "bg-muted-foreground/10 text-accent-foreground"
+//                     : "hover:bg-muted/50",
+//                 )}
+//                 onClick={() => handleUserSelect(appointment)}
+//               >
+//                 <Avatar className="h-12 w-12">
+//                   <AvatarFallback>
+//                     {displayName[0].toUpperCase()}
+//                   </AvatarFallback>
+//                 </Avatar>
+
+//                 <div className="flex-1 min-w-0">
+//                   <div className="flex items-center gap-2">
+//                     <span
+//                       className={cn(
+//                         "font-medium truncate",
+//                         isActive && "font-semibold",
+//                       )}
+//                     >
+//                       {displayName}
+//                     </span>
+//                   </div>
+//                   <div className="flex items-center gap-2">
+//                     <p
+//                       className={cn(
+//                         "text-sm truncate",
+//                         isActive
+//                           ? "text-accent-foreground/80"
+//                           : "text-muted-foreground",
+//                       )}
+//                     >
+//                       {appointment.appointmentType}
+//                     </p>
+//                   </div>
+//                 </div>
+//               </div>
+//             );
+//           })
+//         )}
+//       </ScrollArea>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import { useEffect } from "react";
@@ -39,16 +212,17 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
   const { appointments, loading, fetchAppointments } = useAppointmentsStore();
   const { setActiveRoom, activeRoomId } = useChatStore();
 
-  const chatAppointments = Array.isArray(appointments)
-    ? appointments.filter(
-        (appointment) =>
-          appointment.status === "confirmed" &&
-          (appointment.appointmentType === "Chat" ||
-            appointment.appointmentType === "Quick Call"),
-      )
-    : [];
+  const chatAppointments = appointments?.filter((appointment) => {
+    if (!user) return false;
 
-  console.log("Chat appointments:", chatAppointments);
+    const isValidAppointment =
+      appointment.status === "confirmed" &&
+      ["Chat", "Quick Call"].includes(appointment.appointmentType);
+
+    return user.role === "mentor"
+      ? isValidAppointment && appointment.mentorUserName === user.userName
+      : isValidAppointment && appointment.menteeUserName === user.userName;
+  });
 
   useEffect(() => {
     fetchAppointments({
@@ -57,7 +231,7 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
     });
   }, [fetchAppointments]);
 
-  const handleUserSelect = async (appointment: Appointment): Promise<void> => {
+  const handleUserSelect = async (appointment: Appointment) => {
     const displayName =
       user?.role === "mentor"
         ? appointment.menteeUserName
@@ -65,18 +239,19 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
 
     const selectedUser: ChatUser = {
       id: appointment._id,
-      key: appointment._id,
+      // key: appointment._id,
       username: displayName,
       status: "online",
       lastActive: appointment.updatedAt,
-      email: "",
-      appointmentTime: appointment.selectedSlot[0].time,
-      appointmentDuration: "30",
+      // appointmentTime: appointment.selectedSlot[0].time,
+      // appointmentDuration: "30",
     };
 
     setSelectedUser(selectedUser);
     await ChatService.initializeSession(appointment._id);
-    setActiveRoom(appointment._id);
+    setActiveRoom(
+      `${appointment.mentorUserName}-${appointment.menteeUserName}`,
+    );
   };
 
   return (
@@ -95,7 +270,7 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
           <div className="p-4 text-muted-foreground">
             Loading appointments...
           </div>
-        ) : chatAppointments.length === 0 ? (
+        ) : !chatAppointments?.length ? (
           <div className="p-4 text-muted-foreground">
             No chat appointments found
           </div>
@@ -106,12 +281,17 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
                 ? appointment.menteeUserName
                 : appointment.mentorUserName;
 
+            const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
+            const isActive = roomId === activeRoomId;
+
             return (
               <div
                 key={appointment._id}
                 className={cn(
-                  "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors",
-                  appointment._id === activeRoomId && "bg-accent",
+                  "flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors",
+                  isActive
+                    ? "bg-muted-foreground/10 text-accent-foreground"
+                    : "hover:bg-muted/50",
                 )}
                 onClick={() => handleUserSelect(appointment)}
               >
@@ -123,23 +303,26 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium truncate">{displayName}</span>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      {appointment.selectedSlot[0].time}
+                    <span
+                      className={cn(
+                        "font-medium truncate",
+                        isActive && "font-semibold",
+                      )}
+                    >
+                      {displayName}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p
+                      className={cn(
+                        "text-sm truncate",
+                        isActive
+                          ? "text-accent-foreground/80"
+                          : "text-muted-foreground",
+                      )}
+                    >
                       {appointment.appointmentType}
                     </p>
-                    {/* <span
-                      className={cn(
-                        "h-2 w-2 rounded-full ml-auto",
-                        onlineUsers.includes(appointment._id)
-                          ? "bg-green-500"
-                          : "bg-gray-400",
-                      )}
-                    /> */}
                   </div>
                 </div>
               </div>
