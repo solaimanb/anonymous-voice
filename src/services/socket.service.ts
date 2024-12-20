@@ -90,12 +90,22 @@ class SocketService {
 
   sendMessage(message: ChatMessage): void {
     if (this.socket) {
-      this.socket.emit("private:message", message);
+      // Change from private:message to room:message
+      this.socket.emit("room:message", {
+        type: "message",
+        roomId: message.roomId,
+        message,
+      });
     }
   }
 
-  listenForMessages(callback: (message: SocketMessage) => void): void {
-    this.on("private:message", callback);
+  listenForMessages(
+    roomId: string,
+    callback: (message: SocketMessage) => void,
+  ): void {
+    if (this.socket) {
+      this.socket.on(`room:${roomId}`, callback);
+    }
   }
 }
 

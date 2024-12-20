@@ -12,18 +12,14 @@ import { AuthService } from "@/services/auth.service";
 import { useAuth } from "@/hooks/useAuth";
 import { MessageList } from "@/components/chat/MessageList";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
-import { ChatMessage, Message } from "@/types/chat.types";
+import {
+  ChatMessage,
+  Message,
+  ChatUser,
+  SocketMessage,
+} from "@/types/chat.types";
 import { useChatStore } from "@/store/useChatStore";
-
-interface ChatUser {
-  key: string;
-  username: string;
-  avatar?: string;
-  isActive?: boolean;
-  avatarUrl?: string;
-  appointmentDuration?: string;
-  appointmentTime?: string;
-}
+import { ChatService } from "@/services/chat.service";
 
 const SOCKET_SERVER =
   process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
@@ -44,7 +40,7 @@ function UserProfile({
             alt={selectedUser?.username || "User Avatar"}
           />
           <AvatarFallback className="text-xs">
-            {selectedUser?.username?.charAt(0).toUpperCase() || "U"}
+            {selectedUser?.username?.[0].toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
 
@@ -89,7 +85,7 @@ export default function ChatInterface() {
     addMessage,
     setActiveRoom,
     activeRoomId,
-    setOnlineUsers,
+    // setOnlineUsers,
     removeUserFromSidebar,
   } = useChatStore();
   const { user } = useAuth();
@@ -108,77 +104,86 @@ export default function ChatInterface() {
       const roomId = [currentUser.username, user.username].sort().join("-");
       setActiveRoom(roomId);
       setSelectedUser(user);
+      socket?.emit("room:join", { roomId });
+
+      // Load chat history when selecting a user
+      ChatService.fetchMessages(roomId).then((messages) => {
+        console.log("Loaded messages for room:", roomId, messages);
+      });
     },
-    [currentUser.username, setActiveRoom],
+    [currentUser.username, setActiveRoom, socket],
   );
 
-  const handleSendMessage = React.useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!socket || !selectedUser || !messageInput.trim() || !activeRoomId)
-        return;
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!socket || !selectedUser || !messageInput.trim() || !activeRoomId)
+      return;
 
-      const newMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        content: messageInput.trim(),
-        senderId: socket.id || "",
-        from: socket.id || "",
-        fromUsername: currentUser.username || "",
-        message: messageInput.trim(),
-        timestamp: Date.now(),
-        status: "sent",
-        roomId: activeRoomId,
-      };
+    const newMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      content: messageInput.trim(),
+      senderId: socket.id || "",
+      from: socket.id || "",
+      fromUsername: currentUser.username || "",
+      message: messageInput.trim(),
+      timestamp: Date.now(),
+      status: "sent",
+      roomId: activeRoomId,
+    };
 
-      socket.emit("private message", {
-        to: selectedUser.username,
-        message: messageInput.trim(),
-        roomId: activeRoomId,
-      });
-
+    try {
+      await ChatService.sendMessage(activeRoomId, newMessage);
       addMessage(activeRoomId, newMessage);
       setMessageInput("");
-    },
-    [socket, selectedUser, messageInput, activeRoomId, addMessage, currentUser],
-  );
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
 
   const handleComplete = React.useCallback(() => {
     if (selectedUser) {
-      // Update the status to 'completed' (you might need to call an API here)
-      // For now, we'll just remove the user from the sidebar
       removeUserFromSidebar(selectedUser.username);
       setSelectedUser(null);
     }
   }, [selectedUser, removeUserFromSidebar]);
 
+  // Update the socket event listener
   React.useEffect(() => {
     if (!currentUser.username) return;
 
     const newSocket = io(SOCKET_SERVER, {
       auth: { username: currentUser.username },
+      transports: ["websocket"],
+    });
+
+    newSocket.on("connect", () => {
+      console.log("Socket connected!");
     });
 
     setSocket(newSocket);
 
-    newSocket.on("users", (users: ChatUser[]) => {
-      setOnlineUsers(users.map((user) => user.username));
+    newSocket.on("message:new", (data) => {
+      if (activeRoomId && data.roomId === activeRoomId) {
+        ChatService.fetchMessages(activeRoomId);
+      }
     });
 
-    newSocket.on("private message", (data: Message) => {
-      if (activeRoomId) {
-        addMessage(activeRoomId, {
-          ...data,
-          timestamp: data.timestamp || Date.now(),
-          roomId: activeRoomId,
-          status: data.status || "delivered",
-        });
+    newSocket.on("room:message", (data: SocketMessage) => {
+      console.log("Received message:", data);
+      if (
+        data.type === "message" &&
+        data.message &&
+        activeRoomId &&
+        data.roomId === activeRoomId
+      ) {
+        addMessage(activeRoomId, data.message);
       }
     });
 
     return () => {
       newSocket.disconnect();
     };
-  }, [currentUser.username, activeRoomId, addMessage, setOnlineUsers]);
+  }, [currentUser.username, activeRoomId, addMessage]);
 
   const currentMessages = React.useMemo(() => {
     if (!activeRoomId || !messages[activeRoomId]) return [];
@@ -221,7 +226,7 @@ export default function ChatInterface() {
                   alt={selectedUser?.username || "User Avatar"}
                 />
                 <AvatarFallback>
-                  {selectedUser?.username?.charAt(0).toUpperCase() || "U"}
+                  {selectedUser?.username?.[0].toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
 

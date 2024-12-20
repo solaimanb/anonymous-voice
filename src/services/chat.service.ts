@@ -25,22 +25,30 @@ interface SocketData {
   message?: ChatMessage;
   status?: TypingStatus;
   presence?: PresenceUpdate;
+  roomId: string;
+}
+
+interface MessageResponse {
+  _id: string;
+  sentBy: string;
+  sentTo: string;
+  message: string;
+  roomId: string;
+  isSeen: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export class ChatService {
   static async initializeSession(bookingId: string) {
     const room = await this.createRoom(bookingId);
-
-    // Generate unique room ID based on booking
     const uniqueRoomId = `chat_${bookingId}_${room.id}`;
 
-    // Leave any existing rooms first
     const currentRoom = useChatStore.getState().activeRoomId;
     if (currentRoom) {
       socketService.emit("room:leave", { roomId: currentRoom });
     }
 
-    // Join new room with proper scoping
     socketService.emit("room:join", {
       roomId: uniqueRoomId,
       bookingId,
@@ -48,21 +56,30 @@ export class ChatService {
       menteeId: room.menteeId,
     });
 
-    // Listen only to specific room events
-    socketService.on(`room:${uniqueRoomId}`, (data: SocketData) => {
-      console.log("Room data from chat.service:", data);
-      if (data.roomId !== uniqueRoomId) return;
+    // Load previous messages
+    const messages = await this.fetchMessages(uniqueRoomId);
+    console.log("Messages from DB:", messages);
 
-      switch (data.type) {
-        case "message":
-          this.handleNewMessage(uniqueRoomId, data.message!);
-          break;
-        case "typing":
-          this.handleTypingStatus(data.status!);
-          break;
-        case "presence":
-          this.handlePresenceUpdate(data.presence!);
-          break;
+    const chatMessages: ChatMessage[] = messages.map(
+      (message: MessageResponse) => ({
+        id: message._id,
+        content: message.message,
+        senderId: message.sentBy,
+        from: message.sentBy,
+        fromUsername: message.sentBy,
+        message: message.message,
+        timestamp: new Date(message.createdAt).getTime(),
+        status: "sent",
+        roomId: message.roomId,
+      }),
+    );
+    chatMessages.forEach((message) => {
+      this.handleNewMessage(uniqueRoomId, message);
+    });
+
+    socketService.on(`room:${uniqueRoomId}`, (data: SocketData) => {
+      if (data.type === "message") {
+        this.handleNewMessage(uniqueRoomId, data.message!);
       }
     });
 
@@ -70,33 +87,77 @@ export class ChatService {
   }
 
   static async createRoom(bookingId: string) {
+    const response = await api.post("/api/v1/chat/rooms", { bookingId });
+    return response.data;
+  }
+
+  static async fetchMessages(roomId: string): Promise<MessageResponse[]> {
     try {
-      const response = await api.post("/api/v1/chat/rooms", { bookingId });
-      return response.data;
+      const [user1, user2] = roomId.split("-");
+
+      // Fetch messages for both users in the conversation
+      const response1 = await api.get(`/api/v1/message?sentBy=${user1}`);
+      const response2 = await api.get(`/api/v1/message?sentBy=${user2}`);
+
+      // Combine and sort messages from both users
+      const allMessages = [...response1.data.data, ...response2.data.data].sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+
+      console.log("Combined messages:", allMessages);
+
+      const chatMessages: ChatMessage[] = allMessages.map(
+        (message: MessageResponse) => ({
+          id: message._id,
+          content: message.message,
+          senderId: message.sentBy,
+          from: message.sentBy,
+          fromUsername: message.sentBy,
+          message: message.message,
+          timestamp: new Date(message.createdAt).getTime(),
+          status: message.isSeen ? "read" : ("sent" as const),
+          roomId: roomId,
+        }),
+      );
+
+      useChatStore.getState().setMessages(roomId, chatMessages);
+      return allMessages;
     } catch (error) {
-      console.error("Error creating chat room:", error);
-      throw error;
+      console.log("Error fetching messages:", error);
+      return [];
     }
   }
 
   static async sendMessage(roomId: string, message: ChatMessage) {
-    // Fix: Add proper message validation
     if (!message.content.trim()) return;
 
-    const encrypted = await this.encryptMessage(message);
+    try {
+      const response = await api.post("/api/v1/message/create-message", {
+        sentBy: message.fromUsername,
+        sentTo: message.from,
+        message: message.content,
+        roomId: roomId,
+        isSeen: false,
+      });
 
-    // Fix: Use consistent event naming
-    socketService.emit("room:message", {
-      roomId,
-      message: encrypted,
-      timestamp: Date.now(),
-      status: "sent",
-    });
+      const finalMessage = {
+        ...message,
+        id: response.data._id,
+        timestamp: Date.now(),
+      };
 
-    useChatStore.getState().addMessage(roomId, {
-      ...message,
-      status: "sent",
-    });
+      // Emit to the specific room channel
+      socketService.emit("room:message", {
+        type: "message",
+        roomId,
+        message: finalMessage,
+      });
+
+      socketService.emit("message:new", { roomId });
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   }
 
   static async encryptMessage(message: ChatMessage) {
@@ -132,12 +193,34 @@ export class ChatService {
     socketService.emit("chat:typing", { roomId, isTyping });
   }
 
-  static updateMessageStatus(
+  static async updateMessageStatus(
     roomId: string,
     messageId: string,
     status: ChatMessage["status"],
   ) {
-    useChatStore.getState().updateMessageStatus(roomId, messageId, status);
-    socketService.emit("chat:status", { roomId, messageId, status });
+    try {
+      // Update local state first for optimistic UI
+      useChatStore.getState().updateMessageStatus(roomId, messageId, status);
+
+      // Emit socket event
+      socketService.emit("chat:status", { roomId, messageId, status });
+
+      // Update server state
+      await api.patch(`/api/v1/message/update-status/${messageId}`, {
+        status,
+        roomId,
+      });
+    } catch (error) {
+      // Revert optimistic update if server request fails
+      const previousStatus = status === "read" ? "delivered" : "sent";
+      useChatStore
+        .getState()
+        .updateMessageStatus(roomId, messageId, previousStatus);
+      console.error("Error updating message status:", error);
+    }
+  }
+
+  static async markMessageAsSeen(messageId: string) {
+    await api.patch(`/api/v1/message/${messageId}`, { isSeen: true });
   }
 }

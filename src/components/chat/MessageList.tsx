@@ -28,8 +28,10 @@ export const MessageList = React.memo(
   }: MessageListProps) => {
     const scrollRef = React.useRef<HTMLDivElement>(null);
     const prevMessagesRef = React.useRef(messages);
+    console.log("Messages:", messages);
 
     React.useEffect(() => {
+      console.log("Messages updated:", messages);
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
       prevMessagesRef.current = messages;
     }, [messages, roomId]);
@@ -52,6 +54,7 @@ export const MessageList = React.memo(
         return groups;
       }, [] as ChatMessage[][]);
     }, [messages]);
+    console.log("Grouped Messages:", groupedMessages);
 
     if (isLoading) {
       return (
@@ -89,7 +92,7 @@ export const MessageList = React.memo(
             >
               {group.map((message) => (
                 <motion.div
-                  key={`${roomId}-message-${message.id}-${message.timestamp}`}
+                  key={`${roomId}-message-${message.id}`}
                   initial={{ scale: 0.95, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.1 }}
@@ -136,7 +139,10 @@ export const MessageList = React.memo(
     return (
       prevProps.roomId === nextProps.roomId &&
       prevProps.messages.length === nextProps.messages.length &&
-      prevProps.isTyping === nextProps.isTyping
+      prevProps.isTyping === nextProps.isTyping &&
+      prevProps.messages.every(
+        (msg, index) => msg.id === nextProps.messages[index].id,
+      )
     );
   },
 );

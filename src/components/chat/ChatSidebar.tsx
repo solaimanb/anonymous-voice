@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/store/useChatStore";
 import Link from "next/link";
@@ -39,26 +39,48 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
   const { appointments, loading, fetchAppointments } = useAppointmentsStore();
   const { setActiveRoom, activeRoomId } = useChatStore();
 
-  const uniqueChatAppointments = Array.isArray(appointments)
-    ? appointments.filter((appointment) => {
-        if (!user) return false;
+  const uniqueChatAppointments = useMemo(
+    () =>
+      Array.isArray(appointments)
+        ? appointments.filter((appointment) => {
+            if (!user) return false;
+            const isValidAppointment =
+              appointment.status === "confirmed" &&
+              (appointment.appointmentType === "Chat" ||
+                appointment.appointmentType === "Quick Call");
+            return user.role === "mentor"
+              ? isValidAppointment &&
+                  appointment.mentorUserName === user.userName
+              : isValidAppointment &&
+                  appointment.menteeUserName === user.userName;
+          })
+        : [],
+    [appointments, user],
+  );
 
-        const isValidAppointment =
-          appointment.status === "confirmed" &&
-          (appointment.appointmentType === "Chat" ||
-            appointment.appointmentType === "Quick Call");
+  const handleUserSelect = useCallback(
+    async (appointment: Appointment) => {
+      const displayName =
+        user?.role === "mentor"
+          ? appointment.menteeUserName
+          : appointment.mentorUserName;
 
-        if (user.role === "mentor") {
-          return (
-            isValidAppointment && appointment.mentorUserName === user.userName
-          );
-        } else {
-          return (
-            isValidAppointment && appointment.menteeUserName === user.userName
-          );
-        }
-      })
-    : [];
+      const selectedUser: ChatUser = {
+        id: appointment._id,
+        key: appointment._id,
+        username: displayName,
+        status: "online",
+        lastActive: appointment.updatedAt,
+        appointmentTime: appointment.selectedSlot[0].time,
+        appointmentDuration: "30",
+      };
+
+      setSelectedUser(selectedUser);
+      const room = await ChatService.initializeSession(appointment._id);
+      setActiveRoom(room.uniqueRoomId);
+    },
+    [user?.role, setSelectedUser, setActiveRoom],
+  );
 
   useEffect(() => {
     fetchAppointments({
@@ -67,29 +89,15 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
     });
   }, [fetchAppointments]);
 
-  const handleUserSelect = async (appointment: Appointment): Promise<void> => {
-    const displayName =
-      user?.role === "mentor"
-        ? appointment.menteeUserName
-        : appointment.mentorUserName;
-
-    const selectedUser: ChatUser = {
-      id: user?.userName || "",
-      key: appointment._id,
-      username: displayName,
-      status: "online",
-      lastActive: appointment.updatedAt,
-      appointmentTime: appointment.selectedSlot[0].time,
-      appointmentDuration: "30",
-    };
-
-    setSelectedUser(selectedUser);
-    const room = await ChatService.initializeSession(appointment._id);
-    console.log("Room:", room);
-    const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
-    setActiveRoom(roomId);
-    console.log("Selected User ID:", appointment._id);
-  };
+  useEffect(() => {
+    if (
+      user?.role === "mentee" &&
+      uniqueChatAppointments.length > 0 &&
+      !activeRoomId
+    ) {
+      handleUserSelect(uniqueChatAppointments[0]);
+    }
+  }, [uniqueChatAppointments, user?.role, activeRoomId, handleUserSelect]);
 
   return (
     <div className="flex flex-col h-full">

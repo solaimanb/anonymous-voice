@@ -23,6 +23,8 @@ export interface ChatMessage {
   timestamp: number;
   status: "sent" | "delivered" | "read";
   roomId: string;
+  _id?: string;
+  createdAt?: string;
 }
 
 export interface SocketMessage {

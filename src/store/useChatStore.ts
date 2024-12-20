@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { ChatMessage, ChatUser, PresenceUpdate } from "@/types/chat.types";
 
 interface ChatState {
@@ -40,124 +39,113 @@ interface ChatState {
   initializeChat: (roomId: string, user: ChatUser) => void;
 }
 
-export const useChatStore = create<ChatState>()(
-  persist(
-    (set, get) => ({
-      // Initial State
-      messages: {},
-      activeRoomId: null,
-      activeUser: null,
-      onlineUsers: [],
-      typingStatus: {},
-      socketConnected: false,
-      joinedRooms: [],
+export const useChatStore = create<ChatState>()((set, get) => ({
+  // Initial State
+  messages: {},
+  activeRoomId: null,
+  activeUser: null,
+  onlineUsers: [],
+  typingStatus: {},
+  socketConnected: false,
+  joinedRooms: [],
 
-      updateUserPresence: (presence: PresenceUpdate) =>
-        set((state) => ({
-          activeUser:
-            state.activeUser?.id === presence.userId
-              ? {
-                  ...state.activeUser,
-                  status: presence.status,
-                  lastActive: presence.lastActive,
-                }
-              : state.activeUser,
-          onlineUsers:
-            presence.status === "online"
-              ? [...new Set([...state.onlineUsers, presence.username])]
-              : state.onlineUsers.filter((user) => user !== presence.username),
-        })),
+  updateUserPresence: (presence: PresenceUpdate) =>
+    set((state) => ({
+      activeUser:
+        state.activeUser?.id === presence.userId
+          ? {
+              ...state.activeUser,
+              status: presence.status,
+              lastActive: presence.lastActive,
+            }
+          : state.activeUser,
+      onlineUsers:
+        presence.status === "online"
+          ? [...new Set([...state.onlineUsers, presence.username])]
+          : state.onlineUsers.filter((user) => user !== presence.username),
+    })),
 
-      removeUserFromSidebar: (username) =>
-        set((state) => ({
-          onlineUsers: state.onlineUsers.filter((user) => user !== username),
-        })),
+  removeUserFromSidebar: (username) =>
+    set((state) => ({
+      onlineUsers: state.onlineUsers.filter((user) => user !== username),
+    })),
 
-      // Message Actions
-      addMessage: (roomId, message) =>
-        set((state) => ({
-          messages: {
-            ...state.messages,
-            [roomId]: [...(state.messages[roomId] || []), message],
-          },
-        })),
+  addMessage: (roomId, message) =>
+    set((state) => {
+      const existingMessages = state.messages[roomId] || [];
+      const isDuplicate = existingMessages.some((msg) => msg.id === message.id);
 
-      setMessages: (roomId, messages) =>
-        set((state) => ({
-          messages: {
-            ...state.messages,
-            [roomId]: messages,
-          },
-        })),
+      if (isDuplicate) return state;
 
-      updateMessageStatus: (roomId, messageId, status) =>
-        set((state) => ({
-          messages: {
-            ...state.messages,
-            [roomId]:
-              state.messages[roomId]?.map((msg) =>
-                msg.id === messageId ? { ...msg, status } : msg,
-              ) || [],
-          },
-        })),
-
-      clearMessages: (roomId) =>
-        set((state) => {
-          const { [roomId]: _, ...remainingMessages } = state.messages; //eslint-disable-line @typescript-eslint/no-unused-vars
-          return { messages: remainingMessages };
-        }),
-
-      getMessagesForRoom: (roomId) => get().messages[roomId] || [],
-
-      // Room Actions
-      setActiveRoom: (roomId) => set({ activeRoomId: roomId }),
-
-      addJoinedRoom: (roomId) =>
-        set((state) => ({
-          joinedRooms: [...state.joinedRooms, roomId],
-        })),
-
-      removeJoinedRoom: (roomId) =>
-        set((state) => ({
-          joinedRooms: state.joinedRooms.filter((id) => id !== roomId),
-        })),
-
-      // User Actions
-      setActiveUser: (user) => set({ activeUser: user }),
-
-      setOnlineUsers: (users) => set({ onlineUsers: users }),
-
-      setTypingStatus: (roomId, isTyping) =>
-        set((state) => ({
-          typingStatus: {
-            ...state.typingStatus,
-            [roomId]: isTyping,
-          },
-        })),
-
-      setSocketConnected: (connected) => set({ socketConnected: connected }),
-
-      // Chat Session
-      initializeChat: (roomId, user) =>
-        set((state) => ({
-          activeRoomId: roomId,
-          activeUser: user,
-          joinedRooms: [...state.joinedRooms, roomId],
-          messages: {
-            ...state.messages,
-            [roomId]: state.messages[roomId] || [],
-          },
-        })),
+      return {
+        messages: {
+          ...state.messages,
+          [roomId]: [...existingMessages, message],
+        },
+      };
     }),
-    {
-      name: "chat-storage",
-      version: 1,
-      partialize: (state) => ({
-        messages: state.messages,
-        activeRoomId: state.activeRoomId,
-        joinedRooms: state.joinedRooms,
-        socketConnected: state.socketConnected,
-      }),
-    },
-  ),
-);
+
+  setMessages: (roomId, messages) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [roomId]: messages,
+      },
+    })),
+
+  updateMessageStatus: (roomId, messageId, status) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [roomId]:
+          state.messages[roomId]?.map((msg) =>
+            msg.id === messageId ? { ...msg, status } : msg,
+          ) || [],
+      },
+    })),
+
+  clearMessages: (roomId) =>
+    set((state) => {
+      const { [roomId]: _, ...remainingMessages } = state.messages; //eslint-disable-line @typescript-eslint/no-unused-vars
+      return { messages: remainingMessages };
+    }),
+
+  getMessagesForRoom: (roomId) => get().messages[roomId] || [],
+
+  setActiveRoom: (roomId) => set({ activeRoomId: roomId }),
+
+  addJoinedRoom: (roomId) =>
+    set((state) => ({
+      joinedRooms: [...state.joinedRooms, roomId],
+    })),
+
+  removeJoinedRoom: (roomId) =>
+    set((state) => ({
+      joinedRooms: state.joinedRooms.filter((id) => id !== roomId),
+    })),
+
+  setActiveUser: (user) => set({ activeUser: user }),
+
+  setOnlineUsers: (users) => set({ onlineUsers: users }),
+
+  setTypingStatus: (roomId, isTyping) =>
+    set((state) => ({
+      typingStatus: {
+        ...state.typingStatus,
+        [roomId]: isTyping,
+      },
+    })),
+
+  setSocketConnected: (connected) => set({ socketConnected: connected }),
+
+  initializeChat: (roomId, user) =>
+    set((state) => ({
+      activeRoomId: roomId,
+      activeUser: user,
+      joinedRooms: [...state.joinedRooms, roomId],
+      messages: {
+        ...state.messages,
+        [roomId]: state.messages[roomId] || [],
+      },
+    })),
+}));
