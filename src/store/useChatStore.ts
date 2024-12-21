@@ -10,8 +10,10 @@ interface ChatState {
   typingStatus: Record<string, boolean>;
   socketConnected: boolean;
   joinedRooms: string[];
+  isReadyToChat: boolean;
 
   // Message Actions
+  setReadyToChat: (ready: boolean) => void;
   updateUserPresence: (presence: PresenceUpdate) => void;
   removeUserFromSidebar: (username: string) => void;
   addMessage: (roomId: string, message: ChatMessage) => void;
@@ -48,7 +50,9 @@ export const useChatStore = create<ChatState>()((set, get) => ({
   typingStatus: {},
   socketConnected: false,
   joinedRooms: [],
+  isReadyToChat: false,
 
+  setReadyToChat: (ready) => set({ isReadyToChat: ready }),
   updateUserPresence: (presence: PresenceUpdate) =>
     set((state) => ({
       activeUser:
@@ -77,10 +81,13 @@ export const useChatStore = create<ChatState>()((set, get) => ({
 
       if (isDuplicate) return state;
 
+      // Update messages and trigger a re-render
       return {
         messages: {
           ...state.messages,
-          [roomId]: [...existingMessages, message],
+          [roomId]: [...existingMessages, message].sort(
+            (a, b) => a.timestamp - b.timestamp,
+          ),
         },
       };
     }),
@@ -147,5 +154,6 @@ export const useChatStore = create<ChatState>()((set, get) => ({
         ...state.messages,
         [roomId]: state.messages[roomId] || [],
       },
+      isReadyToChat: true,
     })),
 }));

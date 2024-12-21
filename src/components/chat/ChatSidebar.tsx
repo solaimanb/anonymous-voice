@@ -77,7 +77,10 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
 
       setSelectedUser(selectedUser);
       const room = await ChatService.initializeSession(appointment._id);
-      setActiveRoom(room.uniqueRoomId);
+      if (room?.uniqueRoomId) {
+        setActiveRoom(room.uniqueRoomId);
+        await ChatService.fetchMessages(room.uniqueRoomId);
+      }
     },
     [user?.role, setSelectedUser, setActiveRoom],
   );

@@ -104,7 +104,13 @@ class SocketService {
     callback: (message: SocketMessage) => void,
   ): void {
     if (this.socket) {
+      this.socket.off(`room:${roomId}`).off("message:new");
       this.socket.on(`room:${roomId}`, callback);
+      this.socket.on("message:new", (data) => {
+        if (data.roomId === roomId) {
+          callback(data);
+        }
+      });
     }
   }
 }

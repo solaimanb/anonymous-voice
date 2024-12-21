@@ -41,73 +41,42 @@ interface MessageResponse {
 
 export class ChatService {
   static async initializeSession(bookingId: string) {
+    if (!bookingId || !useChatStore.getState().isReadyToChat) {
+      return null;
+    }
+
     const room = await this.createRoom(bookingId);
     const uniqueRoomId = `chat_${bookingId}_${room.id}`;
 
+    // Handle room switching
     const currentRoom = useChatStore.getState().activeRoomId;
     if (currentRoom) {
       socketService.emit("room:leave", { roomId: currentRoom });
     }
 
-    socketService.emit("room:join", {
-      roomId: uniqueRoomId,
-      bookingId,
-      mentorId: room.mentorId,
-      menteeId: room.menteeId,
-    });
-
-    // Load previous messages
-    const messages = await this.fetchMessages(uniqueRoomId);
-    console.log("Messages from DB:", messages);
-
-    const chatMessages: ChatMessage[] = messages.map(
-      (message: MessageResponse) => ({
-        id: message._id,
-        content: message.message,
-        senderId: message.sentBy,
-        from: message.sentBy,
-        fromUsername: message.sentBy,
-        message: message.message,
-        timestamp: new Date(message.createdAt).getTime(),
-        status: "sent",
-        roomId: message.roomId,
-      }),
-    );
-    chatMessages.forEach((message) => {
-      this.handleNewMessage(uniqueRoomId, message);
-    });
-
-    socketService.on(`room:${uniqueRoomId}`, (data: SocketData) => {
+    // Clean up existing listeners
+    const messageHandler = (data: SocketData) => {
       if (data.type === "message") {
         this.handleNewMessage(uniqueRoomId, data.message!);
       }
-    });
+      if (data.type === "typing") {
+        this.handleTypingStatus(data.status!);
+      }
+      if (data.type === "presence") {
+        this.handlePresenceUpdate(data.presence!);
+      }
+    };
 
-    return { ...room, uniqueRoomId };
-  }
+    socketService.off(`room:${uniqueRoomId}`, messageHandler);
+    socketService.off("message:new", () => {});
 
-  static async createRoom(bookingId: string) {
-    const response = await api.post("/api/v1/chat/rooms", { bookingId });
-    return response.data;
-  }
+    // Set up new real-time listeners
+    socketService.on(`room:${uniqueRoomId}`, messageHandler);
 
-  static async fetchMessages(roomId: string): Promise<MessageResponse[]> {
-    try {
-      const [user1, user2] = roomId.split("-");
-
-      // Fetch messages for both users in the conversation
-      const response1 = await api.get(`/api/v1/message?sentBy=${user1}`);
-      const response2 = await api.get(`/api/v1/message?sentBy=${user2}`);
-
-      // Combine and sort messages from both users
-      const allMessages = [...response1.data.data, ...response2.data.data].sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
-
-      console.log("Combined messages:", allMessages);
-
-      const chatMessages: ChatMessage[] = allMessages.map(
+    // Handle new messages
+    socketService.on("message:new", async () => {
+      const messages = await this.fetchMessages(uniqueRoomId);
+      const chatMessages: ChatMessage[] = messages.map(
         (message: MessageResponse) => ({
           id: message._id,
           content: message.message,
@@ -117,12 +86,91 @@ export class ChatService {
           message: message.message,
           timestamp: new Date(message.createdAt).getTime(),
           status: message.isSeen ? "read" : ("sent" as const),
-          roomId: roomId,
+          roomId: message.roomId,
         }),
       );
+      useChatStore.getState().setMessages(uniqueRoomId, chatMessages);
+    });
 
-      useChatStore.getState().setMessages(roomId, chatMessages);
-      return allMessages;
+    // Join new room
+    socketService.emit("room:join", {
+      roomId: uniqueRoomId,
+      bookingId,
+      mentorId: room.mentorId,
+      menteeId: room.menteeId,
+    });
+
+    // Load initial messages
+    const messages = await this.fetchMessages(uniqueRoomId);
+    const chatMessages: ChatMessage[] = messages.map(
+      (message: MessageResponse) => ({
+        id: message._id,
+        content: message.message,
+        senderId: message.sentBy,
+        from: message.sentBy,
+        fromUsername: message.sentBy,
+        message: message.message,
+        timestamp: new Date(message.createdAt).getTime(),
+        status: message.isSeen ? "read" : ("sent" as const),
+        roomId: message.roomId,
+      }),
+    );
+
+    useChatStore.getState().setMessages(uniqueRoomId, chatMessages);
+
+    return { ...room, uniqueRoomId };
+  }
+
+  static async createRoom(bookingId: string) {
+    const response = await api.post("/api/v1/chat/rooms", { bookingId });
+    return response.data;
+  }
+
+  // static async fetchMessages(roomId: string): Promise<MessageResponse[]> {
+  //   try {
+  //     const [user1, user2] = roomId.split("-");
+
+  //     // Fetch messages for both users in the conversation
+  //     const response1 = await api.get(`/api/v1/message?sentBy=${user1}`);
+  //     const response2 = await api.get(`/api/v1/message?sentBy=${user2}`);
+
+  //     // Combine and sort messages from both users
+  //     const allMessages = [...response1.data.data, ...response2.data.data].sort(
+  //       (a, b) =>
+  //         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  //     );
+
+  //     console.log("Combined messages:", allMessages);
+
+  //     const chatMessages: ChatMessage[] = allMessages.map(
+  //       (message: MessageResponse) => ({
+  //         id: message._id,
+  //         content: message.message,
+  //         senderId: message.sentBy,
+  //         from: message.sentBy,
+  //         fromUsername: message.sentBy,
+  //         message: message.message,
+  //         timestamp: new Date(message.createdAt).getTime(),
+  //         status: message.isSeen ? "read" : ("sent" as const),
+  //         roomId: roomId,
+  //       }),
+  //     );
+
+  //     useChatStore.getState().setMessages(roomId, chatMessages);
+  //     return allMessages;
+  //   } catch (error) {
+  //     console.log("Error fetching messages:", error);
+  //     return [];
+  //   }
+  // }
+  static async fetchMessages(roomId: string): Promise<MessageResponse[]> {
+    try {
+      const response = await api.get(`/api/v1/message`, {
+        params: {
+          roomId: roomId,
+        },
+      });
+      return response.data.data;
     } catch (error) {
       console.log("Error fetching messages:", error);
       return [];
@@ -130,8 +178,6 @@ export class ChatService {
   }
 
   static async sendMessage(roomId: string, message: ChatMessage) {
-    if (!message.content.trim()) return;
-
     try {
       const response = await api.post("/api/v1/message/create-message", {
         sentBy: message.fromUsername,
@@ -141,20 +187,19 @@ export class ChatService {
         isSeen: false,
       });
 
-      const finalMessage = {
-        ...message,
-        id: response.data._id,
-        timestamp: Date.now(),
-      };
-
-      // Emit to the specific room channel
       socketService.emit("room:message", {
         type: "message",
         roomId,
-        message: finalMessage,
+        message: {
+          ...message,
+          id: response.data._id,
+        },
       });
 
+      // Emit immediately after sending
       socketService.emit("message:new", { roomId });
+
+      return response.data;
     } catch (error) {
       console.error("Error sending message:", error);
     }

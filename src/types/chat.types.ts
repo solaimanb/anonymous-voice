@@ -11,6 +11,7 @@ export interface ChatUser {
   avatarUrl?: string;
   appointmentDuration?: string;
   appointmentTime?: string;
+  isActive?: boolean;
 }
 
 export interface ChatMessage {
