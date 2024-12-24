@@ -95,7 +95,12 @@ class SocketService {
   }
 
   listenForMessages(callback: (message: SocketMessage) => void): void {
-    this.on("private:message", callback);
+    this.on("private:message", (message: SocketMessage) => {
+      const activeRoom = useChatStore.getState().activeRoomId;
+      if (message.roomId === activeRoom) {
+        callback(message);
+      }
+    });
   }
 }
 

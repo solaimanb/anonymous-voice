@@ -14,6 +14,7 @@ import { MessageList } from "@/components/chat/MessageList";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatMessage, Message } from "@/types/chat.types";
 import { useChatStore } from "@/store/useChatStore";
+import { ChatService } from "@/services/chat.service";
 
 interface ChatUser {
   key: string;
@@ -83,6 +84,8 @@ export default function ChatInterface() {
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [selectedUser, setSelectedUser] = React.useState<ChatUser | null>(null);
   const [messageInput, setMessageInput] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | undefined>(undefined);
 
   const {
     messages,
@@ -103,6 +106,37 @@ export default function ChatInterface() {
     [currentActiveUser],
   );
 
+  React.useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        setIsLoading(true);
+        setError(undefined);
+        const roomId = activeRoomId;
+        if (roomId && selectedUser) {
+          const appointment = {
+            mentorUserName:
+              user?.role === "mentor"
+                ? currentUser.username
+                : selectedUser.username,
+            menteeUserName:
+              user?.role === "mentee"
+                ? currentUser.username
+                : selectedUser.username,
+            _id: roomId,
+          };
+          await ChatService.initializeSession(appointment);
+        }
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+        setError("Failed to load messages");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [activeRoomId, selectedUser, user?.role, currentUser?.username]);
+
   const handleUserSelect = React.useCallback(
     (user: ChatUser) => {
       const roomId = [currentUser.username, user.username].sort().join("-");
@@ -113,7 +147,7 @@ export default function ChatInterface() {
   );
 
   const handleSendMessage = React.useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
       if (!socket || !selectedUser || !messageInput.trim() || !activeRoomId)
         return;
@@ -135,6 +169,17 @@ export default function ChatInterface() {
         message: messageInput.trim(),
         roomId: activeRoomId,
       });
+
+      try {
+        await ChatService.sendMessage(activeRoomId, {
+          content: messageInput.trim(),
+          fromUsername: currentUser.username,
+          sentTo: selectedUser.username,
+          message: messageInput.trim(),
+        });
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
 
       addMessage(activeRoomId, newMessage);
       setMessageInput("");
@@ -160,28 +205,54 @@ export default function ChatInterface() {
 
     setSocket(newSocket);
 
+    newSocket.on("connect", () => {
+      console.log("Socket connected");
+    });
+
     newSocket.on("users", (users: ChatUser[]) => {
       setOnlineUsers(users.map((user) => user.username));
     });
 
     newSocket.on("private message", (data: Message) => {
-      if (activeRoomId) {
-        addMessage(activeRoomId, {
+      const activeRoom = useChatStore.getState().activeRoomId;
+      if (data.roomId === activeRoom) {
+        addMessage(activeRoom, {
           ...data,
           timestamp: data.timestamp || Date.now(),
-          roomId: activeRoomId,
           status: data.status || "delivered",
         });
       }
     });
 
+    newSocket.on("chat:typing", ({ roomId, isTyping }) => {
+      if (roomId === activeRoomId) {
+        useChatStore.getState().setTypingStatus(roomId, isTyping);
+      }
+    });
+
+    newSocket.on("chat:status", ({ roomId, messageId, status }) => {
+      if (roomId === activeRoomId) {
+        useChatStore.getState().updateMessageStatus(roomId, messageId, status);
+      }
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+      setError("Socket connection error");
+    });
+
+    newSocket.on("disconnect", (reason) => {
+      console.warn("Socket disconnected:", reason);
+      setError("Socket disconnected");
+    });
+
     return () => {
       newSocket.disconnect();
     };
-  }, [currentUser.username, activeRoomId, addMessage, setOnlineUsers]);
+  }, [currentUser.username, setOnlineUsers, addMessage, activeRoomId]);
 
   const currentMessages = React.useMemo(() => {
-    if (!activeRoomId || !messages[activeRoomId]) return [];
+    if (!activeRoomId || !Array.isArray(messages[activeRoomId])) return [];
     return messages[activeRoomId].map((message) => ({
       ...message,
       from: message.senderId,
@@ -239,7 +310,8 @@ export default function ChatInterface() {
             <MessageList
               messages={currentMessages}
               currentUserId={currentUser.username}
-              isLoading={false}
+              isLoading={isLoading}
+              error={error}
               isTyping={false}
               typingUserId={selectedUser?.username || ""}
               roomId={activeRoomId || ""}

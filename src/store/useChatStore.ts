@@ -4,7 +4,8 @@ import { ChatMessage, ChatUser, PresenceUpdate } from "@/types/chat.types";
 
 interface ChatState {
   // Core State
-  messages: Record<string, ChatMessage[]>;
+  // messages: Record<string, ChatMessage[]>;
+  messages: { [roomId: string]: ChatMessage[] };
   activeRoomId: string | null;
   activeUser: ChatUser | null;
   onlineUsers: string[];

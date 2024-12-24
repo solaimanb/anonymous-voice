@@ -37,7 +37,7 @@ interface ChatSidebarProps {
 export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
   const { user } = useAuth();
   const { appointments, loading, fetchAppointments } = useAppointmentsStore();
-  const { setActiveRoom, activeRoomId } = useChatStore();
+  const { activeRoomId } = useChatStore();
 
   const uniqueChatAppointments = Array.isArray(appointments)
     ? appointments.filter((appointment) => {
@@ -67,14 +67,14 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
     });
   }, [fetchAppointments]);
 
-  const handleUserSelect = async (appointment: Appointment): Promise<void> => {
+  const handleUserSelect = async (appointment: Appointment) => {
     const displayName =
       user?.role === "mentor"
         ? appointment.menteeUserName
         : appointment.mentorUserName;
 
     const selectedUser: ChatUser = {
-      id: user?.userName || "",
+      id: appointment._id,
       key: appointment._id,
       username: displayName,
       status: "online",
@@ -84,11 +84,7 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
     };
 
     setSelectedUser(selectedUser);
-    const room = await ChatService.initializeSession(appointment._id);
-    console.log("Room:", room);
-    const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
-    setActiveRoom(roomId);
-    console.log("Selected User ID:", appointment._id);
+    await ChatService.initializeSession(appointment);
   };
 
   return (
