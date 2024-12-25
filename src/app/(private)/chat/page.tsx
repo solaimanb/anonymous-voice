@@ -1,12 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Menu, Phone, Send, Undo2 } from "lucide-react";
+import { Menu, Phone, Send, Undo2 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as React from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -15,13 +14,12 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { useChat } from "@/hooks/useChat";
 import { AuthService } from "@/services/auth.service";
-import socket from "@/lib/socket";
+import { socketService } from "@/services/socket.service";
 
 interface ChatContact {
   id: string;
-  name: string;
+  username: string;
   avatar: string;
   lastMessage: string;
   timestamp?: string;
@@ -29,45 +27,82 @@ interface ChatContact {
   hasHeart?: boolean;
 }
 
+interface Message {
+  id: string;
+  sentBy: string;
+  sentTo: string;
+  message: string;
+  isSeen: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function ChatInterface() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
-  const { roomId } = useParams();
-  // const { messages: chatMessages, sendMessage } = useChat(roomId as string);
-  const [newMessage, setNewMessage] = useState<any>([]);
 
   const currentActiveUser = AuthService.getStoredUser();
-  const [socket, setSocket] = useState<any>(null);
-  const [currentUser, setCurrentUser] = useState<any>({
-    username: currentActiveUser?.userName,
+
+  if (!currentActiveUser || !currentActiveUser.userName) {
+    throw new Error("User is not authenticated or username is missing");
+  }
+
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [currentUser] = useState<{ username: string }>({
+    username: currentActiveUser.userName,
   });
-  const [users, setUsers] = useState([]);
-  const [messages, setMessages] = useState<any>([]);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  const [users, setUsers] = useState<ChatContact[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (socket && selectedUser && messageInput.trim()) {
       socket.emit("private message", {
-        to: selectedUser.username, // Send username
+        to: selectedUser.username,
         message: messageInput,
       });
 
       // Add the message to the local state
-      setMessages((prevMessages: any) => [
+      setMessages((prevMessages: Message[]) => [
         ...prevMessages,
         {
-          from: socket.id,
-          fromUsername: currentUser.username,
+          id: `${Date.now()}`,
+          sentBy: currentUser.username,
+          sentTo: selectedUser.username,
           message: messageInput,
+          isSeen: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ]);
 
+      // Save the message to the database
+      try {
+        await socketService.saveMessage({
+          sentBy: currentUser.username,
+          sentTo: selectedUser.username,
+          message: messageInput,
+          isSeen: false,
+        });
+      } catch (error) {
+        console.error("Error saving message:", error);
+      }
+
       setMessageInput("");
+      scrollToBottom();
     }
   };
+
   useEffect(() => {
     if (currentUser) {
       const newSocket = io("http://localhost:5000", {
@@ -79,30 +114,29 @@ export default function ChatInterface() {
       setSocket(newSocket);
 
       // Listen for user list updates
-      newSocket.on("users", (userList) => {
+      newSocket.on("users", (userList: ChatContact[]) => {
         setUsers(userList);
       });
 
       // Listen for private messages
-      newSocket.on("private message", (data) => {
-        console.log("Received private message:", data);
-        setMessages((prevMessages: any) => [
+      newSocket.on("private message", (data: Message) => {
+        setMessages((prevMessages) => [
           ...prevMessages,
           {
-            from: data.from,
-            fromUsername: data.fromUsername,
+            id: data.id,
+            sentBy: data.sentBy,
+            sentTo: data.sentTo,
             message: data.message,
+            isSeen: data.isSeen,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
           },
         ]);
-      });
-
-      // Listen for message sent confirmation
-      newSocket.on("message sent", (data) => {
-        console.log("Message sent successfully to:", data.to);
+        scrollToBottom();
       });
 
       // Listen for private message errors
-      newSocket.on("private message error", (error) => {
+      newSocket.on("private message error", (error: Error) => {
         console.error("Private message error:", error);
       });
 
@@ -112,10 +146,33 @@ export default function ChatInterface() {
       };
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (selectedUser) {
+        try {
+          const response = await socketService.getMessagesByUsername(
+            selectedUser.username,
+          );
+          setMessages(response.data.reverse()); // Reverse the messages to show the latest at the bottom
+          scrollToBottom();
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+        }
+      }
+    };
+
+    fetchMessages();
+  }, [selectedUser]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   if (!currentActiveUser?.userName) {
     return <h1>Loading</h1>;
   }
-  console.log(messages);
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar for larger screens */}
@@ -186,37 +243,39 @@ export default function ChatInterface() {
         {/* Messages */}
         <ScrollArea className="flex-1 p-4">
           <AnimatePresence initial={false}>
-            {messages.map((message: any) => (
-              <motion.div
-                // key={message.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className={cn(
-                  "flex mb-4",
-                  message?.fromUsername === currentActiveUser?.userName
-                    ? "justify-end"
-                    : "justify-start",
-                )}
-              >
-                <div
+            {Array.isArray(messages) &&
+              messages.map((message) => (
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
                   className={cn(
-                    "max-w-[80%] rounded-lg px-4 py-2",
-                    message?.fromUsername === currentActiveUser?.userName
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted",
+                    "flex mb-4",
+                    message?.sentBy === currentActiveUser?.userName
+                      ? "justify-end"
+                      : "justify-start",
                   )}
                 >
-                  <p className="text-sm">{message.message}</p>
-                  {/* <span className="text-xs opacity-50 mt-1 block">
+                  <div
+                    className={cn(
+                      "max-w-[80%] rounded-lg px-4 py-2",
+                      message?.sentBy === currentActiveUser?.userName
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted",
+                    )}
+                  >
+                    <p className="text-sm">{message.message}</p>
+                    {/* <span className="text-xs opacity-50 mt-1 block">
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </span> */}
-                </div>
-              </motion.div>
-            ))}
+                  </div>
+                </motion.div>
+              ))}
+            <div ref={messagesEndRef} />
           </AnimatePresence>
         </ScrollArea>
 
@@ -250,11 +309,10 @@ function ChatSidebar({
   contacts,
   setSelectedUser,
 }: {
-  setSelectedUser: any;
-  contacts: any;
+  setSelectedUser: React.Dispatch<React.SetStateAction<ChatContact | null>>;
+  contacts: ChatContact[];
 }) {
   const currentActiveuser = AuthService.getStoredUser();
-  console.log(currentActiveuser?.userName);
   return (
     <>
       <div className="p-4 flex items-center gap-4">
@@ -268,7 +326,7 @@ function ChatSidebar({
       </div>
 
       <ScrollArea className="flex-1 border-t mt-3">
-        {contacts.map((contact: any, index: number) => (
+        {contacts.map((contact, index) => (
           <div
             key={index}
             className={cn(
