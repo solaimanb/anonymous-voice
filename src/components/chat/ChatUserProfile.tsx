@@ -1,16 +1,30 @@
+import * as React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
-export function ChatUserProfile() {
+interface ChatContact {
+  id: string;
+  username: string;
+  avatar: string;
+  lastMessage: string;
+  timestamp?: string;
+  isActive?: boolean;
+  hasHeart?: boolean;
+}
+
+interface UserProfileProps {
+  selectedUser: ChatContact;
+}
+
+const UserProfile: React.FC<UserProfileProps> = ({ selectedUser }) => {
   return (
     <Card className="h-full rounded-none border-0">
       <div className="flex flex-col items-center p-6 text-center">
         <Avatar className="h-24 w-24 mb-4">
-          <AvatarImage src="/placeholder.svg" alt="Lois Griffin" />
-          <AvatarFallback>LG</AvatarFallback>
+          <AvatarImage src="/images/avatar.svg" alt={selectedUser.username} />
+          <AvatarFallback>{selectedUser.username.charAt(0)}</AvatarFallback>
         </Avatar>
-        <h2 className="text-xl font-semibold">Lois Griffin</h2>
+        <h2 className="text-xl font-semibold">{selectedUser.username}</h2>
         <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
           <span>10 min Call</span>
           <span>•</span>
@@ -20,11 +34,9 @@ export function ChatUserProfile() {
           <span className="h-2 w-2 rounded-full bg-green-500" />
           <span className="text-sm text-green-500">Active Now</span>
         </div>
-        <div className="grid w-full gap-2 mt-6">
-          <Button className="bg-green-500 hover:bg-green-600">Completed</Button>
-          <Button variant="destructive">Cancel</Button>
-        </div>
       </div>
     </Card>
   );
-}
+};
+
+export default UserProfile;
