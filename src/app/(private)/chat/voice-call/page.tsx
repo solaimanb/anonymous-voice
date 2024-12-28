@@ -9,18 +9,20 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { PhoneOff } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import Loading from "@/app/loading";
 
-const VoiceCallPage = () => {
+const VoiceCallPage: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  console.log("Pathname:", pathname);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const currentActiveUser = AuthService.getStoredUser();
     if (!currentActiveUser || !currentActiveUser.userName) {
-      throw new Error("User is not authenticated or username is missing");
+      setError("User is not authenticated or username is missing");
+      return;
     }
 
     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
@@ -40,6 +42,10 @@ const VoiceCallPage = () => {
       setIsConnected(false);
     });
 
+    newSocket.on("connect_error", (err) => {
+      setError(`Connection error: ${err.message}`);
+    });
+
     return () => {
       newSocket.disconnect();
     };
@@ -52,13 +58,17 @@ const VoiceCallPage = () => {
     }
   };
 
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   if (!isConnected) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <Card className="w-full max-w-md">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <Card className="w-full max-w-md shadow-lg">
         <CardContent className="flex flex-col items-center">
           <Avatar className="h-20 w-20 mb-4">
             <AvatarImage src="/images/avatar.png" alt="Caller" />

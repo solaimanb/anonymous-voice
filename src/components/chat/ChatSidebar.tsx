@@ -16,6 +16,7 @@ interface ChatContact {
   timestamp?: string;
   isActive?: boolean;
   hasHeart?: boolean;
+  mentorName?: string;
 }
 
 interface ChatSidebarProps {
@@ -31,42 +32,59 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentActiveuser = AuthService.getStoredUser();
 
-  React.useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (!params.has("user")) {
-      router.replace("/chat");
+  const currentActiveuser = React.useMemo(() => {
+    try {
+      return AuthService.getStoredUser();
+    } catch {
+      return null;
     }
-  }, [router, searchParams]);
+  }, []);
 
-  const handleUserSelect = (contact: ChatContact) => {
-    setSelectedUser(contact);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("user", contact.username);
-    router.push(`/chat?${params.toString()}`);
-  };
+  const filteredContacts = React.useMemo(
+    () =>
+      contacts.filter(
+        (contact) => contact.username !== currentActiveuser?.userName,
+      ),
+    [contacts, currentActiveuser],
+  );
+
+  const handleUserSelect = React.useCallback(
+    (contact: ChatContact) => {
+      setSelectedUser(contact);
+      const params = new URLSearchParams(searchParams);
+      if (currentActiveuser?.role === "mentor") {
+        params.set("mentee", contact.username);
+        params.set("mentor", currentActiveuser.userName);
+      } else if (currentActiveuser?.role === "mentee") {
+        params.set("mentor", contact.username);
+        params.set("mentee", currentActiveuser.userName);
+      }
+      router.push(`/chat?${params.toString()}`);
+    },
+    [setSelectedUser, searchParams, currentActiveuser, router],
+  );
 
   return (
     <>
       <div className="p-2.5 flex items-center gap-4">
         <Link href="/">
-          <Button variant="ghost" size="icon" className="">
+          <Button variant="ghost" size="icon">
             <Undo2 size={20} />
           </Button>
         </Link>
-
         <h1 className="text-xl font-semibold text-muted-foreground">Chats</h1>
       </div>
 
       <ScrollArea className="flex-1 border-t mt-3">
-        {contacts.map((contact, index) => (
+        {filteredContacts.map((contact) => (
           <div
-            key={index}
+            key={contact.id}
+            role="button"
+            aria-pressed={selectedUser?.username === contact.username}
             className={cn(
               "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-muted/40",
               contact.isActive && "bg-accent",
-              contact.username === currentActiveuser?.userName && "hidden",
               selectedUser?.username === contact.username && "bg-blue-100",
             )}
             onClick={() => handleUserSelect(contact)}
@@ -75,24 +93,23 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               <AvatarImage src={contact.avatar} alt={contact.username} />
               <AvatarFallback>{contact.username.charAt(0)}</AvatarFallback>
             </Avatar>
-
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-medium truncate">{contact.username}</span>
-                {/* {contact.hasHeart && (
-                  <Heart className="h-4 w-4 shrink-0 fill-red-500 text-red-500" />
-                )}
-                {contact.timestamp && (
-                  <span className="text-xs text-muted-foreground ml-auto shrink-0">
-                    {contact.timestamp}
+                {contact.mentorName && (
+                  <span className="text-sm text-muted-foreground ml-2">
+                    (Mentor: {contact.mentorName})
                   </span>
-                )} */}
+                )}
+                {contact.isActive && (
+                  <span className="text-xs text-green-500 ml-auto">Active</span>
+                )}
               </div>
-              {/* {contact.lastMessage && (
+              {contact.lastMessage && (
                 <p className="text-sm text-muted-foreground truncate">
                   {contact.lastMessage}
                 </p>
-              )} */}
+              )}
             </div>
           </div>
         ))}
