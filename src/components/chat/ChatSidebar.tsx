@@ -37,18 +37,28 @@ interface ChatSidebarProps {
 export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
   const { user } = useAuth();
   const { appointments, loading, fetchAppointments } = useAppointmentsStore();
-  const { setActiveRoom, activeRoomId } = useChatStore();
+  const { activeRoomId } = useChatStore();
 
-  const chatAppointments = Array.isArray(appointments)
-    ? appointments.filter(
-        (appointment) =>
+  const uniqueChatAppointments = Array.isArray(appointments)
+    ? appointments.filter((appointment) => {
+        if (!user) return false;
+
+        const isValidAppointment =
           appointment.status === "confirmed" &&
           (appointment.appointmentType === "Chat" ||
-            appointment.appointmentType === "Quick Call"),
-      )
-    : [];
+            appointment.appointmentType === "Quick Call");
 
-  console.log("Chat appointments:", chatAppointments);
+        if (user.role === "mentor") {
+          return (
+            isValidAppointment && appointment.mentorUserName === user.userName
+          );
+        } else {
+          return (
+            isValidAppointment && appointment.menteeUserName === user.userName
+          );
+        }
+      })
+    : [];
 
   useEffect(() => {
     fetchAppointments({
@@ -57,7 +67,7 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
     });
   }, [fetchAppointments]);
 
-  const handleUserSelect = async (appointment: Appointment): Promise<void> => {
+  const handleUserSelect = async (appointment: Appointment) => {
     const displayName =
       user?.role === "mentor"
         ? appointment.menteeUserName
@@ -69,14 +79,12 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
       username: displayName,
       status: "online",
       lastActive: appointment.updatedAt,
-      email: "",
       appointmentTime: appointment.selectedSlot[0].time,
       appointmentDuration: "30",
     };
 
     setSelectedUser(selectedUser);
-    await ChatService.initializeSession(appointment._id);
-    setActiveRoom(appointment._id);
+    await ChatService.initializeSession(appointment);
   };
 
   return (
@@ -95,23 +103,28 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
           <div className="p-4 text-muted-foreground">
             Loading appointments...
           </div>
-        ) : chatAppointments.length === 0 ? (
+        ) : uniqueChatAppointments.length === 0 ? (
           <div className="p-4 text-muted-foreground">
             No chat appointments found
           </div>
         ) : (
-          chatAppointments.map((appointment) => {
+          uniqueChatAppointments.map((appointment) => {
             const displayName =
               user?.role === "mentor"
                 ? appointment.menteeUserName
                 : appointment.mentorUserName;
 
+            const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
+            const isActive = roomId === activeRoomId;
+
             return (
               <div
                 key={appointment._id}
                 className={cn(
-                  "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors",
-                  appointment._id === activeRoomId && "bg-accent",
+                  "flex items-center gap-3 py-3 px-4 cursor-pointer transition-colors",
+                  isActive
+                    ? "bg-muted-foreground/10 text-accent-foreground"
+                    : "hover:bg-muted/50",
                 )}
                 onClick={() => handleUserSelect(appointment)}
               >
@@ -123,23 +136,26 @@ export function ChatSidebar({ setSelectedUser }: ChatSidebarProps) {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium truncate">{displayName}</span>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      {appointment.selectedSlot[0].time}
+                    <span
+                      className={cn(
+                        "font-medium truncate",
+                        isActive && "font-semibold",
+                      )}
+                    >
+                      {displayName}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p
+                      className={cn(
+                        "text-sm truncate",
+                        isActive
+                          ? "text-accent-foreground/80"
+                          : "text-muted-foreground",
+                      )}
+                    >
                       {appointment.appointmentType}
                     </p>
-                    {/* <span
-                      className={cn(
-                        "h-2 w-2 rounded-full ml-auto",
-                        onlineUsers.includes(appointment._id)
-                          ? "bg-green-500"
-                          : "bg-gray-400",
-                      )}
-                    /> */}
                   </div>
                 </div>
               </div>

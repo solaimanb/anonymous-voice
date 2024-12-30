@@ -1,17 +1,21 @@
-import { ChatMessage, ChatUser } from "@/types/chat.types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { ChatMessage, ChatUser, PresenceUpdate } from "@/types/chat.types";
 
 interface ChatState {
-  messages: Record<string, ChatMessage[]>;
+  // Core State
+  // messages: Record<string, ChatMessage[]>;
+  messages: { [roomId: string]: ChatMessage[] };
   activeRoomId: string | null;
   activeUser: ChatUser | null;
-  isTyping: Record<string, boolean>;
   onlineUsers: string[];
-}
+  typingStatus: Record<string, boolean>;
+  socketConnected: boolean;
+  joinedRooms: string[];
 
-interface ChatActions {
-  // Message actions
+  // Message Actions
+  updateUserPresence: (presence: PresenceUpdate) => void;
+  removeUserFromSidebar: (username: string) => void;
   addMessage: (roomId: string, message: ChatMessage) => void;
   setMessages: (roomId: string, messages: ChatMessage[]) => void;
   updateMessageStatus: (
@@ -20,29 +24,57 @@ interface ChatActions {
     status: ChatMessage["status"],
   ) => void;
   clearMessages: (roomId: string) => void;
-
-  // Room actions
-  setActiveRoom: (roomId: string) => void;
   getMessagesForRoom: (roomId: string) => ChatMessage[];
 
-  // User actions
-  setActiveUser: (user: ChatUser | null) => void;
-  setTypingStatus: (roomId: string, isTyping: boolean) => void;
-  setOnlineUsers: (users: string[]) => void;
+  // Room Actions
+  setActiveRoom: (roomId: string | null) => void;
+  addJoinedRoom: (roomId: string) => void;
+  removeJoinedRoom: (roomId: string) => void;
 
-  // Chat session
+  // User Actions
+  setActiveUser: (user: ChatUser | null) => void;
+  setOnlineUsers: (users: string[]) => void;
+  setTypingStatus: (roomId: string, isTyping: boolean) => void;
+  setSocketConnected: (connected: boolean) => void;
+
+  // Chat Session
   initializeChat: (roomId: string, user: ChatUser) => void;
 }
 
-export const useChatStore = create<ChatState & ChatActions>()(
+export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
+      // Initial State
       messages: {},
       activeRoomId: null,
       activeUser: null,
-      isTyping: {},
       onlineUsers: [],
+      typingStatus: {},
+      socketConnected: false,
+      joinedRooms: [],
 
+      updateUserPresence: (presence: PresenceUpdate) =>
+        set((state) => ({
+          activeUser:
+            state.activeUser?.id === presence.userId
+              ? {
+                  ...state.activeUser,
+                  status: presence.status,
+                  lastActive: presence.lastActive,
+                }
+              : state.activeUser,
+          onlineUsers:
+            presence.status === "online"
+              ? [...new Set([...state.onlineUsers, presence.username])]
+              : state.onlineUsers.filter((user) => user !== presence.username),
+        })),
+
+      removeUserFromSidebar: (username) =>
+        set((state) => ({
+          onlineUsers: state.onlineUsers.filter((user) => user !== username),
+        })),
+
+      // Message Actions
       addMessage: (roomId, message) =>
         set((state) => ({
           messages: {
@@ -72,27 +104,46 @@ export const useChatStore = create<ChatState & ChatActions>()(
 
       clearMessages: (roomId) =>
         set((state) => {
-          const { [roomId]: _, ...restMessages } = state.messages; // eslint-disable-line @typescript-eslint/no-unused-vars
-          return { messages: restMessages };
+          const { [roomId]: _, ...remainingMessages } = state.messages; //eslint-disable-line @typescript-eslint/no-unused-vars
+          return { messages: remainingMessages };
         }),
-
-      setActiveRoom: (roomId) => set({ activeRoomId: roomId }),
 
       getMessagesForRoom: (roomId) => get().messages[roomId] || [],
 
-      setActiveUser: (user) => set({ activeUser: user }),
+      // Room Actions
+      setActiveRoom: (roomId) => set({ activeRoomId: roomId }),
 
-      setTypingStatus: (roomId, isTyping) =>
+      addJoinedRoom: (roomId) =>
         set((state) => ({
-          isTyping: { ...state.isTyping, [roomId]: isTyping },
+          joinedRooms: [...state.joinedRooms, roomId],
         })),
+
+      removeJoinedRoom: (roomId) =>
+        set((state) => ({
+          joinedRooms: state.joinedRooms.filter((id) => id !== roomId),
+        })),
+
+      // User Actions
+      setActiveUser: (user) => set({ activeUser: user }),
 
       setOnlineUsers: (users) => set({ onlineUsers: users }),
 
+      setTypingStatus: (roomId, isTyping) =>
+        set((state) => ({
+          typingStatus: {
+            ...state.typingStatus,
+            [roomId]: isTyping,
+          },
+        })),
+
+      setSocketConnected: (connected) => set({ socketConnected: connected }),
+
+      // Chat Session
       initializeChat: (roomId, user) =>
         set((state) => ({
           activeRoomId: roomId,
           activeUser: user,
+          joinedRooms: [...state.joinedRooms, roomId],
           messages: {
             ...state.messages,
             [roomId]: state.messages[roomId] || [],
@@ -105,7 +156,8 @@ export const useChatStore = create<ChatState & ChatActions>()(
       partialize: (state) => ({
         messages: state.messages,
         activeRoomId: state.activeRoomId,
-        activeUser: state.activeUser,
+        joinedRooms: state.joinedRooms,
+        socketConnected: state.socketConnected,
       }),
     },
   ),

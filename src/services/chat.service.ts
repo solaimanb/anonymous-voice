@@ -3,103 +3,139 @@ import { socketService } from "./socket.service";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatMessage } from "@/types/chat.types";
 
-interface TypingStatus {
-  roomId: string;
-  userId: string;
-  username: string;
-  isTyping: boolean;
+interface MessageInput {
+  content: string;
+  fromUsername: string;
+  sentTo: string;
+  message: string;
 }
 
-interface PresenceUpdate {
-  roomId: string;
-  userId: string;
-  username: string;
-  email: string;
-  avatar?: string;
-  status: "online" | "offline" | "away";
-  lastActive: string;
-}
-
-interface SocketData {
-  type: "message" | "typing" | "presence";
-  message?: ChatMessage;
-  status?: TypingStatus;
-  presence?: PresenceUpdate;
+interface APIResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  data: {
+    _id: string;
+    sentBy: string;
+    sentTo: string;
+    message: string;
+    isSeen: boolean;
+    createdAt: string;
+  }[];
 }
 
 export class ChatService {
-  static async initializeSession(bookingId: string) {
-    const room = await this.createRoom(bookingId);
+  static async initializeSession(appointment: {
+    mentorUserName: string;
+    menteeUserName: string;
+    _id: string;
+  }) {
+    const roomId = `${appointment.mentorUserName}-${appointment.menteeUserName}`;
+    const messages = await this.fetchMessages(
+      appointment.mentorUserName,
+      appointment.menteeUserName,
+      roomId,
+    );
 
-    socketService.on(`chat:${room.id}`, (data: SocketData) => {
-      switch (data.type) {
-        case "message":
-          this.handleNewMessage(room.id, data.message!);
-          break;
-        case "typing":
-          this.handleTypingStatus(data.status!);
-          break;
-        case "presence":
-          this.handlePresenceUpdate(data.presence!);
-          break;
-      }
-    });
+    useChatStore.getState().setMessages(roomId, this.convertMessages(messages));
+    useChatStore.getState().setActiveRoom(roomId);
 
-    return room;
+    return { roomId };
   }
 
-  static async createRoom(bookingId: string) {
+  static async fetchMessages(
+    mentorUsername: string,
+    menteeUsername: string,
+    roomId: string,
+  ): Promise<APIResponse["data"]> {
     try {
-      const response = await api.post("/api/v1/chat/rooms", { bookingId });
-      return response.data;
+      const response = await api.get<APIResponse>("/api/v1/message", {
+        params: {
+          mentorUsername,
+          menteeUsername,
+        },
+      });
+      return response.data.data.filter(
+        (msg) =>
+          ((msg.sentBy === mentorUsername && msg.sentTo === menteeUsername) ||
+            (msg.sentBy === menteeUsername && msg.sentTo === mentorUsername)) &&
+          `${msg.sentBy}-${msg.sentTo}` === roomId,
+      );
     } catch (error) {
-      console.error("Error creating chat room:", error);
-      throw error;
+      console.error("Error fetching messages:", error);
+      return [];
     }
   }
 
-  static async sendMessage(roomId: string, message: ChatMessage) {
-    const encrypted = await this.encryptMessage(message);
-
-    socketService.emit("chat:message", {
-      roomId,
-      message: encrypted,
-    });
-
-    useChatStore.getState().addMessage(roomId, {
-      ...message,
-      from: message.fromUsername,
-      status: "sent",
-    });
+  private static convertMessages(
+    apiMessages: APIResponse["data"],
+  ): ChatMessage[] {
+    return apiMessages.map((msg) => ({
+      id: msg._id,
+      content: msg.message,
+      senderId: msg.sentBy,
+      from: msg.sentBy,
+      fromUsername: msg.sentBy,
+      message: msg.message,
+      timestamp: new Date(msg.createdAt).getTime(),
+      status: msg.isSeen ? "read" : "delivered",
+      roomId: `${msg.sentBy}-${msg.sentTo}`,
+    }));
   }
 
-  static async encryptMessage(message: ChatMessage) {
-    return message;
-  }
+  static async sendMessage(roomId: string, message: MessageInput) {
+    try {
+      const response = await api.post<APIResponse>(
+        "/api/v1/message/create-message",
+        {
+          sentBy: message.fromUsername,
+          sentTo: message.sentTo,
+          message: message.message,
+          isSeen: false,
+        },
+      );
 
-  private static handleNewMessage(roomId: string, message: ChatMessage) {
-    useChatStore.getState().addMessage(roomId, message);
-  }
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Failed to send message");
+      }
 
-  private static handleTypingStatus(status: TypingStatus) {
-    useChatStore.getState().setTypingStatus(status.roomId, status.isTyping);
-  }
+      const messageData = response.data.data[0];
 
-  private static handlePresenceUpdate(presence: PresenceUpdate) {
-    const store = useChatStore.getState();
-    store.setActiveUser(
-      presence.status === "offline"
-        ? null
-        : {
-            id: presence.userId,
-            key: presence.userId,
-            username: presence.username,
-            email: presence.email,
-            status: presence.status,
-            lastActive: presence.lastActive,
-            avatar: presence.avatar,
-          },
-    );
+      if (!messageData) {
+        throw new Error("No message data returned from API");
+      }
+
+      const newMessage: ChatMessage = {
+        id: messageData._id,
+        content: message.content,
+        senderId: message.fromUsername,
+        from: message.fromUsername,
+        fromUsername: message.fromUsername,
+        message: message.message,
+        timestamp: Date.now(),
+        status: "sent",
+        roomId,
+      };
+
+      useChatStore.getState().addMessage(roomId, newMessage);
+      socketService.emit("private:message", newMessage);
+      return newMessage;
+    } catch (error) {
+      console.error("Error sending message:", error);
+      throw error;
+    }
+  }
+  static async markMessageAsRead(messageId: string): Promise<void> {
+    try {
+      await api.get(`/api/v1/message/${messageId}`);
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+    }
   }
 
   static setTypingStatus(roomId: string, isTyping: boolean) {

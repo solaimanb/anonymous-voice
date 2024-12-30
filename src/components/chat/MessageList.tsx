@@ -30,9 +30,7 @@ export const MessageList = React.memo(
     const prevMessagesRef = React.useRef(messages);
 
     React.useEffect(() => {
-      if (prevMessagesRef.current.length < messages.length) {
-        scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-      }
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
       prevMessagesRef.current = messages;
     }, [messages, roomId]);
 

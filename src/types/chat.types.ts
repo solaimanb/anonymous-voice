@@ -4,7 +4,7 @@ export interface ChatUser {
   name?: string;
   username: string;
   avatar?: string;
-  status: string;
+  status: "online" | "offline" | "away";
   lastActive?: string;
   email?: string;
   role?: string;
@@ -25,4 +25,29 @@ export interface ChatMessage {
   roomId: string;
 }
 
+export interface SocketMessage {
+  type: "message" | "typing" | "presence";
+  message?: ChatMessage;
+  userId?: string;
+  username?: string;
+  roomId?: string;
+}
+
 export type Message = ChatMessage;
+
+export interface TypingStatus {
+  roomId: string;
+  userId: string;
+  username: string;
+  isTyping: boolean;
+}
+
+export interface PresenceUpdate {
+  roomId: string;
+  userId: string;
+  username: string;
+  email?: string;
+  avatar?: string;
+  status: "online" | "offline" | "away";
+  lastActive: string;
+}
