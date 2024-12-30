@@ -9,3 +9,10 @@ export class APIError extends Error {
     Object.setPrototypeOf(this, APIError.prototype);
   }
 }
+
+export class MediaDeviceError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "MediaDeviceError";
+  }
+}

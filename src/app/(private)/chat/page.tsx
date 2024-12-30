@@ -9,10 +9,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/app/loading";
 import { useAppointments } from "@/hooks/useAppointments";
 import ChatSidebar from "@/components/chat/ChatSidebar";
-import CallConfirmationDialog from "@/components/chat/CallConfirmationDialog";
 import ChatMessages from "@/components/chat/ChatMessages";
 import UserProfile from "@/components/chat/ChatUserProfile";
 import { useRouter } from "next/navigation";
+import { CallInvitation } from "@/types/call";
+import CallInviteDialog from "@/components/chat/CallInviteDialog";
+import { CallService } from "@/lib/webrtc/call-service";
 
 interface ChatContact {
   id: string;
@@ -44,9 +46,9 @@ interface ReceivedMessage {
 
 export default function ChatInterface() {
   const router = useRouter();
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { appointments } = useAppointments();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [users, setUsers] = useState<ChatContact[]>([]);
@@ -54,7 +56,7 @@ export default function ChatInterface() {
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
 
   const currentActiveUser = AuthService.getStoredUser();
   if (!currentActiveUser || !currentActiveUser.userName) {
@@ -108,22 +110,6 @@ export default function ChatInterface() {
       setMessageInput("");
       scrollToBottom();
     }
-  };
-
-  const handleConfirmCall = () => {
-    if (socket && selectedUser) {
-      const roomLink = `av-session-${Date.now()}`;
-      socket.emit("send room link", {
-        to: selectedUser.username,
-        roomLink,
-      });
-      setIsPopupOpen(false);
-      router.push(`/chat/voice-call?roomLink=${roomLink}`);
-    }
-  };
-
-  const handlePhoneClick = () => {
-    setIsPopupOpen(true);
   };
 
   useEffect(() => {
@@ -209,6 +195,64 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  // Handle call invitations
+  useEffect(() => {
+    if (!socket) return;
+
+    CallService.listenForCallInvitations(
+      socket,
+      (invitation: CallInvitation) => {
+        setIncomingCall(invitation);
+      },
+    );
+
+    // Handle call acceptance
+    socket.on("call:accept", ({ roomId }) => {
+      router.push(`/chat/video-call?roomId=${roomId}&caller=false`);
+    });
+
+    // Handle call rejection
+    socket.on("call:reject", () => {
+      setIncomingCall(null);
+    });
+
+    return () => {
+      socket.off("call:accept");
+      socket.off("call:reject");
+    };
+  }, [socket]);
+
+  const handleAcceptCall = () => {
+    if (!incomingCall || !socket) return;
+
+    CallService.acceptCall(socket, incomingCall.roomId);
+    setIncomingCall(null);
+    router.push(`/chat/video-call?roomId=${incomingCall.roomId}&caller=false`);
+  };
+
+  const handleRejectCall = () => {
+    if (!incomingCall || !socket) return;
+
+    CallService.rejectCall(socket, incomingCall.roomId);
+    setIncomingCall(null);
+  };
+
+  const handlePhoneClick = () => {
+    if (!socket || !selectedUser) return;
+
+    const roomId = CallService.generateRoomId();
+
+    const invitation: CallInvitation = {
+      roomId,
+      from: currentUser.username,
+      to: selectedUser.username,
+      type: "video",
+    };
+
+    CallService.sendCallInvitation(socket, invitation);
+    router.push(`/chat/video-call?roomId=${roomId}&caller=true`);
+  };
+
   if (!currentActiveUser?.userName) {
     return <Loading />;
   }
@@ -224,7 +268,6 @@ export default function ChatInterface() {
           : appointment.mentorUserName,
       avatar: "/images/avatar.png",
       lastMessage: "",
-      // isActive: true,
     }));
 
   // Remove duplicate users and filter out undefined values
@@ -289,12 +332,16 @@ export default function ChatInterface() {
         </aside>
       )}
 
-      <CallConfirmationDialog
-        isOpen={isPopupOpen}
-        onOpenChange={setIsPopupOpen}
-        selectedUser={selectedUser}
-        handleConfirmCall={handleConfirmCall}
-      />
+      {incomingCall && (
+        <CallInviteDialog
+          isOpen={!!incomingCall}
+          onOpenChange={(open) => !open && setIncomingCall(null)}
+          caller={incomingCall.from}
+          callType={incomingCall.type}
+          onAccept={handleAcceptCall}
+          onReject={handleRejectCall}
+        />
+      )}
     </div>
   );
 }

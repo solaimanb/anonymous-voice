@@ -8,11 +8,11 @@ import { googleProvider } from "@/lib/firebase";
 import api from "@/config/axios.config";
 
 export interface UserInfo {
-  id: string;
+  id?: string;
   userName: string;
-  isVerified: boolean;
+  isVerified?: boolean;
   role: UserRole;
-  userDetails: string;
+  userDetails?: string;
 }
 
 interface CreateMenteeData {
@@ -44,6 +44,8 @@ interface LoginResponse {
 }
 
 export class AuthService {
+  private static readonly USER_KEY = "user";
+
   // Role-based Google authentication
   static async googleSignIn(role: "admin" | "mentor") {
     try {
@@ -162,12 +164,23 @@ export class AuthService {
     return data;
   }
 
+  // static getStoredUser(): UserInfo | null {
+  //   if (typeof window !== "undefined") {
+  //     const userStr = localStorage.getItem("user");
+  //     return userStr ? JSON.parse(userStr) : null;
+  //   }
+  //   return null;
+  // }
   static getStoredUser(): UserInfo | null {
-    if (typeof window !== "undefined") {
-      const userStr = localStorage.getItem("user");
+    if (typeof window === "undefined") return null;
+
+    try {
+      const userStr = localStorage.getItem(this.USER_KEY);
       return userStr ? JSON.parse(userStr) : null;
+    } catch (error) {
+      console.error("Error getting stored user:", error);
+      return null;
     }
-    return null;
   }
 
   static logout(): void {
@@ -179,11 +192,14 @@ export class AuthService {
     }
   }
 
+  // static isAuthenticated(): boolean {
+  //   if (typeof window !== "undefined") {
+  //     return localStorage.getItem("isAuthenticated") === "true";
+  //   }
+  //   return false;
+  // }
   static isAuthenticated(): boolean {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("isAuthenticated") === "true";
-    }
-    return false;
+    return !!this.getStoredUser();
   }
 
   static getStoredToken(): string | null {

@@ -1,90 +1,172 @@
-"use client";
+// "use client";
 
-import * as React from "react";
-import { io, Socket } from "socket.io-client";
-import { useEffect, useState } from "react";
-import { AuthService } from "@/services/auth.service";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { PhoneOff } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import Loading from "@/app/loading";
+// import React, { useEffect, useState } from "react";
+// import { io, Socket } from "socket.io-client";
+// import { AuthService } from "@/services/auth.service";
+// import { usePathname, useRouter } from "next/navigation";
+// import Loading from "@/app/loading";
+// import VideoCall from "@/components/chat/VideoCall";
+// import { webRTCService } from "@/services/webrtc.service";
+// import PreJoinScreen from "@/components/chat/PreJoinScreen";
+// import { MediaDeviceError } from "@/types/error";
 
-const VoiceCallPage: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+// const VoiceCallPage: React.FC = () => {
+//   const router = useRouter();
+//   const pathname = usePathname();
+//   const [socket, setSocket] = useState<Socket | null>(null);
+//   const [isConnected, setIsConnected] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [hasJoined, setHasJoined] = useState(false);
+//   const [isInitializing, setIsInitializing] = useState(true);
 
-  useEffect(() => {
-    const currentActiveUser = AuthService.getStoredUser();
-    if (!currentActiveUser || !currentActiveUser.userName) {
-      setError("User is not authenticated or username is missing");
-      return;
-    }
+//   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+//   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+//   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+//   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
 
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
-      auth: {
-        username: currentActiveUser.userName,
-      },
-    });
+//   useEffect(() => {
+//     const currentActiveUser = AuthService.getStoredUser();
+//     if (!currentActiveUser?.userName) {
+//       setError("User is not authenticated");
+//       setIsInitializing(false);
+//       return;
+//     }
 
-    setSocket(newSocket);
+//     const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
+//       auth: { username: currentActiveUser.userName },
+//     });
 
-    newSocket.on("connect", () => {
-      setIsConnected(true);
-      newSocket.emit("join room", { pathname });
-    });
+//     setSocket(newSocket);
 
-    newSocket.on("disconnect", () => {
-      setIsConnected(false);
-    });
+//     newSocket.on("connect", () => {
+//       setIsConnected(true);
+//       initializeMedia(newSocket);
+//     });
 
-    newSocket.on("connect_error", (err) => {
-      setError(`Connection error: ${err.message}`);
-    });
+//     newSocket.on("disconnect", () => setIsConnected(false));
+//     newSocket.on("connect_error", (err) => {
+//       setError(`Connection error: ${err.message}`);
+//       setIsInitializing(false);
+//     });
 
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [pathname]);
+//     return () => {
+//       newSocket.disconnect();
+//     };
+//   }, []);
 
-  const handleLeaveCall = () => {
-    if (socket) {
-      socket.emit("leave room", { pathname });
-      router.push("/chat");
-    }
-  };
+//   const initializeMedia = async (socket: Socket) => {
+//     try {
+//       const stream = await webRTCService.initialize(socket, true);
+//       setLocalStream(stream);
+//       setIsInitializing(false);
+//     } catch (error) {
+//       if (error instanceof MediaDeviceError) {
+//         setError(error.message);
+//       } else {
+//         setError("Failed to initialize media devices");
+//       }
+//       setIsInitializing(false);
+//     }
+//   };
 
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
+//   useEffect(() => {
+//     if (!socket || !hasJoined) return;
 
-  if (!isConnected) {
-    return <Loading />;
-  }
+//     socket.emit("join room", { roomId: pathname });
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardContent className="flex flex-col items-center">
-          <Avatar className="h-20 w-20 mb-4">
-            <AvatarImage src="/images/avatar.png" alt="Caller" />
-            <AvatarFallback>C</AvatarFallback>
-          </Avatar>
-          <p className="text-lg font-semibold">Voice Call</p>
-        </CardContent>
-        <CardFooter className="flex justify-center space-x-4">
-          <Button onClick={handleLeaveCall} variant="destructive">
-            <PhoneOff className="mr-2 h-4 w-4" />
-            Leave Call
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
-};
+//     const handleOffer = async (data: { offer: RTCSessionDescriptionInit }) => {
+//       await webRTCService.handleAnswer(data.offer);
+//       const answer = await webRTCService.createOffer();
+//       if (answer) {
+//         socket.emit("answer", { roomId: pathname, answer });
+//       }
+//     };
 
-export default VoiceCallPage;
+//     const handleAnswer = async (data: {
+//       answer: RTCSessionDescriptionInit;
+//     }) => {
+//       await webRTCService.handleAnswer(data.answer);
+//     };
+
+//     const handleIceCandidate = async (data: {
+//       candidate: RTCIceCandidateInit;
+//     }) => {
+//       await webRTCService.handleIceCandidate(data.candidate);
+//     };
+
+//     socket.on("offer", handleOffer);
+//     socket.on("answer", handleAnswer);
+//     socket.on("ice-candidate", handleIceCandidate);
+
+//     return () => {
+//       socket.off("offer", handleOffer);
+//       socket.off("answer", handleAnswer);
+//       socket.off("ice-candidate", handleIceCandidate);
+//     };
+//   }, [socket, hasJoined, pathname]);
+
+//   const handleJoinCall = async () => {
+//     if (!socket) return;
+
+//     setHasJoined(true);
+//     const offer = await webRTCService.createOffer();
+//     if (offer) {
+//       socket.emit("offer", { roomId: pathname, offer });
+//     }
+//   };
+
+//   const toggleAudio = () => {
+//     if (localStream) {
+//       const audioTracks = localStream.getAudioTracks();
+//       audioTracks.forEach((track) => {
+//         track.enabled = !track.enabled;
+//       });
+//       setIsAudioEnabled(!isAudioEnabled);
+//     }
+//   };
+
+//   const toggleVideo = () => {
+//     if (localStream) {
+//       const videoTracks = localStream.getVideoTracks();
+//       videoTracks.forEach((track) => {
+//         track.enabled = !track.enabled;
+//       });
+//       setIsVideoEnabled(!isVideoEnabled);
+//     }
+//   };
+
+//   const handleLeaveCall = () => {
+//     if (socket) {
+//       socket.emit("leave room", { roomId: pathname });
+//       webRTCService.cleanup();
+//       router.push("/chat");
+//     }
+//   };
+
+//   if (isInitializing) return <Loading />;
+//   if (error) return <p className="text-red-500">{error}</p>;
+//   if (!isConnected) return <Loading />;
+
+//   return hasJoined ? (
+//     <VideoCall
+//       localStream={localStream}
+//       remoteStream={remoteStream}
+//       onLeaveCall={handleLeaveCall}
+//       isAudioEnabled={isAudioEnabled}
+//       isVideoEnabled={isVideoEnabled}
+//       toggleAudio={toggleAudio}
+//       toggleVideo={toggleVideo}
+//     />
+//   ) : (
+//     <PreJoinScreen
+//       onJoin={handleJoinCall}
+//       localStream={localStream}
+//       isAudioEnabled={isAudioEnabled}
+//       isVideoEnabled={isVideoEnabled}
+//       toggleAudio={toggleAudio}
+//       toggleVideo={toggleVideo}
+//     />
+//   );
+// };
+
+// export default VoiceCallPage;
