@@ -8,6 +8,7 @@ import Loading from "@/app/loading";
 import VolunteerCard from "@/components/cards/VolunteerCard";
 import { useSearchParams } from "next/navigation";
 import { ActionType } from "@/components/pages/home/hero/Hero";
+import TitleHeader from "@/components/common/TitleHeader";
 
 export default function Session() {
   const searchParams = useSearchParams();
@@ -46,24 +47,9 @@ export default function Session() {
   };
 
   return (
-    <div className="container mx-auto bg-gray-50 px-4 py-8 md:px-6 lg:px-8">
+    <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
       {/* Header Section */}
-      <div className="relative mb-8">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[#7FCCCC] rounded-lg" />
-          <div className="absolute top-0 left-0 w-16 h-16">
-            <div className="absolute inset-0 bg-[#98D9D9] rounded-full -translate-x-1/4 -translate-y-1/4" />
-            <div className="absolute inset-0 bg-[#98D9D9] rounded-full translate-x-1/4 translate-y-1/4 scale-75" />
-          </div>
-          <div className="absolute top-0 right-0 w-16 h-16 transform rotate-90">
-            <div className="absolute inset-0 bg-[#98D9D9] rounded-full -translate-x-1/4 -translate-y-1/4" />
-            <div className="absolute inset-0 bg-[#98D9D9] rounded-full translate-x-1/4 translate-y-1/4 scale-75" />
-          </div>
-        </div>
-        <h1 className="relative text-center text-white text-2xl md:text-3xl font-semibold py-6">
-          {getHeaderText()}
-        </h1>
-      </div>
+      <TitleHeader getHeaderText={getHeaderText} />
 
       <div className="max-w-7xl mx-auto">
         <h2 className="text-xl text-gray-600 mb-6">
