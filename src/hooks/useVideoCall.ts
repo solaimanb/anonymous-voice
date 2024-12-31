@@ -1,7 +1,7 @@
 "use client";
 
-import { RTCConfig } from "@/lib/webrtc/config";
-import { RoomManager } from "@/lib/webrtc/room";
+import { RTCConfig } from "@/lib/call/config";
+import { RoomManager } from "@/lib/call/room";
 import { useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 

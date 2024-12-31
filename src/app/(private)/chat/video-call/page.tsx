@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth.service";
-import VideoCall from "@/components/chat/VideoCall";
 import PreJoinScreen from "@/components/chat/PreJoinScreen";
 import Loading from "@/app/loading";
 import { useVideoCall } from "@/hooks/useVideoCall";

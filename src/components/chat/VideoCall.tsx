@@ -1,90 +1,111 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
+import { CallService } from "@/lib/call/call-service";
 import { Button } from "@/components/ui/button";
-import { PhoneOff, Video, Mic, MicOff, VideoOff } from "lucide-react";
+import { PhoneOff } from "lucide-react";
 
-interface VideoCallProps {
-  localStream: MediaStream | null;
-  remoteStream: MediaStream | null;
-  onLeaveCall: () => void;
-  isAudioEnabled: boolean;
-  isVideoEnabled: boolean;
-  toggleAudio: () => void;
-  toggleVideo: () => void;
+interface VoiceCallProps {
+  socket: Socket;
+  roomId: string;
+  isCaller: boolean;
+  onEndCall: () => void;
 }
 
-const VideoCall: React.FC<VideoCallProps> = ({
-  localStream,
-  remoteStream,
-  onLeaveCall,
-  isAudioEnabled,
-  isVideoEnabled,
-  toggleAudio,
-  toggleVideo,
+export const VoiceCall: React.FC<VoiceCallProps> = ({
+  socket,
+  roomId,
+  isCaller,
+  onEndCall,
 }) => {
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    if (localVideoRef.current && localStream) {
-      localVideoRef.current.srcObject = localStream;
-    }
-    if (remoteVideoRef.current && remoteStream) {
-      remoteVideoRef.current.srcObject = remoteStream;
-    }
-  }, [localStream, remoteStream]);
+    let peerConnection: RTCPeerConnection;
+
+    const initializeCall = async () => {
+      try {
+        peerConnection = await CallService.initializeCall(
+          socket,
+          isCaller,
+          roomId,
+        );
+        setIsConnected(true);
+
+        if (isCaller) {
+          await CallService.createOffer(peerConnection, socket, roomId);
+        }
+
+        // Handle incoming offer
+        socket.on("call-offer", async ({ offer, roomId: incomingRoomId }) => {
+          if (roomId === incomingRoomId && !isCaller) {
+            await CallService.handleOffer(
+              peerConnection,
+              socket,
+              offer,
+              roomId,
+            );
+          }
+        });
+
+        // Handle answer
+        socket.on("call-answer", async ({ answer }) => {
+          if (peerConnection.currentRemoteDescription === null) {
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(answer),
+            );
+          }
+        });
+
+        // Handle ICE candidates
+        socket.on("ice-candidate", async ({ candidate }) => {
+          try {
+            await peerConnection.addIceCandidate(
+              new RTCIceCandidate(candidate),
+            );
+          } catch (e) {
+            console.error("Error adding ICE candidate:", e);
+          }
+        });
+      } catch (err) {
+        setError("Failed to initialize call");
+        console.error(err);
+      }
+    };
+
+    initializeCall();
+
+    return () => {
+      peerConnection?.close();
+      socket.off("call-offer");
+      socket.off("call-answer");
+      socket.off("ice-candidate");
+    };
+  }, [socket, roomId, isCaller]);
+
+  const handleEndCall = () => {
+    socket.emit("call:end", { roomId });
+    onEndCall();
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50">
-      <div className="relative h-full w-full">
-        {/* Remote Video (Full Screen) */}
-        <video
-          ref={remoteVideoRef}
-          autoPlay
-          playsInline
-          className="w-full h-full object-cover"
-        />
-
-        {/* Local Video (Picture-in-Picture) */}
-        <video
-          ref={localVideoRef}
-          autoPlay
-          playsInline
-          muted
-          className="absolute top-4 right-4 w-48 h-36 rounded-lg border-2 border-white"
-        />
-
-        {/* Controls */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
-          <Button
-            onClick={toggleAudio}
-            variant={isAudioEnabled ? "default" : "destructive"}
-            size="icon"
-            className="rounded-full h-12 w-12"
-          >
-            {isAudioEnabled ? <Mic /> : <MicOff />}
-          </Button>
-
-          <Button
-            onClick={toggleVideo}
-            variant={isVideoEnabled ? "default" : "destructive"}
-            size="icon"
-            className="rounded-full h-12 w-12"
-          >
-            {isVideoEnabled ? <Video /> : <VideoOff />}
-          </Button>
-
-          <Button
-            onClick={onLeaveCall}
-            variant="destructive"
-            size="icon"
-            className="rounded-full h-12 w-12"
-          >
-            <PhoneOff />
-          </Button>
+    <div className="fixed bottom-4 right-4 bg-background p-4 rounded-lg shadow-lg">
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col">
+          <span className="text-sm font-medium">
+            {isConnected ? "Connected" : "Connecting..."}
+          </span>
+          {error && <span className="text-destructive text-sm">{error}</span>}
         </div>
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={handleEndCall}
+          className="rounded-full"
+        >
+          <PhoneOff className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
 };
-
-export default VideoCall;

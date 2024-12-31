@@ -14,7 +14,7 @@ import UserProfile from "@/components/chat/ChatUserProfile";
 import { useRouter } from "next/navigation";
 import { CallInvitation } from "@/types/call";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
-import { CallService } from "@/lib/webrtc/call-service";
+import { CallService } from "@/lib/call/call-service";
 
 interface ChatContact {
   id: string;
@@ -246,7 +246,7 @@ export default function ChatInterface() {
       roomId,
       from: currentUser.username,
       to: selectedUser.username,
-      type: "video",
+      type: "voice",
     };
 
     CallService.sendCallInvitation(socket, invitation);

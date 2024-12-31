@@ -1,39 +1,14 @@
-import { SocketManager } from "./socket-manager";
+import { Socket } from "socket.io-client";
 
-export interface MediaConfig {
-  video: boolean;
-  audio: boolean;
+export interface WebRTCConfig {
+  socket: Socket;
+  onRemoteStream?: (stream: MediaStream) => void;
+  onError?: (error: Error) => void;
 }
 
-export interface CallEvents {
-  onTrack: (stream: MediaStream) => void;
-  onError: (error: Error) => void;
-}
-
-export interface CallInvitation {
-  roomId: string;
+export interface CallPayload {
   from: string;
   to: string;
-  type: "video" | "audio";
-}
-
-export interface RoomEvents {
-  remoteStream: (stream: MediaStream) => void;
-  userLeft: () => void;
-  error: (error: Error) => void;
-  roomJoined: () => void;
-  reconnecting: () => void;
-  reconnected: () => void;
-}
-
-export interface RoomManagerConfig {
-  socketManager: SocketManager;
+  fromName?: string;
   roomId: string;
-  rtcConfig: RTCConfiguration;
-}
-
-export interface CallState {
-  isInitialized: boolean;
-  error: string | null;
-  roomId: string | null;
 }

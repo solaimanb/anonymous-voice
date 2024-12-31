@@ -1,3 +1,43 @@
+"use client";
+
+import { useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { VoiceCall } from "@/components/chat/VideoCall";
+
+export default function VoiceCallPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const socket = useSocket();
+
+  const roomId = searchParams.get("roomId");
+  const isCaller = searchParams.get("caller") === "true";
+
+  useEffect(() => {
+    if (!roomId || !socket) {
+      router.push("/chat");
+    }
+  }, [roomId, socket, router]);
+
+  if (!roomId || !socket) {
+    return null;
+  }
+
+  const handleEndCall = () => {
+    router.push("/chat");
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <VoiceCall
+        socket={socket}
+        roomId={roomId}
+        isCaller={isCaller}
+        onEndCall={handleEndCall}
+      />
+    </div>
+  );
+}
+
 // "use client";
 
 // import React, { useEffect, useState } from "react";

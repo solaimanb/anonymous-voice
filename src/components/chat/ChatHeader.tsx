@@ -3,6 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Menu, Phone } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CallButton } from "../call/call-button";
 
 interface currentMentorUser {
   username: string;
@@ -39,6 +40,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   currentUser,
   onPhoneClick,
 }) => {
+  console.log("selectedUser:", selectedUser);
   return (
     <header className="flex items-center gap-3 p-4 border-b">
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
@@ -65,15 +67,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       {currentUser.role === "mentor" && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0"
-          onClick={onPhoneClick}
-        >
-          <Phone className="h-5 w-5" />
-          <span className="sr-only">Call</span>
-        </Button>
+        // <Button
+        //   variant="ghost"
+        //   size="icon"
+        //   className="shrink-0"
+        //   onClick={onPhoneClick}
+        // >
+        //   <Phone className="h-5 w-5" />
+        //   <span className="sr-only">Call</span>
+        // </Button>
+        <CallButton menteeId={selectedUser.id} />
       )}
     </header>
   );

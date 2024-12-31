@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { AuthService } from "@/services/auth.service";
+import { useChatStore } from "@/store/useChatStore";
 
 interface ChatContact {
   id: string;
@@ -32,6 +33,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setSession, setChatSelectedUser } = useChatStore();
 
   const currentActiveuser = React.useMemo(() => {
     try {
@@ -49,20 +51,72 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     [contacts, currentActiveuser],
   );
 
+  // const handleUserSelect = React.useCallback(
+  //   (contact: ChatContact) => {
+  //     setSelectedUser(contact);
+  //     const params = new URLSearchParams(searchParams);
+  //     if (currentActiveuser?.role === "mentor") {
+  //       params.set("mentee", contact.username);
+  //       params.set("mentor", currentActiveuser.userName);
+  //     } else if (currentActiveuser?.role === "mentee") {
+  //       params.set("mentor", contact.username);
+  //       params.set("mentee", currentActiveuser.userName);
+  //     }
+  //     router.push(`/chat?${params.toString()}`);
+
+  //     const mentor =
+  //       currentActiveuser?.role === "mentor"
+  //         ? currentActiveuser.userName
+  //         : contact.username;
+  //     const mentee =
+  //       currentActiveuser?.role === "mentee"
+  //         ? currentActiveuser.userName
+  //         : contact.username;
+
+  //     setSession(mentor, mentee);
+  //   },
+  //   [setSelectedUser, searchParams, currentActiveuser, router],
+  // );
+
   const handleUserSelect = React.useCallback(
     (contact: ChatContact) => {
-      setSelectedUser(contact);
-      const params = new URLSearchParams(searchParams);
-      if (currentActiveuser?.role === "mentor") {
-        params.set("mentee", contact.username);
-        params.set("mentor", currentActiveuser.userName);
-      } else if (currentActiveuser?.role === "mentee") {
-        params.set("mentor", contact.username);
-        params.set("mentee", currentActiveuser.userName);
+      if (!currentActiveuser) {
+        router.push("/login");
+        return;
       }
+
+      // Update local state
+      setSelectedUser(contact);
+
+      // Update URL parameters
+      const params = new URLSearchParams(searchParams);
+      const isMentor = currentActiveuser.role === "mentor";
+
+      params.set(
+        "mentee",
+        isMentor ? contact.username : currentActiveuser.userName,
+      );
+      params.set(
+        "mentor",
+        isMentor ? currentActiveuser.userName : contact.username,
+      );
       router.push(`/chat?${params.toString()}`);
+
+      // Update Zustand store
+      setSession(
+        isMentor ? currentActiveuser.userName : contact.username,
+        isMentor ? contact.username : currentActiveuser.userName,
+      );
+      setChatSelectedUser(contact);
     },
-    [setSelectedUser, searchParams, currentActiveuser, router],
+    [
+      setSelectedUser,
+      searchParams,
+      currentActiveuser,
+      router,
+      setSession,
+      setChatSelectedUser,
+    ],
   );
 
   return (
