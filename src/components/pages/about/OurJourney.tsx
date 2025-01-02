@@ -10,12 +10,13 @@ export default function OurJourney() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left Column - Image */}
-          <div className="rounded-xl border h-full overflow-hidden shadow-lg">
+          <div className="relative w-full h-96 rounded-xl border overflow-hidden shadow-lg">
             <Image
-              src="/placeholder.svg?height=600&width=800"
+              src="/images/who-we-are.png"
               alt="Supportive mental health consultation"
-              className="w-full h-full object-cover"
+              className="w-full object-cover"
               layout="fill"
+              loading="lazy"
             />
           </div>
 

@@ -8,10 +8,10 @@ export default function MissionSection() {
           Our Mission
         </h2>
 
-        <div className="bg-[#86C6C6]/10 rounded-[40px] overflow-hidden">
+        <div className="rounded-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             {/* Text Content */}
-            <div className="prose prose-lg text-gray-700">
+            <div className="prose prose-lg opacity-80">
               <p>
                 Contrary to popular belief, Lorem Ipsum is not simply random
                 text. It has roots in a piece of classical Latin literature from
@@ -38,12 +38,13 @@ export default function MissionSection() {
             </div>
 
             {/* Image */}
-            <div className="rounded-2xl overflow-hidden">
+            <div className="relative w-full h-96 rounded-2xl overflow-hidden">
               <Image
-                src="/placeholder.svg?height=600&width=800"
+                src="/images/our-mission.png"
                 alt="Group of diverse people in a library showing support"
-                className="w-full h-full object-cover"
+                className="object-cover"
                 layout="fill"
+                loading="lazy"
               />
             </div>
           </div>

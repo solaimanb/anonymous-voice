@@ -6,42 +6,42 @@ const members: TeamMember[] = [
   {
     name: "Sarah Thompson",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/sarah2.png",
   },
   {
     name: "John Martinez",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/john2.png",
   },
   {
     name: "Emily Chen",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/emily2.png",
   },
   {
     name: "Michael Patel",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/michael2.png",
   },
   {
     name: "Sarah Thompson",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/sarah3.png",
   },
   {
     name: "John Martinez",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/john3.png",
   },
   {
     name: "Emily Chen",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/emily3.png",
   },
   {
     name: "Michael Patel",
     role: "Volunteer",
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/michael3.png",
   },
 ];
 
@@ -56,12 +56,13 @@ export default function LeadershipSection() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-8">
           {members.map((member, index) => (
             <div key={index} className="flex flex-col items-center">
-              <div className="rounded-[24px] overflow-hidden mb-4 w-full aspect-square">
+              <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-4">
                 <Image
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="object-cover"
                   layout="fill"
+                  loading="lazy"
                 />
               </div>
               <h3 className="font-medium text-gray-900 text-center">

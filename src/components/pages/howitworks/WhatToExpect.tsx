@@ -1,39 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield, Heart, Lightbulb, Clock, FileText } from "lucide-react";
+import Image from "next/image";
 
 interface ExpectationCard {
   id: number;
   title: string;
-  icon: JSX.Element;
+  image: string;
 }
 
 const expectations: ExpectationCard[] = [
   {
     id: 1,
     title: "Confidentiality & Privacy",
-    icon: <Shield className="w-8 h-8" />,
+    image: "/images/confidentiality.png",
   },
   {
     id: 2,
     title: "Empathy & Compassion",
-    icon: <Heart className="w-8 h-8" />,
+    image: "/images/empathy.png",
   },
   {
     id: 3,
     title: "Expert Guidance",
-    icon: <Lightbulb className="w-8 h-8" />,
+    image: "/images/guidance.png",
   },
   {
     id: 4,
     title: "Flexible Support",
-    icon: <Clock className="w-8 h-8" />,
+    image: "/images/support.png",
   },
   {
     id: 5,
     title: "Resources & Referrals",
-    icon: <FileText className="w-8 h-8" />,
+    image: "/images/resources.png",
   },
 ];
 
@@ -80,8 +80,13 @@ export default function WhatToExpect() {
               variants={itemVariants}
             >
               <div className="rounded-2xl border border-[#8CD7D0]/30 p-1 mb-4 w-full max-w-[200px]">
-                <div className="aspect-square rounded-xl bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0]">
-                  {card.icon}
+                <div className="relative w-full h-0 pb-[100%] rounded-xl bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0]">
+                  <Image
+                    src={card.image}
+                    alt={card.title}
+                    className="object-cover"
+                    layout="fill"
+                  />
                 </div>
               </div>
               <h3 className="text-center text-sm font-medium text-gray-700">

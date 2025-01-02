@@ -78,14 +78,7 @@ export default function Component() {
   return (
     <div className="w-full">
       <section className="w-full bg-[url('/texture-bg.png')] bg-cover bg-center">
-        {/* Top Banner */}
-        <div className="w-full bg-[#8CD7D0] relative py-4">
-          <div className="absolute top-0 left-0 w-24 h-24 bg-[url('/leaf-decoration.svg')] opacity-30" />
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[url('/leaf-decoration.svg')] opacity-30 transform scale-x-[-1]" />
-          <h2 className="text-white text-2xl font-medium text-center">
-            Easy Steps to Access Support
-          </h2>
-        </div>
+        {/* <TitleHeader title="Easy Steps to Access Support" /> */}
 
         <div className="container max-w-2xl mx-auto px-4 py-12">
           {/* Subtitle */}
