@@ -23,25 +23,25 @@ const volunteers: Volunteer[] = [
     id: 1,
     name: "Sarah Thompson",
     title: "Volunteer",
-    image: "https://via.placeholder.com/600x400",
+    image: "/images/sarah.png",
   },
   {
     id: 2,
     name: "John Martinez",
     title: "Volunteer",
-    image: "https://via.placeholder.com/600x400",
+    image: "/images/john.png",
   },
   {
     id: 3,
     name: "Emily Chen",
     title: "Volunteer",
-    image: "https://via.placeholder.com/600x400",
+    image: "/images/emily.png",
   },
   {
     id: 4,
     name: "Michael Patel",
     title: "Volunteer",
-    image: "https://via.placeholder.com/600x400",
+    image: "/images/michael.png",
   },
 ];
 

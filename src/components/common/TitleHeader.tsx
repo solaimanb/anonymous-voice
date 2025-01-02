@@ -1,12 +1,11 @@
 import React from "react";
 
 interface TitleHeaderProps {
-  getHeaderText: (() => string) | string;
+  title: (() => string) | string;
 }
 
-const TitleHeader: React.FC<TitleHeaderProps> = ({ getHeaderText }) => {
-  const headerText =
-    typeof getHeaderText === "function" ? getHeaderText() : getHeaderText;
+const TitleHeader: React.FC<TitleHeaderProps> = ({ title }) => {
+  const headerText = typeof title === "function" ? title() : title;
 
   return (
     <div className="relative mb-8 w-full">
@@ -21,7 +20,7 @@ const TitleHeader: React.FC<TitleHeaderProps> = ({ getHeaderText }) => {
           <div className="absolute inset-0 bg-[#98D9D9] rounded-full translate-x-1/4 translate-y-1/4 scale-75" />
         </div>
       </div>
-      <h1 className="relative text-center text-white text-2xl md:text-3xl font-semibold py-6">
+      <h1 className="relative text-center text-white text-2xl py-10 md:text-3xl font-semibold">
         {headerText}
       </h1>
     </div>

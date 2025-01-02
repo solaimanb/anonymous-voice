@@ -49,7 +49,7 @@ export default function Session() {
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
       {/* Header Section */}
-      <TitleHeader getHeaderText={getHeaderText} />
+      <TitleHeader title={getHeaderText} />
 
       <div className="max-w-7xl mx-auto">
         <h2 className="text-xl text-gray-600 mb-6">

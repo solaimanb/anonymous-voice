@@ -9,7 +9,7 @@ import QuotationsSection from "@/components/pages/about/QuotationsSection";
 const AboutPage = () => {
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
-      <TitleHeader getHeaderText="Want To Know More About Us?" />
+      <TitleHeader title="Want To Know More About Us?" />
       <OurJourney />
       <LeadershipSection />
       <MissionSection />

@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { VideoSection } from "../stat/VideoSection";
 
 export default function WhyAnonymousVoice() {
   return (
-    <section className="w-full px-4 py-16 md:py-24 bg-white overflow-hidden">
+    <section className="w-full px-4 py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left Column */}
@@ -16,7 +17,7 @@ export default function WhyAnonymousVoice() {
               <br />
               Trusted Mental Health Support
             </h1>
-            <p className="text-gray-700 text-lg leading-relaxed max-w-xl">
+            <p className="text-lg leading-relaxed max-w-xl">
               At Anonymous Voice, we believe that every voice deserves to be
               heard, especially when it comes to mental health. We are dedicated
               to creating a safe, supportive space where individuals can seek
@@ -40,7 +41,7 @@ export default function WhyAnonymousVoice() {
             </div>
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden">
               <Image
-                src="/placeholder.svg?height=800&width=1000"
+                src="/images/why-av.png"
                 alt="Mental health professionals in a supportive group session"
                 className="w-full h-full object-cover"
                 layout="fill"
@@ -49,6 +50,10 @@ export default function WhyAnonymousVoice() {
           </div>
         </div>
       </div>
+      <VideoSection
+        imageUrl="/images/why-av-vid.png"
+        videoUrl="/meditation-video.mp4"
+      />
     </section>
   );
 }

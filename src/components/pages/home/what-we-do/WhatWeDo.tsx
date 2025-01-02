@@ -17,12 +17,13 @@ interface WhatWeDoProps {
   trainingSteps: TrainingStep[];
 }
 
-const WhatWeDo = ({
-  title = "What We Do",
-  subtitle = "How Our Volunteers Are Trained",
-  description = "A short paragraph introducing the work done by volunteers, highlighting the training they receive and how that equips them to help users.",
-  videoThumbnail = "https://via.placeholder.com/600x400",
-  trainingSteps = [
+const whatWeDoData: WhatWeDoProps = {
+  title: "What We Do",
+  subtitle: "How Our Volunteers Are Trained",
+  description:
+    "A short paragraph introducing the work done by volunteers, highlighting the training they receive and how that equips them to help users.",
+  videoThumbnail: "/images/what-we-do.png",
+  trainingSteps: [
     {
       title: "Initial Screening",
       description:
@@ -39,7 +40,12 @@ const WhatWeDo = ({
         "Continuous learning through workshops and mental health experts.",
     },
   ],
-}: WhatWeDoProps) => {
+};
+
+export default function WhatWeDo() {
+  const { title, subtitle, description, videoThumbnail, trainingSteps } =
+    whatWeDoData;
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -148,6 +154,4 @@ const WhatWeDo = ({
       </motion.div>
     </section>
   );
-};
-
-export default WhatWeDo;
+}
