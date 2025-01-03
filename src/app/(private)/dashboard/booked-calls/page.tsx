@@ -62,13 +62,13 @@ export default function BookedCallsPage() {
         emptyMessage="No pending requests"
       />
 
-      <AppointmentSection
+      {/* <AppointmentSection
         title="Confirmed User"
         description="List of confirmed and running calls"
         appointments={appointmentsByStatus.confirmed}
         appointmentType="Booking Call"
         emptyMessage="No confirmed bookings"
-      />
+      /> */}
 
       {/* <AppointmentSection
         title="Completed Calls"

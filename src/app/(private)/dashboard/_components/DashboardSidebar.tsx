@@ -29,7 +29,7 @@ const mentorNavItems: NavItem[] = [
   },
   {
     title: "Messages",
-    href: "/dashboard/messages",
+    href: "/chat",
     icon: <MessageSquare size={20} />,
   },
   {

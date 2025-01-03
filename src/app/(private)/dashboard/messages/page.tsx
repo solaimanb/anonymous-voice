@@ -8,6 +8,8 @@ import { AppointmentSection } from "../booked-calls/_components/AppointmentSecti
 export default function Messages() {
   const { appointments, isLoading, refetch } = useAppointments();
 
+  console.log("Appointments:", appointments);
+
   const chatAppointments = appointments.filter(
     (appointment) => appointment.appointmentType === "Chat",
   );
