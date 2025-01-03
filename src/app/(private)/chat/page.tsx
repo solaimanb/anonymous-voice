@@ -58,6 +58,8 @@ export default function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
 
+  console.log("Appointment users:", users);
+
   const currentActiveUser = AuthService.getStoredUser();
   if (!currentActiveUser || !currentActiveUser.userName) {
     throw new Error("User is not authenticated or username is missing");
@@ -220,7 +222,7 @@ export default function ChatInterface() {
       socket.off("call:accept");
       socket.off("call:reject");
     };
-  }, [socket]);
+  }, [socket, router]);
 
   const handleAcceptCall = () => {
     if (!incomingCall || !socket) return;

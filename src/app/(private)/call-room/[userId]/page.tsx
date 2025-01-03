@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,12 +10,24 @@ import { WebRTCService } from "@/lib/webrtc/webrtc-service";
 import { SOCKET_EVENTS } from "@/lib/webrtc/constants";
 import { Mic, MicOff, PhoneOff } from "lucide-react";
 
-export default function CallRoom({ params }: { params: { roomId: string } }) {
+interface CallRoomProps {
+  params: {
+    roomId: string;
+  };
+}
+
+export default function CallRoom({ params }: CallRoomProps) {
   const [isMuted, setIsMuted] = useState(false);
   const webRTCRef = useRef<WebRTCService | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const router = useRouter();
   const { toast } = useToast();
+
+  const handleEndCall = useCallback(() => {
+    webRTCRef.current?.endCall();
+    socket.emit(SOCKET_EVENTS.CALL_END, { roomId: params.roomId });
+    router.push("/chat");
+  }, [params.roomId, router]);
 
   useEffect(() => {
     webRTCRef.current = new WebRTCService({
@@ -41,13 +53,7 @@ export default function CallRoom({ params }: { params: { roomId: string } }) {
       webRTCRef.current?.endCall();
       socket.off(SOCKET_EVENTS.CALL_END);
     };
-  }, []);
-
-  const handleEndCall = () => {
-    webRTCRef.current?.endCall();
-    socket.emit(SOCKET_EVENTS.CALL_END, { roomId: params.roomId });
-    router.push("/chat");
-  };
+  }, [handleEndCall, toast]);
 
   const toggleMute = () => {
     const tracks = webRTCRef.current?.localStream?.getAudioTracks();
