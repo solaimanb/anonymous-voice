@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { VoiceCall } from "@/components/chat/VideoCall";
+import { VoiceCall } from "@/components/chat/VoiceCall";
 
 export default function VoiceCallPage() {
   const searchParams = useSearchParams();
