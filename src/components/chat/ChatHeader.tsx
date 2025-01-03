@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Menu, Phone } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CallButton } from "../call/call-button";
 
@@ -38,7 +38,6 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   setIsSidebarOpen,
   lastActiveTime,
   currentUser,
-  onPhoneClick,
 }) => {
   console.log("selectedUser:", selectedUser);
   return (
