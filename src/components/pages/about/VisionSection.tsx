@@ -4,14 +4,14 @@ export default function VisionSection() {
   return (
     <section className="w-full px-4 py-16">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-medium text-center text-[#9B8ACB] mb-12">
+        <h2 className="text-3xl font-bold text-center text-violet mb-8">
           Our Vision
         </h2>
 
-        <div className="rounded-[40px] overflow-hidden">
+        <div className="rounded-xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             {/* Text Content */}
-            <div className="prose prose-lg opacity-80">
+            <div className="prose prose-lg text-muted-foreground text-sm">
               <p>
                 Contrary to popular belief, Lorem Ipsum is not simply random
                 text. It has roots in a piece of classical Latin literature from

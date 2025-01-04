@@ -10,7 +10,7 @@ import WhyAnonymousVoice from "@/components/pages/home/why/WhyAnonymousVoice";
 
 export default function Page() {
   return (
-    <div>
+    <div className="[url('/images/watermark_bg.png')]">
       <Hero />
       <WhoWeAre />
       <WhatWeDo />

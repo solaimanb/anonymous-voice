@@ -104,15 +104,16 @@ const MentorRegistrationForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="w-full max-w-2xl mx-auto shadow">
+      <Card className="w-full max-w-3xl mx-auto shadow space-y-6">
         <CardHeader>
-          <h2 className="text-2xl font-bold text-center text-soft-paste-dark">
-            Mentor Registration
+          <h2 className="text-2xl font-bold text-center text-violet">
+            Apply Now
           </h2>
           <p className="text-center text-muted-foreground mt-2 text-sm">
-            Join our community of expert mentors
+            Apply now to become a Listener or join our Placement Program.
           </p>
         </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -291,7 +292,7 @@ const MentorRegistrationForm = () => {
         </CardContent>
         <CardFooter>
           <Button
-            className="w-full bg-soft-paste-dark-hover font-bold"
+            className="w-full bg-soft-paste font-bold"
             onClick={form.handleSubmit(onSubmit)}
             disabled={isLoading}
           >

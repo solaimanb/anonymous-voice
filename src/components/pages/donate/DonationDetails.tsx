@@ -4,7 +4,7 @@ export default function DonationDetails() {
   return (
     <section className="w-full px-4 py-16">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-medium text-center text-[#9B8ACB] mb-12">
+        <h1 className="text-2xl font-bold text-center text-violet mb-12">
           Donation Details
         </h1>
 
@@ -12,7 +12,7 @@ export default function DonationDetails() {
           {/* Bank Details */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-[#86C6C6]">
+              <CardTitle className="text-lg text-soft-paste">
                 Bank Details
               </CardTitle>
             </CardHeader>
@@ -42,7 +42,7 @@ export default function DonationDetails() {
           {/* Online Banking Details */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-[#86C6C6]">
+              <CardTitle className="text-lg text-soft-paste">
                 Online Banking Details
               </CardTitle>
             </CardHeader>
@@ -68,7 +68,7 @@ export default function DonationDetails() {
         </div>
 
         {/* Thank You Message */}
-        <div className="border border-blue-300 rounded-lg p-6 text-gray-700 leading-relaxed">
+        <div className="rounded-xl p-6 text-muted-foreground bg-soft-paste-light-hover leading-relaxed text-sm">
           Thank you for your generous donation to Anonymous Voice. Your support
           is invaluable in our mission to promote mental health awareness and
           provide essential resources to those in need. With your contribution,

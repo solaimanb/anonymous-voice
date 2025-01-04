@@ -48,7 +48,7 @@ export default function WhoWeAre() {
   };
 
   return (
-    <section className="relative w-full max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-12 space-y-6 overflow-hidden">
+    <section className="relative w-full max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-12 space-y-10 overflow-hidden">
       <motion.h2
         className="text-2xl sm:text-3xl font-bold text-violet-dark text-center"
         {...fadeIn}
@@ -67,10 +67,10 @@ export default function WhoWeAre() {
       </motion.div>
 
       {/* Main Content Container */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-12">
+      <div className="flex flex-col lg:flex-row items-center lg:space-x-12 gap-6">
         {/* Image Container */}
         <motion.div
-          className="relative w-full lg:w-1/2 aspect-[4/2] lg:aspect-[12/7] rounded-2xl overflow-hidden mb-8 lg:mb-0"
+          className="relative w-full lg:w-1/2 aspect-[4/2] lg:aspect-[12/7] max-w-2xl rounded-2xl overflow-hidden bg-violet-200 p-2"
           {...fadeIn}
         >
           <Image

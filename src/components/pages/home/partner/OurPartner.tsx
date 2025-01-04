@@ -38,9 +38,9 @@ const partners: Partner[] = [
 
 export default function OurPartner({ title }: PartnersProps) {
   return (
-    <section className="w-full py-16">
+    <section className="w-full py-16 lg:py-20">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-medium text-center text-[#9B8ACB] mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-violet mb-12">
           {title}
         </h2>
 
@@ -52,7 +52,7 @@ export default function OurPartner({ title }: PartnersProps) {
                 className="flex-shrink-0 w-24 md:w-32 aspect-square relative group transition-transform duration-200 hover:scale-105 mx-10"
               >
                 <div className="absolute inset-0 rounded-2xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-slate-200 rounded-2xl shadow p-4 aspect-square">
+                <div className="relative rounded-2xl aspect-square">
                   <Image
                     src={partner.logo}
                     alt={partner.alt}
