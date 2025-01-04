@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -115,7 +114,7 @@ export default function HonourableVolunteers() {
         </Swiper>
       </div>
 
-      <div className="flex justify-center mt-8">
+      {/* <div className="flex justify-center mt-8">
         <Button
           variant="outline"
           className="bg-soft-paste text-white font-semibold border-none"
@@ -123,7 +122,7 @@ export default function HonourableVolunteers() {
         >
           See More
         </Button>
-      </div>
+      </div> */}
     </section>
   );
 }
