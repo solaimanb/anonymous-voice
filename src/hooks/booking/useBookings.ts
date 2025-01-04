@@ -9,7 +9,7 @@ interface UseBookingsReturn {
   cancelledBookings: Booking[];
   loading: boolean;
   error: Error | null;
-  handleAccept: (bookingId: string) => Promise<void>;
+  handleAccept: (bookingId: string, appointmentType: string) => Promise<void>;
   handleReject: (bookingId: string) => Promise<void>;
   handleChat: (bookingId: string) => Promise<void>;
   refreshBookings: () => Promise<void>;
@@ -36,12 +36,17 @@ export function useBookings(): UseBookingsReturn {
     }
   };
 
-  const handleAccept = async (bookingId: string) => {
+  const handleAccept = async (bookingId: string, appointmentType: string) => {
     try {
-      await updateBookingStatus(bookingId, "confirmed");
-      refreshBookings();
+      const status =
+        appointmentType === "chat" || appointmentType === "quick-call"
+          ? "confirmed"
+          : "pending";
+
+      await updateBookingStatus(bookingId, status);
+      await refreshBookings();
     } catch (error) {
-      console.log(error);
+      console.error("Error accepting booking:", error);
     }
   };
 

@@ -37,11 +37,11 @@ const mentorNavItems: NavItem[] = [
     href: "/dashboard/notifications",
     icon: <Mail size={20} />,
   },
-  {
-    title: "Profile",
-    href: "/dashboard/profile",
-    icon: <User size={20} />,
-  },
+  // {
+  //   title: "Profile",
+  //   href: "/dashboard/profile",
+  //   icon: <User size={20} />,
+  // },
 ];
 
 const adminNavItems: NavItem[] = [

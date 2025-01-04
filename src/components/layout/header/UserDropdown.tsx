@@ -18,11 +18,11 @@ const roleDropdownItems = {
   mentee: [],
   mentor: [
     { label: "Dashboard", href: "/dashboard/booked-calls" },
-    { label: "Settings", href: "/settings" },
+    // { label: "Settings", href: "/settings" },
   ],
   admin: [
     { label: "Dashboard", href: "/dashboard/mentors" },
-    { label: "Settings", href: "/settings" },
+    // { label: "Settings", href: "/settings" },
     { label: "User Management", href: "/admin/users" },
     { label: "Analytics", href: "/admin/analytics" },
   ],

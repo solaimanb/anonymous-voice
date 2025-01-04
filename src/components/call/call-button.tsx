@@ -8,12 +8,18 @@ import { socket } from "@/lib/webrtc/socket";
 import { SOCKET_EVENTS } from "@/lib/webrtc/constants";
 import { useChatStore } from "@/store/useChatStore";
 
-export function CallButton() {
+interface CallButtonProps {
+  menteeId: string;
+}
+
+export function CallButton({ menteeId }: CallButtonProps) {
   const { toast } = useToast();
   const router = useRouter();
   const { selectedUser, mentor, mentee } = useChatStore();
 
   const handleCall = () => {
+    console.log("Intend to call:", menteeId);
+
     if (!selectedUser?.id) {
       toast({
         title: "Error",

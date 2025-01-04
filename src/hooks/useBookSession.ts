@@ -72,7 +72,8 @@ export const useBookSession = () => {
     currentUser: UserInfo,
   ): AppointmentPayload => ({
     appointmentType: bookingStore.appointmentType,
-    status: "pending",
+    status:
+      bookingStore.appointmentType === "Booking Call" ? "pending" : "confirmed",
     content: createAppointmentContent(bookingStore.appointmentType),
     selectedSlot: {
       time:
@@ -121,6 +122,10 @@ export const useBookSession = () => {
         return;
       }
 
+      if (!currentUser.isVerified) {
+        currentUser.isVerified = false;
+      }
+
       const validationErrors = getValidationRules(bookingStore.appointmentType)
         .filter((rule) => rule.condition)
         .map((rule) => rule.message);
@@ -129,7 +134,9 @@ export const useBookSession = () => {
         throw new BookingError("VALIDATION_ERROR", validationErrors.join(", "));
       }
 
-      const appointmentPayload = createAppointmentPayload(currentUser);
+      const appointmentPayload = createAppointmentPayload(
+        currentUser as UserInfo,
+      );
       const response =
         await AppointmentService.createAppointment(appointmentPayload);
 
