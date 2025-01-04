@@ -20,6 +20,16 @@ export default function ListenerSection() {
     "Be part of a supportive and purpose-driven team.",
   ];
 
+  const responsibilities = [
+    "Patiently listening to individuals who reach out for support.",
+    "Responding with empathy and understanding, creating a safe and non-judgmental space.",
+    "Maintaining strict confidentiality of all conversations.",
+    "Providing information about mental health resources and support services.",
+    "Attend training sessions to develop and enhance listening skills.",
+    "Report any concerns about user safety following the organization’s protocols.",
+    "Collaborate with a team of listeners and coordinators to ensure quality service.",
+  ];
+
   return (
     <section className="w-full px-4 py-16">
       <div className="max-w-6xl mx-auto">
@@ -40,6 +50,21 @@ export default function ListenerSection() {
               will play a crucial role in offering empathetic, non-judgmental,
               and active listening to our users.
             </p>
+
+            {/* Role of a Volunteer Listener Section */}
+            <div className="space-y-8">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Role of a Volunteer Listener
+              </h3>
+              <ul className="space-y-3 text-sm font-medium">
+                {responsibilities.map((responsibility, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <Check className="w-4 h-4 text-soft-paste mt-1 flex-shrink-0" />
+                    <span className="text-gray-600">{responsibility}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {/* Requirements Section */}
             <div className="grid grid-cols-2 gap-2">
