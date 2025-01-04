@@ -1,4 +1,5 @@
 import TitleHeader from "@/components/common/TitleHeader";
+import HowToApplySection from "@/components/pages/mentor-reg/HowToApplySection";
 import ListenerFAQ from "@/components/pages/mentor-reg/ListenerFAQ";
 import ListenerSection from "@/components/pages/mentor-reg/ListenerSection";
 import MentorRegistrationForm from "@/components/pages/mentor-reg/MentorRegistrationForm";
@@ -9,6 +10,7 @@ const MentorRegistration = () => {
       <TitleHeader title="Become a Listener and Make a Change" />
       <ListenerSection />
       <ListenerFAQ />
+      <HowToApplySection />
       <MentorRegistrationForm />
     </div>
   );
