@@ -62,7 +62,7 @@ export default function WhatToExpect() {
   return (
     <section className="w-full py-12 md:py-24">
       <div className="container px-4 md:px-6 mx-auto">
-        <h2 className="text-3xl font-medium text-center text-[#A393EB] mb-12">
+        <h2 className="text-2xl font-bold text-center text-violet mb-12">
           What to Expect From Us
         </h2>
 
@@ -79,8 +79,8 @@ export default function WhatToExpect() {
               className="flex flex-col items-center"
               variants={itemVariants}
             >
-              <div className="rounded-2xl border border-[#8CD7D0]/30 p-1 mb-4 w-full max-w-[200px]">
-                <div className="relative w-full h-0 pb-[100%] rounded-xl bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0]">
+              <div className="rounded-2xl p-1 mb-4 w-full max-w-40">
+                <div className="relative w-full h-0 pb-[100%] rounded-xl flex items-center justify-center">
                   <Image
                     src={card.image}
                     alt={card.title}
@@ -89,7 +89,7 @@ export default function WhatToExpect() {
                   />
                 </div>
               </div>
-              <h3 className="text-center text-sm font-medium text-gray-700">
+              <h3 className="text-center text-sm font-medium text-muted-foreground">
                 {card.title}
               </h3>
             </motion.div>

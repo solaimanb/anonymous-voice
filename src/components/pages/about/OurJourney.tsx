@@ -4,13 +4,13 @@ export default function OurJourney() {
   return (
     <section className="w-full px-4 py-16 md:py-24">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-medium text-center text-[#9B8ACB] mb-12">
+        <h2 className="text-3xl sm:text-3xl font-medium text-center text-[#9B8ACB] mb-12">
           Our Journey
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left Column - Image */}
-          <div className="relative w-full h-96 rounded-xl border overflow-hidden shadow-lg">
+          <div className="relative w-full h-96 lg:h-full rounded-xl border overflow-hidden shadow-lg">
             <Image
               src="/images/who-we-are.png"
               alt="Supportive mental health consultation"
@@ -22,11 +22,11 @@ export default function OurJourney() {
 
           {/* Right Column - Content */}
           <div className="space-y-6">
-            <h3 className="text-3xl md:text-4xl font-medium text-[#86C6C6] leading-tight">
+            <h3 className="text-2xl md:text-3xl font-bold text-soft-paste leading-tight">
               Committed to Your Mental Wellness with Compassionate Care
             </h3>
 
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-4 text-muted-foreground text-sm">
               <p className="leading-relaxed">
                 At Anonymous Voice, we believe that every voice deserves to be
                 heard, especially when it comes to mental health. We are

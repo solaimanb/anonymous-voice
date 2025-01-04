@@ -62,11 +62,11 @@ const mainNavItems: NavItem[] = [
     name: "Apply",
     href: "/apply",
     dropdown: [
-      {
-        id: "quote",
-        label: "Get a Quote",
-        link: "/get-a-quote",
-      },
+      // {
+      //   id: "quote",
+      //   label: "Get a Quote",
+      //   link: "/get-a-quote",
+      // },
       {
         id: "mentor",
         label: "Apply for Mentor",
@@ -319,7 +319,7 @@ const Header: React.FC = () => {
         </SheetHeader>
 
         <nav className="p-4 overflow-y-auto flex-grow">
-          <motion.ul className="space-y-2">
+          <motion.ul className="space-y-2 font-semibold">
             <AnimatePresence>
               {combinedNavItems.map((item) => (
                 <MobileAccordionItem
@@ -349,7 +349,7 @@ const Header: React.FC = () => {
         <div key={item.name} className="relative group">
           {hasDropdown(item) ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+              <DropdownMenuTrigger className="inline-flex items-center px-1 pt-1 text-sm font-semibold text-gray-500 hover:text-gray-700">
                 {item.name}
                 <ChevronDown className="ml-1 h-4 w-4" />
               </DropdownMenuTrigger>

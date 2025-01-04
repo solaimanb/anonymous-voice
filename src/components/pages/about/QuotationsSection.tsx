@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import QuoteCard from "./QuoteCard";
 
 const quotes = [
@@ -10,12 +9,12 @@ const quotes = [
 export default function QuotationsSection() {
   return (
     <section className="w-full px-4 py-16">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-medium text-center text-[#9B8ACB] mb-6">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-center text-violet mb-6">
           Our Quotations
         </h2>
 
-        <p className="text-2xl md:text-3xl text-center text-[#86C6C6] font-medium mb-12">
+        <p className="text-xl text-center text-soft-paste font-medium mb-12">
           &quot;Every story deserves a listener.&quot;
         </p>
 
@@ -25,14 +24,14 @@ export default function QuotationsSection() {
           ))}
         </div>
 
-        <div className="flex justify-center mt-8">
+        {/* <div className="flex justify-center mt-8">
           <Button
             variant="outline"
-            className="bg-[#86C6C6] text-white hover:bg-[#78b7b7] border-0"
+            className="bg-soft-paste text-white font-bold border-0"
           >
             See More
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

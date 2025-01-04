@@ -1,5 +1,6 @@
 "use client";
 
+import TitleHeader from "@/components/common/TitleHeader";
 import WhatToExpect from "@/components/pages/howitworks/WhatToExpect";
 import { motion } from "framer-motion";
 import {
@@ -9,6 +10,7 @@ import {
   FileText,
   Heart,
 } from "lucide-react";
+import Image from "next/image";
 
 interface Step {
   id: number;
@@ -76,18 +78,24 @@ const itemVariants = {
 
 export default function Component() {
   return (
-    <div className="w-full">
-      <section className="w-full bg-[url('/texture-bg.png')] bg-cover bg-center">
-        {/* <TitleHeader title="Easy Steps to Access Support" /> */}
+    <div className="container mx-auto px-4 py-6">
+      <section className="w-full bg-[url('/images/watermark_bg.png')] bg-cover bg-center">
+        <TitleHeader title="Easy Steps to Access Support" />
 
         <div className="container max-w-2xl mx-auto px-4 py-12">
           {/* Subtitle */}
           <div className="text-center mb-8">
-            <h3 className="text-[#A393EB] text-2xl font-medium mb-4">
+            <h3 className="text-violet text-2xl font-bold mb-4">
               Step-by-Step Guideline
             </h3>
-            <div className="inline-flex items-center bg-[#8CD7D0] rounded-full px-6 py-2 text-white">
-              Follow These Simple Steps 👋
+            <div className="inline-flex items-center bg-soft-paste rounded-full px-6 py-2 text-white gap-4">
+              Follow These Simple Steps
+              <Image
+                src="/images/arrow_hand.png"
+                alt="Arrow Hand"
+                width={10}
+                height={10}
+              />
             </div>
           </div>
 
@@ -102,19 +110,23 @@ export default function Component() {
             {steps.map((step) => (
               <motion.div
                 key={step.id}
-                className="flex flex-col items-center text-center"
+                className="flex flex-col items-center text-center space-y-4"
                 variants={itemVariants}
               >
                 <div className="rounded-lg border-2 border-[#A393EB] px-6 py-1 text-[#A393EB] font-medium mb-4">
                   Step {step.id}
                 </div>
-                <div className="w-16 h-16 rounded-full bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0] mb-4">
-                  {step.icon}
+
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-[#8CD7D0]/20 flex items-center justify-center text-[#8CD7D0]">
+                    {step.icon}
+                  </div>
+                  <h4 className="text-base font-bold text-gray-800">
+                    {step.title}
+                  </h4>
                 </div>
-                <h4 className="text-lg font-medium text-gray-800 mb-2">
-                  {step.title}
-                </h4>
-                <p className="text-sm text-gray-600 max-w-md">
+
+                <p className="text-sm text-muted-foreground max-w-md">
                   {step.description}
                 </p>
               </motion.div>
