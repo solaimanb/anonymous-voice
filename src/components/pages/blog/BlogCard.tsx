@@ -17,12 +17,12 @@ export default function BlogCard({
 }: BlogCardProps) {
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-lg">
-      <div className="aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden">
         <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform hover:scale-105"
-          layout="fill"
+          className="object-cover transition-transform hover:scale-105"
+          fill
         />
       </div>
       <CardContent className="p-4">
