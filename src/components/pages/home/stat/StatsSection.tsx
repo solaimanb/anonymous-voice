@@ -16,19 +16,21 @@ export function StatsSection({ stats }: StatsSectionProps) {
   };
 
   return (
-    <div className="w-full bg-[#86C6C6]/20 py-16 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="w-full bg-soft-paste-light-active py-16 px-4">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white/50 backdrop-blur-sm space-y-2"
+              className="flex flex-col items-center justify-center p-6 rounded-2xl bg-soft-paste-light backdrop-blur-sm space-y-2"
             >
-              <div className="text-[#86C6C6]">{getIcon(stat.icon)}</div>
+              <div className="text-soft-paste">{getIcon(stat.icon)}</div>
               <div className="text-4xl font-bold text-gray-800">
                 {stat.value}
               </div>
-              <div className="text-gray-600">{stat.label}</div>
+              <div className="text-sidebar-foreground text-sm">
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>

@@ -75,8 +75,8 @@ export default function WhatWeDo() {
             <div className="w-3 h-3 rounded-full bg-teal-500" />
           </div>
           <div>
-            <h4 className="font-medium text-lg">{step.title}:</h4>
-            <p className="text-muted-foreground">{step.description}</p>
+            <h4 className="text-sm font-bold">{step.title}:</h4>
+            <p className="text-muted-foreground text-sm">{step.description}</p>
           </div>
         </motion.li>
       ))}
@@ -89,18 +89,17 @@ export default function WhatWeDo() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid lg:grid-cols-2 gap-8 lg:gap-12"
+        className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
       >
         <motion.div variants={itemVariants} className="space-y-6">
-          <div className="space-y-2 text-center lg:text-start">
-            <h2 className="text-2xl md:text-4xl font-medium text-purple-500">
-              {title}
-            </h2>
-            <h3 className="text-xl md:text-3xl font-medium text-teal-500">
+          <div className="space-y-2 text-center lg:text-left">
+            <h2 className="text-2xl font-bold text-violet">{title}</h2>
+            <h3 className="text-xl md:text-3xl font-bold text-soft-paste">
               {subtitle}
             </h3>
           </div>
-          <p className="text-muted-foreground max-w-prose lg:hidden">
+
+          <p className="text-muted-foreground lg:hidden text-sm">
             {description}
           </p>
 
