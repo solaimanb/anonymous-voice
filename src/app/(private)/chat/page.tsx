@@ -49,7 +49,7 @@ export default function ChatInterface() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { appointments } = useAppointments();
+  const { appointments, refetch } = useAppointments();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [users, setUsers] = useState<ChatContact[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -57,8 +57,6 @@ export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
-
-  console.log("Appointment users:", users);
 
   const currentActiveUser = AuthService.getStoredUser();
   if (!currentActiveUser || !currentActiveUser.userName) {
@@ -248,7 +246,7 @@ export default function ChatInterface() {
       roomId,
       from: currentUser.username,
       to: selectedUser.username,
-      type: "voice",
+      type: "audio",
     };
 
     CallService.sendCallInvitation(socket, invitation);
@@ -330,7 +328,13 @@ export default function ChatInterface() {
       {/* User profile sidebar for larger screens */}
       {selectedUser && currentUser.role === "mentor" && (
         <aside className="hidden lg:block w-80 xl:w-96 border-l">
-          <UserProfile selectedUser={selectedUser} />
+          <UserProfile
+            selectedUser={selectedUser}
+            onStatusUpdate={() => {
+              setSelectedUser(null);
+              refetch();
+            }}
+          />
         </aside>
       )}
 
