@@ -277,21 +277,19 @@ const Header: React.FC = () => {
       {user ? (
         <div className="flex items-center gap-4 text-soft-paste">
           <Link href="/chat">
-            <Mail size={20} />
+            <Mail size={18} />
           </Link>
-          <Button variant="ghost" size="icon">
+          {/* <Button variant="ghost" size="icon">
             <Bell size={20} />
-          </Button>
+          </Button> */}
           <SheetTrigger onClick={() => setIsMobileMenuOpen(true)}>
-            <Menu size={20} />
+            <Menu size={24} />
           </SheetTrigger>
         </div>
       ) : (
-        <div className="flex items-center text-sm bg-soft-paste text-white font-bold rounded-lg space-x-2 px-4 py-2">
-          <Link href="/login">Login</Link>
-          <span>/</span>
-          <Link href="/signup">Sign Up</Link>
-        </div>
+        <SheetTrigger onClick={() => setIsMobileMenuOpen(true)}>
+          <Menu size={26} className="text-soft-paste-dark" />
+        </SheetTrigger>
       )}
     </div>
   );
@@ -328,6 +326,11 @@ const Header: React.FC = () => {
                   pathname={pathname}
                 />
               ))}
+              {/* <div className="flex items-center text-sm bg-soft-paste text-white font-bold rounded-lg space-x-2 px-4 py-2">
+                <Link href="/login">Login</Link>
+                <span>/</span>
+                <Link href="/signup">Sign Up</Link>
+              </div> */}
             </AnimatePresence>
           </motion.ul>
         </nav>

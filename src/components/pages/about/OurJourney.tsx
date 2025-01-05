@@ -2,9 +2,9 @@ import Image from "next/image";
 
 export default function OurJourney() {
   return (
-    <section className="w-full px-4 py-16 md:py-24">
+    <section className="w-full px-4">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl sm:text-3xl font-medium text-center text-[#9B8ACB] mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-violet mb-10">
           Our Journey
         </h2>
 
@@ -21,8 +21,8 @@ export default function OurJourney() {
           </div>
 
           {/* Right Column - Content */}
-          <div className="space-y-6">
-            <h3 className="text-2xl md:text-3xl font-bold text-soft-paste leading-tight">
+          <div className="space-y-6 text-center lg:text-start">
+            <h3 className="text-xl md:text-2xl font-bold text-soft-paste leading-tight">
               Committed to Your Mental Wellness with Compassionate Care
             </h3>
 

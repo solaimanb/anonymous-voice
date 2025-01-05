@@ -106,7 +106,7 @@ const MentorRegistrationForm = () => {
     <div className="container mx-auto px-4 py-8">
       <Card className="w-full max-w-3xl mx-auto shadow space-y-6">
         <CardHeader>
-          <h2 className="text-2xl font-bold text-center text-violet">
+          <h2 className="text-xl md:text-2xl font-bold text-center text-violet">
             Apply Now
           </h2>
           <p className="text-center text-muted-foreground mt-2 text-sm">

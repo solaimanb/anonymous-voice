@@ -51,33 +51,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     [contacts, currentActiveuser],
   );
 
-  // const handleUserSelect = React.useCallback(
-  //   (contact: ChatContact) => {
-  //     setSelectedUser(contact);
-  //     const params = new URLSearchParams(searchParams);
-  //     if (currentActiveuser?.role === "mentor") {
-  //       params.set("mentee", contact.username);
-  //       params.set("mentor", currentActiveuser.userName);
-  //     } else if (currentActiveuser?.role === "mentee") {
-  //       params.set("mentor", contact.username);
-  //       params.set("mentee", currentActiveuser.userName);
-  //     }
-  //     router.push(`/chat?${params.toString()}`);
-
-  //     const mentor =
-  //       currentActiveuser?.role === "mentor"
-  //         ? currentActiveuser.userName
-  //         : contact.username;
-  //     const mentee =
-  //       currentActiveuser?.role === "mentee"
-  //         ? currentActiveuser.userName
-  //         : contact.username;
-
-  //     setSession(mentor, mentee);
-  //   },
-  //   [setSelectedUser, searchParams, currentActiveuser, router],
-  // );
-
   const handleUserSelect = React.useCallback(
     (contact: ChatContact) => {
       if (!currentActiveuser) {
@@ -85,10 +58,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
         return;
       }
 
-      // Update local state
       setSelectedUser(contact);
 
-      // Update URL parameters
       const params = new URLSearchParams(searchParams);
       const isMentor = currentActiveuser.role === "mentor";
 
@@ -102,7 +73,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       );
       router.push(`/chat?${params.toString()}`);
 
-      // Update Zustand store
       setSession(
         isMentor ? currentActiveuser.userName : contact.username,
         isMentor ? contact.username : currentActiveuser.userName,
@@ -119,6 +89,32 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
     ],
   );
 
+  const getEmptyStateMessage = () => {
+    if (currentActiveuser?.role === "mentor") {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+          <p className="text-sm font-medium text-muted-foreground mb-2">
+            No Active Mentees
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Wait for mentees to book appointments with you
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-6 text-center">
+        <p className="text-sm font-medium text-muted-foreground mb-2">
+          No Active Appointments
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Book an appointment with a mentor to start chatting
+        </p>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="p-2.5 flex items-center gap-4">
@@ -131,42 +127,48 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </div>
 
       <ScrollArea className="flex-1 border-t mt-3">
-        {filteredContacts.map((contact) => (
-          <div
-            key={contact.id}
-            role="button"
-            aria-pressed={selectedUser?.username === contact.username}
-            className={cn(
-              "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-muted/40",
-              contact.isActive && "bg-accent",
-              selectedUser?.username === contact.username && "bg-blue-100",
-            )}
-            onClick={() => handleUserSelect(contact)}
-          >
-            <Avatar className="w-8 h-8 border rounded-full">
-              <AvatarImage src={contact.avatar} alt={contact.username} />
-              <AvatarFallback>{contact.username.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-medium truncate">{contact.username}</span>
-                {contact.mentorName && (
-                  <span className="text-sm text-muted-foreground ml-2">
-                    (Mentor: {contact.mentorName})
-                  </span>
+        {filteredContacts.length > 0
+          ? filteredContacts.map((contact) => (
+              <div
+                key={contact.id}
+                role="button"
+                aria-pressed={selectedUser?.username === contact.username}
+                className={cn(
+                  "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b border-muted/40",
+                  contact.isActive && "bg-accent",
+                  selectedUser?.username === contact.username && "bg-blue-100",
                 )}
-                {contact.isActive && (
-                  <span className="text-xs text-green-500 ml-auto">Active</span>
-                )}
+                onClick={() => handleUserSelect(contact)}
+              >
+                <Avatar className="w-8 h-8 border rounded-full">
+                  <AvatarImage src={contact.avatar} alt={contact.username} />
+                  <AvatarFallback>{contact.username.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium truncate">
+                      {contact.username}
+                    </span>
+                    {contact.mentorName && (
+                      <span className="text-sm text-muted-foreground ml-2">
+                        (Mentor: {contact.mentorName})
+                      </span>
+                    )}
+                    {contact.isActive && (
+                      <span className="text-xs text-green-500 ml-auto">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  {contact.lastMessage && (
+                    <p className="text-sm text-muted-foreground truncate">
+                      {contact.lastMessage}
+                    </p>
+                  )}
+                </div>
               </div>
-              {contact.lastMessage && (
-                <p className="text-sm text-muted-foreground truncate">
-                  {contact.lastMessage}
-                </p>
-              )}
-            </div>
-          </div>
-        ))}
+            ))
+          : getEmptyStateMessage()}
       </ScrollArea>
     </>
   );

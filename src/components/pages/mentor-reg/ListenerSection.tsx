@@ -31,19 +31,17 @@ export default function ListenerSection() {
   ];
 
   return (
-    <section className="w-full px-4 py-16">
+    <section className="w-full px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-violet mb-12">
-          Listener
-        </h1>
-        <h2 className="text-2xl font-bold text-center text-soft-paste">
+        <h1 className="text-3xl font-bold text-center text-violet">Listener</h1>
+        <h2 className="text-xl md:text-2xl font-bold text-center text-soft-paste mt-6">
           Become a Listener
         </h2>
 
         <div className="space-y-12 mt-4">
           {/* Text Content */}
           <div className="space-y-8">
-            <p className="text-muted-foreground leading-relaxed text-sm">
+            <p className="text-muted-foreground leading-relaxed text-sm text-center lg:text-start">
               Anonymous Voices is a youth-driven mental wellness organization in
               Bangladesh. We provide confidential support to individuals seeking
               a safe space to share their feelings. As a volunteer listener, you
@@ -67,7 +65,7 @@ export default function ListenerSection() {
             </div>
 
             {/* Requirements Section */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Required Qualifications
@@ -94,7 +92,7 @@ export default function ListenerSection() {
             </div>
 
             {/* Benefits Section */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Benefits

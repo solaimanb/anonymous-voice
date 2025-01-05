@@ -16,9 +16,9 @@ export default async function BlogPostPage({
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
       <article className="max-w-4xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-4">
+        <header className="mb-10">
+          <h1 className="text-2xl md:text-4xl font-bold mb-4">{post.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-4 text-sm">
             <span className="font-medium">{post.author}</span>
             <span>•</span>
             <time>{format(new Date(post.date), "MMMM dd, yyyy")}</time>
@@ -34,7 +34,7 @@ export default async function BlogPostPage({
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-muted rounded-full text-sm"
+                  className="px-3 py-1 bg-muted rounded-full text-xs"
                 >
                   {tag}
                 </span>

@@ -7,7 +7,7 @@ interface QuoteCardProps {
 export default function QuoteCard({ children }: QuoteCardProps) {
   return (
     <div
-      className="bg-soft-paste bg-opacity-80 rounded-xl p-6 relative overflow-hidden"
+      className="bg-soft-paste bg-opacity-80 rounded-xl px-6 py-8 relative overflow-hidden"
       style={{ backgroundImage: "url('/images/header_title_bg.png')" }}
     >
       {/* Decorative Corners */}

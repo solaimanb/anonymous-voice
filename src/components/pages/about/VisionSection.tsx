@@ -3,13 +3,13 @@ import Image from "next/image";
 export default function VisionSection() {
   return (
     <section className="w-full px-4 py-16">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-violet mb-8">
+      <div className="max-w-6xl mx-autos space-y-6 text-center lg:text-start">
+        <h2 className="text-2xl md:text-3xl font-bold text-violet">
           Our Vision
         </h2>
 
         <div className="rounded-xl overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Text Content */}
             <div className="prose prose-lg text-muted-foreground text-sm">
               <p>
@@ -21,6 +21,7 @@ export default function VisionSection() {
                 Ipsum passage, and going through the cites of the word in
                 classical literature, discovered the undoubtable source.
               </p>
+              <br />
               <p>
                 Contrary to popular belief, Lorem Ipsum is not simply random
                 text. It has roots in a piece of classical Latin literature from
