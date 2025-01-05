@@ -66,7 +66,7 @@ export default function Hero() {
       className={`${className}`}
     >
       <Button
-        className={`w-full md:w-auto ${variant} text-white font-bold`}
+        className={`w-full ${variant} text-white font-bold`}
         onClick={() => handleAction(actionType)}
       >
         <Icon className="w-4 h-4 mr-2" />

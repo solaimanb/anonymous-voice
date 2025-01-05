@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -67,18 +67,18 @@ export default function ApprovedMentors() {
     isActive: true,
   });
 
-  const handleEdit = () => {
-    console.log("Edit function called");
-    // setSelectedMentor(mentor)
-    // setPermissions({
-    //   canCreateCourses: mentor.canCreateCourses || false,
-    //   canReviewSubmissions: mentor.canReviewSubmissions || false,
-    //   canMentorStudents: mentor.canMentorStudents || false,
-    //   isFeatured: mentor.isFeatured || false,
-    //   isActive: mentor.isActive || true
-    // })
-    // setEditDialogOpen(true)
-  };
+  // const handleEdit = () => {
+  //   console.log("Edit function called");
+  //   setSelectedMentor(mentor);
+  //   setPermissions({
+  //     canCreateCourses: mentor.canCreateCourses || false,
+  //     canReviewSubmissions: mentor.canReviewSubmissions || false,
+  //     canMentorStudents: mentor.canMentorStudents || false,
+  //     isFeatured: mentor.isFeatured || false,
+  //     isActive: mentor.isActive || true,
+  //   });
+  //   setEditDialogOpen(true);
+  // };
 
   const handlePermissionUpdate = async () => {
     try {
@@ -145,7 +145,8 @@ export default function ApprovedMentors() {
                   <TableCell className="flex items-center gap-3">
                     <Avatar>
                       <AvatarImage
-                        src={mentor.profileImage}
+                        // src={mentor.profileImage}
+                        src="/images/avatar.png"
                         alt={mentor.name}
                       />
                       <AvatarFallback>{mentor.name[0]}</AvatarFallback>
@@ -160,7 +161,7 @@ export default function ApprovedMentors() {
                   <TableCell>{mentor.designation}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
+                      {/* <Button
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8 text-soft-paste-dark hover:bg-blue-50"
@@ -168,11 +169,12 @@ export default function ApprovedMentors() {
                       >
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
-                      </Button>
+                      </Button> */}
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 cursor-not-allowed"
+                        disabled
                         onClick={() => handleDeleteClick(mentor)}
                       >
                         <Trash2 className="h-4 w-4" />

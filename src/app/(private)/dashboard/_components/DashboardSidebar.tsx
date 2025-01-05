@@ -5,11 +5,10 @@ import {
   CalendarClock,
   Mail,
   MessageSquare,
-  User,
   Users,
-  Settings2,
-  FileText,
-  PenSquare,
+  // Settings2,
+  // FileText,
+  // PenSquare,
   UserPlus,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -55,21 +54,21 @@ const adminNavItems: NavItem[] = [
     href: "/dashboard/mentor-requests",
     icon: <UserPlus size={20} />,
   },
-  {
-    title: "Post A Blog",
-    href: "/dashboard/post-blog",
-    icon: <PenSquare size={20} />,
-  },
-  {
-    title: "Blog Management",
-    href: "/dashboard/blog-management",
-    icon: <FileText size={20} />,
-  },
-  {
-    title: "Data Customization",
-    href: "/dashboard/data-customization",
-    icon: <Settings2 size={20} />,
-  },
+  // {
+  //   title: "Post A Blog",
+  //   href: "/dashboard/post-blog",
+  //   icon: <PenSquare size={20} />,
+  // },
+  // {
+  //   title: "Blog Management",
+  //   href: "/dashboard/blog-management",
+  //   icon: <FileText size={20} />,
+  // },
+  // {
+  //   title: "Data Customization",
+  //   href: "/dashboard/data-customization",
+  //   icon: <Settings2 size={20} />,
+  // },
 ];
 
 export default function DashboardSidebar() {

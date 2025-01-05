@@ -13,8 +13,9 @@ import {
   Mail,
   Menu,
   MessageSquare,
-  Settings,
   User,
+  UserPlus,
+  Users,
 } from "lucide-react";
 import {
   Sheet,
@@ -59,20 +60,46 @@ const getMentorNavItems = (): NavItem[] => [
 
 const getAdminNavItems = (): NavItem[] => [
   {
-    title: "Mentors",
+    title: "All Mentors",
     href: "/dashboard/mentors",
-    icon: <User size={20} />,
+    icon: <Users size={20} />,
   },
   {
-    title: "Analytics",
-    href: "/dashboard/analytics",
-    icon: <CalendarClock size={20} />,
+    title: "Mentor Requests",
+    href: "/dashboard/mentor-requests",
+    icon: <UserPlus size={20} />,
   },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
-    icon: <Settings size={20} />,
-  },
+  // {
+  //   title: "Post A Blog",
+  //   href: "/dashboard/post-blog",
+  //   icon: <PenSquare size={20} />,
+  // },
+  // {
+  //   title: "Blog Management",
+  //   href: "/dashboard/blog-management",
+  //   icon: <FileText size={20} />,
+  // },
+  // {
+  //   title: "Data Customization",
+  //   href: "/dashboard/data-customization",
+  //   icon: <Settings2 size={20} />,
+  // },
+
+  // {
+  //   title: "Mentors",
+  //   href: "/dashboard/mentors",
+  //   icon: <User size={20} />,
+  // },
+  // {
+  //   title: "Analytics",
+  //   href: "/dashboard/analytics",
+  //   icon: <CalendarClock size={20} />,
+  // },
+  // {
+  //   title: "Settings",
+  //   href: "/dashboard/settings",
+  //   icon: <Settings size={20} />,
+  // },
 ];
 
 export default function DashboardHeader() {
@@ -96,26 +123,28 @@ export default function DashboardHeader() {
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
             <SheetTitle className="p-4 text-lg">{dashboardTitle}</SheetTitle>
+
             <Separator />
-            <nav className="flex flex-col gap-2 py-2">
+            <nav className="flex flex-col gap-2 py-2 px-2">
               {navItems.map((item) => (
                 <Link
-                  key={item.title}
-                  href={item.href}
+                  key={item?.title}
+                  href={item?.href}
                   className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-3 text-sm transition-colors hover:bg-soft-paste-light-active text-soft-paste-dark font-bold",
-                    activeItem === item.title && "bg-gray-100 font-medium",
+                    "flex items-center gap-2 rounded px-3 py-3 text-sm transition-colors hover:bg-soft-paste-light-active text-soft-paste-dark font-bold",
+                    activeItem === item?.title && "bg-gray-100 font-medium",
                   )}
-                  onClick={() => setActiveItem(item.title)}
+                  onClick={() => setActiveItem(item?.title)}
                 >
-                  {item.icon}
-                  {item.title}
+                  {item?.icon}
+                  {item?.title}
                 </Link>
               ))}
             </nav>
           </SheetContent>
         </Sheet>
-        <div className="text-lg font-semibold">{dashboardTitle}</div>
+
+        <div className="text-lg font-bold">{dashboardTitle}</div>
       </div>
 
       {/* <DropdownMenu>
