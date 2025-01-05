@@ -55,12 +55,12 @@ export default function HonourableVolunteers() {
   if (!mounted) return null;
 
   return (
-    <section className="container w-full mx-auto px-4 py-12 md:py-16 space-y-10">
+    <section className="container w-full mx-auto py-12 md:py-16 space-y-10">
       <h2 className="text-2xl md:text-3xl font-bold text-center lg:text-start text-soft-paste">
         Honourable Volunteers
       </h2>
 
-      <div className="relative w-[95vw] md:w-full">
+      <div className="relative w-[95vw] mx-auto md:w-full">
         <Swiper
           modules={[Pagination, Navigation]}
           pagination={{
@@ -97,7 +97,7 @@ export default function HonourableVolunteers() {
                 // transition={{ duration: 0.5 }}
                 className="flex flex-col items-center"
               >
-                <div className="relative w-full h-48  rounded-3xl overflow-hidden p-2">
+                <div className="relative w-full h-48  rounded-3xl overflow-hidden">
                   <Image
                     src={volunteer.image}
                     alt={volunteer.name}
@@ -107,7 +107,9 @@ export default function HonourableVolunteers() {
                   />
                 </div>
                 <h4 className="mt-4 font-semibold">{volunteer.name}</h4>
-                <p className="text-sm text-gray-500">{volunteer.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  {volunteer.title}
+                </p>
               </motion.div>
             </SwiperSlide>
           ))}
