@@ -1,6 +1,6 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send } from "lucide-react";
+import { Send, Undo2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useChatStore } from "@/store/useChatStore";
 import { AuthService } from "@/services/auth.service";
+import Link from "next/link";
 
 interface currentMentorUser {
   username: string;
@@ -114,6 +115,7 @@ const ChatMessages = ({
       <div className="flex flex-col h-full bg-gradient-to-b from-background to-muted/20">
         <ChatHeader
           selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
           isProfileOpen={isProfileOpen}
@@ -193,8 +195,13 @@ const ChatMessages = ({
 
   const renderContactList = () => (
     <div className="flex flex-col h-full lg:hidden bg-background">
-      <header className="p-4 border-b flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-sm z-10">
-        <h1 className="text-xl font-semibold">Messages</h1>
+      <header className="py-4 px-8 border-b flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-sm z-10">
+        <Link href="/">
+          <Button variant="ghost" size="icon" className="text-xs">
+            <Undo2 size={20} /> Back
+          </Button>
+        </Link>
+        <h1 className="text-xl font-semibold">Chats</h1>
       </header>
 
       <div className="flex-1">
@@ -206,7 +213,7 @@ const ChatMessages = ({
               onClick={() => handleContactSelect(contact)}
             >
               <div className="flex items-center gap-3 p-4 border-b">
-                <Avatar className="h-12 w-12">
+                <Avatar className="h-8 w-8">
                   <AvatarImage
                     src="/images/avatar.png"
                     alt={contact.username}
