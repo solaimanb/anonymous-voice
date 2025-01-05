@@ -20,7 +20,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ChevronDown, Mail, Bell, Menu } from "lucide-react";
+import { ChevronDown, Mail, Menu } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { UserDropdown } from "./UserDropdown";
 import Loading from "@/app/loading";
@@ -276,9 +276,11 @@ const Header: React.FC = () => {
     <div className="lg:hidden flex items-center">
       {user ? (
         <div className="flex items-center gap-4 text-soft-paste">
-          <Link href="/chat">
-            <Mail size={18} />
-          </Link>
+          {user?.role !== "admin" && (
+            <Link href="/chat">
+              <Mail size={18} />
+            </Link>
+          )}
           {/* <Button variant="ghost" size="icon">
             <Bell size={20} />
           </Button> */}
@@ -391,14 +393,19 @@ const Header: React.FC = () => {
     <div className="hidden lg:flex items-center space-x-3">
       {user ? (
         <div className="flex items-center space-x-2">
-          <Link href="/chat">
-            <Button variant="ghost" size="icon">
-              <Mail size={22} />
-            </Button>
-          </Link>
-          <Button variant="ghost" size="icon">
-            <Bell size={22} />
-          </Button>
+          {user?.role !== "admin" && (
+            <>
+              <Link href="/chat">
+                <Button variant="ghost" size="icon">
+                  <Mail size={22} className="text-soft-paste-dark" />
+                </Button>
+              </Link>
+              {/* <Button variant="ghost" size="icon">
+                <Bell size={22} />
+              </Button> */}
+            </>
+          )}
+
           <UserDropdown
             userRole={{
               role: user.role,

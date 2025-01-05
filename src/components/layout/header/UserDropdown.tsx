@@ -23,8 +23,8 @@ const roleDropdownItems = {
   admin: [
     { label: "Dashboard", href: "/dashboard/mentors" },
     // { label: "Settings", href: "/settings" },
-    { label: "User Management", href: "/admin/users" },
-    { label: "Analytics", href: "/admin/analytics" },
+    // { label: "User Management", href: "/admin/users" },
+    // { label: "Analytics", href: "/admin/analytics" },
   ],
 };
 
@@ -42,13 +42,19 @@ export function UserDropdown({ userRole }: UserDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <User size={22} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-soft-paste-light-hover rounded-full p-1 ring-0 focus:ring-0 focus:ring-offset-0 border-0 outline-none"
+        >
+          <User size={32} className="text-soft-paste-dark" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {userRole.role !== "mentee" ? (
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel className="capitalize">
+            {user?.userName}
+          </DropdownMenuLabel>
         ) : (
           <DropdownMenuLabel className="capitalize">
             {user?.userName}
