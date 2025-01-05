@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import useVolunteers from "@/hooks/useVolunteers";
@@ -14,7 +15,7 @@ export default function Session() {
   const searchParams = useSearchParams();
   const actionParam = searchParams.get("action");
   const { approvedVolunteers, loading, error } = useVolunteers<Volunteer[]>();
-  console.log(approvedVolunteers, loading, error);
+  const [visibleCount, setVisibleCount] = useState(10);
 
   if (loading) {
     return <Loading />;
@@ -46,13 +47,17 @@ export default function Session() {
     }
   };
 
+  const handleSeeMore = () => {
+    setVisibleCount((prevCount) => prevCount + 10);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
       {/* Header Section */}
-      <TitleHeader title={getHeaderText} />
+      <TitleHeader title={getHeaderText()} />
 
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-xl text-gray-600 mb-6">
+        <h2 className="text-xl text-soft-paste-dark font-bold mb-6">
           Who would you like to take the session with?
         </h2>
 
@@ -63,7 +68,7 @@ export default function Session() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {approvedVolunteers.map((volunteer, index) => (
+          {approvedVolunteers.slice(0, visibleCount).map((volunteer, index) => (
             <motion.div
               key={volunteer.id}
               initial={{ opacity: 0, y: 20 }}
@@ -88,14 +93,17 @@ export default function Session() {
         </motion.div>
 
         {/* See More Button */}
-        <div className="flex justify-center">
-          <Button
-            variant="secondary"
-            className="bg-[#7FCCCC] text-white hover:bg-[#6BBBBB] transition-colors"
-          >
-            See More
-          </Button>
-        </div>
+        {approvedVolunteers.length > visibleCount && (
+          <div className="flex justify-center">
+            <Button
+              variant="secondary"
+              className="bg-[#7FCCCC] text-white hover:bg-[#6BBBBB] transition-colors"
+              onClick={handleSeeMore}
+            >
+              See More
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

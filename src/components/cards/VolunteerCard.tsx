@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Star,
   Phone,
   MessageCircle,
   CalendarCheck,
@@ -43,9 +42,8 @@ export default function VolunteerCard({
   name,
   userName,
   title,
-  profileImage,
+  // profileImage,
   isActive,
-  rating,
   yearsExperience,
   sessionsCompleted,
   description,
@@ -84,7 +82,7 @@ export default function VolunteerCard({
           <div className="shrink-0">
             <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted-foreground/20">
               <Image
-                src={profileImage}
+                src="/images/avatar.png"
                 alt={name}
                 width={200}
                 height={200}
@@ -108,7 +106,7 @@ export default function VolunteerCard({
             </div>
 
             {/* Rating Stars */}
-            <div className="flex items-center gap-1 mb-3">
+            {/* <div className="flex items-center gap-1 mb-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
@@ -117,7 +115,7 @@ export default function VolunteerCard({
                   }`}
                 />
               ))}
-            </div>
+            </div> */}
 
             {/* Stats */}
             <div className="space-y-1.5 mb-3">
