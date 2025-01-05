@@ -1,6 +1,6 @@
 const HowToApplySection = () => {
   return (
-    <section className="w-full px-4 py-10">
+    <section className="w-full px-4">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-2xl font-bold text-soft-paste mb-4">
           How to Apply

@@ -8,13 +8,13 @@ const quotes = [
 
 export default function QuotationsSection() {
   return (
-    <section className="w-full px-4 py-16">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-violet mb-6">
+    <section className="w-full px-4">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-violet">
           Our Quotations
         </h2>
 
-        <p className="text-xl text-center text-soft-paste font-medium mb-12">
+        <p className="text-center text-soft-paste font-semibold mb-12">
           &quot;Every story deserves a listener.&quot;
         </p>
 

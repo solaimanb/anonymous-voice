@@ -26,13 +26,15 @@ export default function BlogCard({
         />
       </div>
       <CardContent className="p-4">
-        <h3 className="font-medium text-lg mb-2 line-clamp-2">{title}</h3>
-        <p className="text-gray-600 text-sm line-clamp-3">{excerpt}</p>
+        <h3 className="font-bold mb-2 line-clamp-2">{title}</h3>
+        <p className="text-muted-foreground text-xs md:text-sm line-clamp-3">
+          {excerpt}
+        </p>
       </CardContent>
       <CardFooter className="px-4 pb-4">
         <Link
           href={`/blog/${slug}`}
-          className="text-[#86C6C6] hover:text-[#78b7b7] text-sm font-medium"
+          className="text-soft-paste hover:text-soft-paste-active text-xs md:text-sm font-semibold"
         >
           Read More...
         </Link>

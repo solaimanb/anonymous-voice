@@ -23,7 +23,7 @@ const TitleHeader: React.FC<TitleHeaderProps> = ({ title }) => {
           <div className="absolute inset-0 rounded-full translate-x-1/4 translate-y-1/4 scale-75" />
         </div>
       </div>
-      <h1 className="relative text-center text-white text-xl sm:text-2xl md:text-3xl py-6 sm:py-8 md:py-10 font-semibold">
+      <h1 className="relative text-center text-white text-lg md:text-2xl lg:text-3xl py-6 sm:py-8 md:py-10 font-semibold">
         {headerText}
       </h1>
     </div>
