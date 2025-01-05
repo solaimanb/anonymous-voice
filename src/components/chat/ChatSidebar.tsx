@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { AuthService } from "@/services/auth.service";
 import { useChatStore } from "@/store/useChatStore";
+import { useChatContactsStore } from "@/store/chat-contacts.store";
 
 interface ChatContact {
   id: string;
@@ -21,19 +22,18 @@ interface ChatContact {
 }
 
 interface ChatSidebarProps {
-  contacts: ChatContact[];
   setSelectedUser: React.Dispatch<React.SetStateAction<ChatContact | null>>;
   selectedUser: ChatContact | null;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
-  contacts,
   setSelectedUser,
   selectedUser,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setSession, setChatSelectedUser } = useChatStore();
+  const { filteredContacts } = useChatContactsStore();
 
   const currentActiveuser = React.useMemo(() => {
     try {
@@ -42,14 +42,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       return null;
     }
   }, []);
-
-  const filteredContacts = React.useMemo(
-    () =>
-      contacts.filter(
-        (contact) => contact.username !== currentActiveuser?.userName,
-      ),
-    [contacts, currentActiveuser],
-  );
 
   const handleUserSelect = React.useCallback(
     (contact: ChatContact) => {
