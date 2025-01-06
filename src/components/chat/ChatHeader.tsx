@@ -131,7 +131,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               {currentActiveuser?.role === "mentor" ? (
                 <p className="text-xs text-muted-foreground">Your mentees</p>
               ) : (
-                <p className="text-xs text-muted-foreground">Your mentors</p>
+                <p className="text-xs text-muted-foreground">Your mentor</p>
               )}
             </div>
           </div>
