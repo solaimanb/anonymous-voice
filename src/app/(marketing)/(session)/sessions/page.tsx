@@ -57,7 +57,7 @@ export default function Session() {
       <TitleHeader title={getHeaderText()} />
 
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-xl text-soft-paste-dark font-bold mb-6">
+        <h2 className="text-lg xl:text-xl text-soft-paste-dark font-bold mb-6">
           Who would you like to take the session with?
         </h2>
 

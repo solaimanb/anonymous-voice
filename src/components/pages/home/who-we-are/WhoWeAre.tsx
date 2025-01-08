@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 
 interface WhoWeAreProps {
@@ -37,8 +37,8 @@ export default function WhoWeAre() {
     subtitle,
     description,
     extendedDescription,
-    buttonText,
-    onLearnMore,
+    // buttonText,
+    // onLearnMore,
   } = whoWeAreData;
 
   const fadeIn = {
@@ -109,7 +109,7 @@ export default function WhoWeAre() {
             {extendedDescription}
           </motion.p>
 
-          <motion.div
+          {/* <motion.div
             className="flex justify-center lg:justify-start"
             {...fadeIn}
             transition={{ delay: 0.6 }}
@@ -120,7 +120,7 @@ export default function WhoWeAre() {
             >
               {buttonText} →
             </Button>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </section>

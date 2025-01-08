@@ -28,7 +28,7 @@ export default function Booking() {
   if (loading) return <Loading />;
 
   return (
-    <div className="max-w-6xl mx-auto mt-4">
+    <div className="max-w-6xl mx-auto mt-4 px-2">
       {volunteers.slice(0, 1).map((volunteer) => (
         <BookingDetailsCard
           key={volunteer.id}
