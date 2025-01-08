@@ -61,6 +61,7 @@ export default function ChatInterface() {
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
+  const { addMessage } = useChatStore();
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -114,11 +115,6 @@ export default function ChatInterface() {
     e.preventDefault();
     if (!socket || !selectedUser || !messageInput.trim()) return;
 
-    socket.emit("private message", {
-      to: selectedUser.username,
-      message: messageInput,
-    });
-
     const newMessage = {
       id: `${Date.now()}`,
       sentBy: currentUser.username,
@@ -129,7 +125,13 @@ export default function ChatInterface() {
       updatedAt: new Date().toISOString(),
     };
 
+    socket.emit("private message", {
+      to: selectedUser.username,
+      message: messageInput,
+    });
+
     setMessages((prev) => [...prev, newMessage]);
+    addMessage(newMessage);
 
     try {
       await socketService.saveMessage({
