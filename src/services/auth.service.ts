@@ -6,6 +6,7 @@ import { CreateMentorData, MentorDataField } from "@/types/auth.types";
 import { getAuth, signInWithPopup } from "firebase/auth";
 import { googleProvider } from "@/lib/firebase";
 import api from "@/config/axios.config";
+import axios from "axios";
 
 export interface UserInfo {
   id?: string;
@@ -134,35 +135,35 @@ export class AuthService {
     return response.json();
   }
 
-  static async login(credentials: LoginData) {
-    const response = await fetch(`${apiConfig.apiUrl}/api/v1/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
+  // static async login(credentials: LoginData) {
+  //   const response = await fetch(`${apiConfig.apiUrl}/api/v1/auth/login`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(credentials),
+  //   });
 
-    if (!response.ok) {
-      throw new APIError("Login failed", response.status, "AUTH_ERROR");
-    }
+  //   if (!response.ok) {
+  //     throw new APIError("Login failed", response.status, "AUTH_ERROR");
+  //   }
 
-    const data: LoginResponse = await response.json();
+  //   const data: LoginResponse = await response.json();
 
-    if (data.success) {
-      const decodedToken = jwtDecode<UserInfo>(data.data.accessToken);
+  //   if (data.success) {
+  //     const decodedToken = jwtDecode<UserInfo>(data.data.accessToken);
 
-      if (typeof window !== "undefined") {
-        localStorage.setItem("authToken", data.data.accessToken);
-        localStorage.setItem(
-          "needsPasswordChange",
-          String(data.data.needsPasswordChange),
-        );
-        localStorage.setItem("user", JSON.stringify(decodedToken));
-        localStorage.setItem("isAuthenticated", "true");
-      }
-    }
+  //     if (typeof window !== "undefined") {
+  //       localStorage.setItem("authToken", data.data.accessToken);
+  //       localStorage.setItem(
+  //         "needsPasswordChange",
+  //         String(data.data.needsPasswordChange),
+  //       );
+  //       localStorage.setItem("user", JSON.stringify(decodedToken));
+  //       localStorage.setItem("isAuthenticated", "true");
+  //     }
+  //   }
 
-    return data;
-  }
+  //   return data;
+  // }
 
   // static getStoredUser(): UserInfo | null {
   //   if (typeof window !== "undefined") {
@@ -171,6 +172,51 @@ export class AuthService {
   //   }
   //   return null;
   // }
+  static async login(credentials: LoginData) {
+    try {
+      const response = await api.post<LoginResponse>("/api/v1/auth/login", {
+        userName: credentials.userName,
+        password: credentials.password,
+      });
+
+      console.log("Login Response:", response.data);
+
+      if (response.data.success) {
+        const decodedToken = jwtDecode<UserInfo>(
+          response.data.data.accessToken,
+        );
+
+        // Store auth data in localStorage
+        if (typeof window !== "undefined") {
+          localStorage.setItem("authToken", response.data.data.accessToken);
+          localStorage.setItem(
+            "needsPasswordChange",
+            String(response.data.data.needsPasswordChange),
+          );
+          localStorage.setItem("user", JSON.stringify(decodedToken));
+          localStorage.setItem("isAuthenticated", "true");
+        }
+
+        return response.data;
+      }
+
+      throw new APIError(
+        response.data.message || "Authentication failed",
+        response.status || 401,
+        "AUTH_ERROR",
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new APIError(
+          error.response?.data?.message || "Login failed",
+          error.response?.status || 500,
+          "AUTH_ERROR",
+        );
+      }
+      throw error;
+    }
+  }
+
   static getStoredUser(): UserInfo | null {
     if (typeof window === "undefined") return null;
 

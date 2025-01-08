@@ -124,7 +124,7 @@ const ChatMessages = ({
           onPhoneClick={onPhoneClick}
         />
 
-        <ScrollArea className="flex-1 px-4 py-6">
+        <ScrollArea className="flex-1 px-4 py-6 overflow-y-auto">
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
@@ -181,7 +181,7 @@ const ChatMessages = ({
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               className="flex-1 rounded-full bg-muted border-none"
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage(e)}
+              onKeyDown={(e) => e.key === "Enter" && handleSendMessage(e)}
             />
             <Button type="submit" size="icon" className="rounded-full">
               <Send className="h-5 w-5" />
