@@ -16,6 +16,7 @@ import { CallInvitation } from "@/types/call";
 import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import { CallService } from "@/lib/call/call-service";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
+import { useChatStore } from "@/store/useChatStore";
 
 interface ChatContact {
   id: string;
