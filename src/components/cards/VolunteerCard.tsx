@@ -14,7 +14,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { ActionType } from "../pages/home/hero/Hero";
-import Link from "next/link";
 import { SessionConfirmDialog } from "@/app/(marketing)/(session)/sessions/_components/SessionConfirmDialog";
 
 interface Expertise {
@@ -70,8 +69,8 @@ export default function VolunteerCard({
     router.push(`/booking?mentor=${userName}&type=${appointmentType}`);
   };
 
-  const isButtonDisabled = (buttonType: ActionType): boolean => {
-    return actionType !== buttonType;
+  const isButtonEnabled = (buttonType: ActionType): boolean => {
+    return actionType === buttonType;
   };
 
   return (
@@ -155,33 +154,31 @@ export default function VolunteerCard({
       {/* Action Buttons */}
       <CardFooter className="grid grid-cols-3 gap-3 p-3">
         <Button
-          className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
+          className="bg-soft-paste hover:bg-soft-paste-dark text-white border-0 rounded-md h-11"
           onClick={() => handleAction("quick-call")}
-          disabled={isButtonDisabled("quick-call")}
+          disabled={!isButtonEnabled("quick-call")}
         >
           <Phone className="w-4 h-4 mr-2" />
           Quick Call
         </Button>
 
         <Button
-          className="bg-[#B4A5E8] hover:bg-[#A394D7] text-white border-0 rounded-md h-11"
+          className="bg-violet hover:bg-violet-dark text-white border-0 rounded-md h-11"
           onClick={() => handleAction("chat")}
-          disabled={isButtonDisabled("chat")}
+          disabled={!isButtonEnabled("chat")}
         >
           <MessageCircle className="w-4 h-4 mr-2" />
           Chat
         </Button>
 
-        <Link href={`/booking?mentor=${userName}`}>
-          <Button
-            className="bg-[#7FCCCC] hover:bg-[#6BBBBB] text-white border-0 rounded-md h-11"
-            onClick={() => handleAction("booking")}
-            disabled={isButtonDisabled("booking")}
-          >
-            <CalendarCheck className="w-4 h-4 mr-2" />
-            Book Call
-          </Button>
-        </Link>
+        <Button
+          className="bg-soft-paste hover:bg-soft-paste-dark text-white border-0 rounded-md h-11"
+          onClick={() => handleAction("booking")}
+          disabled={!isButtonEnabled("booking")}
+        >
+          <CalendarCheck className="w-4 h-4 mr-2" />
+          Book Call
+        </Button>
       </CardFooter>
       <SessionConfirmDialog />
     </Card>
