@@ -210,15 +210,6 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       {currentUser.role === "mentor" && (
-        // <Button
-        //   variant="ghost"
-        //   size="icon"
-        //   className="shrink-0"
-        //   onClick={onPhoneClick}
-        // >
-        //   <Phone className="h-5 w-5" />
-        //   <span className="sr-only">Call</span>
-        // </Button>
         <CallButton menteeId={selectedUser.id} />
       )}
     </header>
