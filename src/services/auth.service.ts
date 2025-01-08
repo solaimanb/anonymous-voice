@@ -135,51 +135,12 @@ export class AuthService {
     return response.json();
   }
 
-  // static async login(credentials: LoginData) {
-  //   const response = await fetch(`${apiConfig.apiUrl}/api/v1/auth/login`, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(credentials),
-  //   });
-
-  //   if (!response.ok) {
-  //     throw new APIError("Login failed", response.status, "AUTH_ERROR");
-  //   }
-
-  //   const data: LoginResponse = await response.json();
-
-  //   if (data.success) {
-  //     const decodedToken = jwtDecode<UserInfo>(data.data.accessToken);
-
-  //     if (typeof window !== "undefined") {
-  //       localStorage.setItem("authToken", data.data.accessToken);
-  //       localStorage.setItem(
-  //         "needsPasswordChange",
-  //         String(data.data.needsPasswordChange),
-  //       );
-  //       localStorage.setItem("user", JSON.stringify(decodedToken));
-  //       localStorage.setItem("isAuthenticated", "true");
-  //     }
-  //   }
-
-  //   return data;
-  // }
-
-  // static getStoredUser(): UserInfo | null {
-  //   if (typeof window !== "undefined") {
-  //     const userStr = localStorage.getItem("user");
-  //     return userStr ? JSON.parse(userStr) : null;
-  //   }
-  //   return null;
-  // }
   static async login(credentials: LoginData) {
     try {
       const response = await api.post<LoginResponse>("/api/v1/auth/login", {
         userName: credentials.userName,
         password: credentials.password,
       });
-
-      console.log("Login Response:", response.data);
 
       if (response.data.success) {
         const decodedToken = jwtDecode<UserInfo>(

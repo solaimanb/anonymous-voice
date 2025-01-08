@@ -52,15 +52,14 @@ export default function LoginPage() {
 
       await login(values.userName, values.password);
 
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
-      });
+      // toast({
+      //   title: "Welcome back!",
+      //   description: "You have successfully logged in.",
+      // });
 
       router.push("/");
     } catch (error) {
       toast({
-        variant: "destructive",
         title: "Login Failed",
         description: "Please check your credentials and try again.",
       });
