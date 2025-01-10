@@ -32,30 +32,51 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import api from "@/config/axios.config";
+import { Day, mentorFormSchema } from "@/types/mentor.types";
+import { AvailabilityScheduler } from "@/components/availability/AvailabilityScheduler";
 
-const mentorFormSchema = z.object({
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    ),
-  userName: z.string().min(3, "Username must be at least 3 characters"),
-  mentor: z.object({
-    gender: z.enum(["male", "female", "other"]),
-    name: z.string().min(2, "Name is required"),
-    bio: z.string().min(10, "Bio must be at least 10 characters"),
-    designation: z.string().min(2, "Designation is required"),
-    specialization: z.string().min(2, "Specialization is required"),
-    availability: z.string().min(5, "Availability schedule is required"),
-    email: z.string().email("Invalid email address"),
-    profileImage: z.string().optional(),
-    adminApproval: z.boolean().default(false),
-  }),
-});
+// const mentorFormSchema = z.object({
+//   password: z
+//     .string()
+//     .min(8, "Password must be at least 8 characters")
+//     .regex(
+//       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
+//       "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+//     ),
+//   userName: z.string().min(3, "Username must be at least 3 characters"),
+//   mentor: z.object({
+//     gender: z.enum(["male", "female", "other"]),
+//     name: z.string().min(2, "Name is required"),
+//     bio: z.string().min(10, "Bio must be at least 10 characters"),
+//     designation: z.string().min(2, "Designation is required"),
+//     specialization: z.string().min(2, "Specialization is required"),
+//     availability: z.string().min(5, "Availability schedule is required"),
+//     email: z.string().email("Invalid email address"),
+//     profileImage: z.string().optional(),
+//     adminApproval: z.boolean().default(false),
+//   }),
+// });
 
-const DEFAULT_PROFILE_IMAGE = "https://via.placeholder.com/150";
+const DEFAULT_PROFILE_IMAGE = "/images/avatar.png";
+const DEFAULT_AVAILABILITY: Array<{
+  day: Day;
+  startTime: { hours: number; minutes: number };
+  endTime: { hours: number; minutes: number };
+  isAvailable: boolean;
+}> = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+].map((day) => ({
+  day: day as Day,
+  startTime: { hours: 9, minutes: 0 },
+  endTime: { hours: 17, minutes: 0 },
+  isAvailable: false,
+}));
 
 type MentorFormValues = z.infer<typeof mentorFormSchema>;
 
@@ -69,7 +90,7 @@ const MentorRegistrationForm = () => {
     defaultValues: {
       mentor: {
         gender: "male",
-        availability: "Monday to Friday, 9 AM - 5 PM",
+        availability: DEFAULT_AVAILABILITY,
         adminApproval: false,
         profileImage: DEFAULT_PROFILE_IMAGE,
       },
@@ -264,9 +285,9 @@ const MentorRegistrationForm = () => {
                   <FormItem>
                     <FormLabel>Availability Schedule</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Monday to Friday, 9 AM - 5 PM"
-                        {...field}
+                      <AvailabilityScheduler
+                        value={field.value}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
