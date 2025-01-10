@@ -53,7 +53,7 @@ const faqs = [
 export default function ListenerFAQ() {
   return (
     <section className="w-full px-4 py-16">
-      <div className="max-w-6xl mx-auto">
+      <div className="">
         <h2 className="text-lg font-bold mb-6">FAQ</h2>
 
         <Accordion type="single" collapsible className="w-full">

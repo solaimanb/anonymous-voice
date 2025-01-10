@@ -48,7 +48,7 @@ export default function WhoWeAre() {
   };
 
   return (
-    <section className="relative w-full max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-12 space-y-10 overflow-hidden">
+    <section className="relative w-full mx-auto mt-10 py-12 space-y-10 overflow-hidden">
       <motion.h2
         className="text-2xl sm:text-3xl font-bold text-violet-dark text-center"
         {...fadeIn}

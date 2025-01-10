@@ -46,8 +46,8 @@ const members: TeamMember[] = [
 
 export default function LeadershipSection() {
   return (
-    <section className="w-full px-4">
-      <div className="max-w-6xl mx-auto">
+    <section className="w-full">
+      <div className="">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-violet mb-10">
           Our Leadership
         </h2>

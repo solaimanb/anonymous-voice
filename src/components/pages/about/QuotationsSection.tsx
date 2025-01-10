@@ -8,8 +8,8 @@ const quotes = [
 
 export default function QuotationsSection() {
   return (
-    <section className="w-full px-4">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <section className="w-full">
+      <div className="space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-violet">
           Our Quotations
         </h2>

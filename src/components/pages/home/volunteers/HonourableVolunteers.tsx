@@ -55,7 +55,7 @@ export default function HonourableVolunteers() {
   if (!mounted) return null;
 
   return (
-    <section className="container w-full mx-auto py-12 md:py-16 space-y-10">
+    <section className="py-12 md:py-16 space-y-10">
       <h2 className="text-2xl md:text-3xl font-bold text-center lg:text-start text-soft-paste">
         Honourable Volunteers
       </h2>

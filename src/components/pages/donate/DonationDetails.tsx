@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DonationDetails() {
   return (
-    <section className="w-full px-4 py-16">
-      <div className="max-w-6xl mx-auto">
+    <section className="w-full py-16">
+      <div className="">
         <h1 className="text-2xl font-bold text-center text-violet mb-12">
           Donation Details
         </h1>

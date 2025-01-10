@@ -82,7 +82,7 @@ export default function Component() {
       <section className="w-full bg-[url('/images/watermark_bg.png')] bg-cover bg-center">
         <TitleHeader title="Easy Steps to Access Support" />
 
-        <div className="container max-w-2xl mx-auto px-4 py-12">
+        <div className="container mx-auto">
           {/* Subtitle */}
           <div className="text-center mb-8">
             <h3 className="text-violet text-2xl font-bold mb-4">

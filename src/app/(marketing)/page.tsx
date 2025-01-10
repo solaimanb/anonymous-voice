@@ -10,14 +10,16 @@ import WhyAnonymousVoice from "@/components/pages/home/why/WhyAnonymousVoice";
 
 export default function Page() {
   return (
-    <div className="[url('/images/watermark_bg.png')]">
+    <div className="[url('/images/watermark_bg.png')] bg-cover bg-center bg-no-repeat">
       <Hero />
-      <WhoWeAre />
-      <WhatWeDo />
-      <HonourableVolunteers />
-      <WhyAnonymousVoice />
-      <Stat />
-      <OurPartner title="Our Partners" />
+      <div className="container w-full mx-auto px-4 md:px-8 lg:px-16 xl:px-24 ">
+        <WhoWeAre />
+        <WhatWeDo />
+        <HonourableVolunteers />
+        <WhyAnonymousVoice />
+        <Stat />
+        <OurPartner title="Our Partners" />
+      </div>
     </div>
   );
 }
