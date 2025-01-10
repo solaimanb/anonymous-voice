@@ -76,7 +76,7 @@ export default function Hero() {
   );
 
   return (
-    <section className="relative lg:min-h-[90vh] flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300">
+    <section className="relative lg:min-h-[90vh] w-[100vw] flex justify-center items-center overflow-hidden bg-gradient-to-b from-purple-400 via-purple-300 to-blue-300">
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/av-hero.webp"
@@ -88,7 +88,8 @@ export default function Hero() {
           loading="lazy"
         />
       </div>
-      <div className="relative z-10 flex flex-col items-center justify-center text-center text-white px-4 py-20 md:px-8 lg:px-16">
+
+      <div className="relative container mx-auto z-10 flex flex-col items-center justify-center text-center text-white py-20 w-full">
         <motion.h1
           variants={textVariants}
           initial="initial"

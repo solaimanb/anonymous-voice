@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function MissionSection() {
   return (
-    <section className="w-full px-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <section className="w-full">
+      <div className="space-y-6">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-violet">
           Our Mission
         </h2>

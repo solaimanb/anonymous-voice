@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function VisionSection() {
   return (
-    <section className="w-full px-4 py-16">
-      <div className="max-w-6xl mx-auto space-y-6 text-center">
+    <section className="w-full py-16">
+      <div className="space-y-6 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-violet">
           Our Vision
         </h2>

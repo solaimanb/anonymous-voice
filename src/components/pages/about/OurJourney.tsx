@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function OurJourney() {
   return (
-    <section className="w-full px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="">
+      <div className="w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-violet mb-10">
           Our Journey
         </h2>

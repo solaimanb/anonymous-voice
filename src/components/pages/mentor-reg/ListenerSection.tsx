@@ -32,7 +32,7 @@ export default function ListenerSection() {
 
   return (
     <section className="w-full px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="">
         <h1 className="text-3xl font-bold text-center text-violet">Listener</h1>
         <h2 className="text-xl md:text-2xl font-bold text-center text-soft-paste mt-6">
           Become a Listener

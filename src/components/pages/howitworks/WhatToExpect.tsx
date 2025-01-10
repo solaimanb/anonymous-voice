@@ -67,7 +67,7 @@ export default function WhatToExpect() {
         </h2>
 
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-5xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-5 gap-8"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -79,13 +79,14 @@ export default function WhatToExpect() {
               className="flex flex-col items-center"
               variants={itemVariants}
             >
-              <div className="rounded-2xl p-1 mb-4 w-full max-w-40">
-                <div className="relative w-full h-0 pb-[100%] rounded-xl flex items-center justify-center">
+              <div className="rounded-2xl p-1 mb-4 w-full">
+                <div className="relative w-full rounded-xl flex items-center justify-center">
                   <Image
                     src={card.image}
                     alt={card.title}
-                    className="object-cover"
-                    layout="fill"
+                    className="object-cover w-fit"
+                    width={100}
+                    height={100}
                   />
                 </div>
               </div>

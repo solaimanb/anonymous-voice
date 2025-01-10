@@ -84,7 +84,7 @@ export default function WhatWeDo() {
   );
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-20">
+    <section className="w-full mx-auto py-12 md:py-16 lg:py-20">
       <motion.div
         variants={containerVariants}
         initial="hidden"
