@@ -78,7 +78,7 @@ const itemVariants = {
 
 export default function Component() {
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-8">
       <section className="w-full bg-[url('/images/watermark_bg.png')] bg-cover bg-center">
         <TitleHeader title="Easy Steps to Access Support" />
 
