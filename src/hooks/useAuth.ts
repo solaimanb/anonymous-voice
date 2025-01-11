@@ -56,6 +56,8 @@ export function useAuth() {
     setUser(null);
   };
 
+  const userRole = user?.role || "guest";
+
   return {
     user,
     loading,
@@ -64,5 +66,6 @@ export function useAuth() {
     register,
     logout,
     isAuthenticated: AuthService.isAuthenticated(),
+    userRole,
   };
 }
