@@ -44,7 +44,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   setSelectedUser,
   isSidebarOpen,
   setIsSidebarOpen,
-  lastActiveTime,
+  // lastActiveTime,
   currentUser,
 }) => {
   const router = useRouter();
@@ -204,9 +204,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </Avatar>
       <div className="flex-1 min-w-0">
         <h2 className="font-semibold truncate">{selectedUser.username}</h2>
-        <p className="text-xs text-muted-foreground truncate">
+        {/* <p className="text-xs text-muted-foreground truncate">
           {lastActiveTime || "Active 9m ago"}
-        </p>
+        </p> */}
       </div>
 
       {currentUser.role === "mentor" && (
