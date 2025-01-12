@@ -48,6 +48,23 @@ interface ChatMessagesProps {
   onPhoneClick: () => void;
 }
 
+const formatDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return date.toLocaleDateString(undefined, options);
+};
+
+const isSameDay = (date1: Date, date2: Date) => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
+
 const ChatMessages = ({
   selectedUser,
   setSelectedUser,
@@ -101,6 +118,8 @@ const ChatMessages = ({
   const renderChatView = () => {
     if (!selectedUser) return null;
 
+    let lastMessageDate: Date | null = null;
+
     return (
       <div className="flex flex-col h-full bg-gradient-to-b from-background to-muted/20">
         <ChatHeader
@@ -119,46 +138,63 @@ const ChatMessages = ({
             <Skeleton className="w-full h-full" />
           ) : (
             <AnimatePresence initial={false}>
-              {messages?.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className={cn(
-                    "flex mb-4 items-end gap-2",
-                    message.sentBy === currentActiveUser?.userName
-                      ? "justify-end"
-                      : "justify-start",
-                  )}
-                >
-                  {message.sentBy !== currentActiveUser?.userName && (
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage
-                        src="/images/avatar.png"
-                        alt={message.sentBy}
-                      />
-                      <AvatarFallback>{message.sentBy[0]}</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div
-                    className={cn(
-                      "max-w-[80%] rounded-2xl px-4 py-2 shadow-sm",
-                      message.sentBy === currentActiveUser?.userName
-                        ? "bg-primary text-primary-foreground rounded-br-none"
-                        : "bg-muted rounded-bl-none",
+              {messages?.map((message) => {
+                const messageDate = new Date(message.createdAt);
+                const showDateDivider =
+                  !lastMessageDate || !isSameDay(lastMessageDate, messageDate);
+                lastMessageDate = messageDate;
+
+                return (
+                  <React.Fragment key={message.id}>
+                    {showDateDivider && (
+                      <div className="text-center my-4">
+                        <span className="px-4 py-1 bg-muted font-semibold text-muted-foreground rounded-full text-xs">
+                          {formatDate(messageDate)}
+                        </span>
+                      </div>
                     )}
-                  >
-                    <p className="text-sm leading-relaxed">{message.message}</p>
-                    <span className="text-[9px] font-semibold opacity-50 block">
-                      {new Date(message.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className={cn(
+                        "flex mb-4 items-end gap-2",
+                        message.sentBy === currentActiveUser?.userName
+                          ? "justify-end"
+                          : "justify-start",
+                      )}
+                    >
+                      {message.sentBy !== currentActiveUser?.userName && (
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage
+                            src="/images/avatar.png"
+                            alt={message.sentBy}
+                          />
+                          <AvatarFallback>{message.sentBy[0]}</AvatarFallback>
+                        </Avatar>
+                      )}
+                      <div
+                        className={cn(
+                          "max-w-[80%] rounded-2xl px-4 py-2 shadow-sm",
+                          message.sentBy === currentActiveUser?.userName
+                            ? "bg-primary text-primary-foreground rounded-br-none"
+                            : "bg-muted rounded-bl-none",
+                        )}
+                      >
+                        <p className="text-sm leading-relaxed">
+                          {message.message}
+                        </p>
+                        <span className="text-[9px] font-semibold opacity-50 block">
+                          {new Date(message.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </motion.div>
+                  </React.Fragment>
+                );
+              })}
               <div ref={messagesEndRef} />
             </AnimatePresence>
           )}
