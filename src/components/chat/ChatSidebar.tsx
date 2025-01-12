@@ -9,17 +9,19 @@ import { cn } from "@/lib/utils";
 import { AuthService } from "@/services/auth.service";
 import { useChatStore } from "@/store/useChatStore";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
+import { ChatContact } from "@/types/chat.types";
 
-interface ChatContact {
-  id: string;
-  username: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp?: string;
-  isActive?: boolean;
-  hasHeart?: boolean;
-  mentorName?: string;
-}
+// interface ChatContact {
+//   id: string;
+//   username: string;
+//   avatar: string;
+//   lastMessage: string;
+//   timestamp?: string;
+//   isActive?: boolean;
+//   hasHeart?: boolean;
+//   mentorName?: string;
+//   mentorUserName?: string;
+// }
 
 interface ChatSidebarProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<ChatContact | null>>;
@@ -42,6 +44,15 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       return null;
     }
   }, []);
+
+  const matchedContacts = React.useMemo(() => {
+    if (currentActiveuser?.role === "mentor") {
+      return filteredContacts.filter(
+        (contact) => contact.mentorUserName === currentActiveuser.userName,
+      );
+    }
+    return filteredContacts;
+  }, [filteredContacts, currentActiveuser]);
 
   const handleUserSelect = React.useCallback(
     (contact: ChatContact) => {
@@ -119,8 +130,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </div>
 
       <ScrollArea className="flex-1 border-t mt-3">
-        {filteredContacts.length > 0
-          ? filteredContacts.map((contact) => (
+        {matchedContacts.length > 0
+          ? matchedContacts.map((contact) => (
               <div
                 key={contact.id}
                 role="button"

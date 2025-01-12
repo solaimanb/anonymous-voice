@@ -21,3 +21,15 @@ export interface Message {
   senderId: string;
   timestamp: number;
 }
+
+export interface ChatContact {
+  id: string;
+  username: string;
+  avatar: string;
+  lastMessage: string;
+  timestamp?: string;
+  isActive?: boolean;
+  hasHeart?: boolean;
+  mentorName?: string;
+  mentorUserName: string;
+}

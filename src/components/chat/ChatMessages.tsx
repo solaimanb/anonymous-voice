@@ -13,21 +13,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useChatStore } from "@/store/useChatStore";
 import { AuthService } from "@/services/auth.service";
 import Link from "next/link";
+import { ChatContact } from "@/types/chat.types";
 
 interface currentMentorUser {
   username: string;
   role: string;
-}
-
-interface ChatContact {
-  id: string;
-  username: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp?: string;
-  isActive?: boolean;
-  hasHeart?: boolean;
-  mentorName?: string;
 }
 
 interface Message {
@@ -205,7 +195,7 @@ const ChatMessages = ({
       </header>
 
       <div className="flex-1">
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-full overflow-y-auto">
           {filteredContacts.map((contact) => (
             <div
               key={contact.id}

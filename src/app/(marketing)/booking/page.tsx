@@ -22,20 +22,24 @@ export default function Booking() {
     : DEFAULT_SESSION_TYPE;
 
   const sessionConfig = SESSION_CONFIG[sessionType];
-  console.log("Session Type:", sessionType);
-  console.log("Session Config:", sessionConfig);
 
   if (loading) return <Loading />;
 
+  // Filter only adminApproved volunteers
+  const approvedVolunteers = volunteers.filter(
+    (volunteer) => volunteer.adminApproval,
+  );
+
   return (
     <div className="max-w-6xl mx-auto mt-4 px-2">
-      {volunteers.slice(0, 1).map((volunteer) => (
+      {approvedVolunteers.slice(0, 1).map((volunteer) => (
         <BookingDetailsCard
           key={volunteer.id}
           {...volunteer}
           showAvailability={sessionConfig?.requiresTimeSlot ?? true}
         />
       ))}
+
       <ChoosePlan
         mentorUsername={mentorUserName}
         sessionType={sessionType}
