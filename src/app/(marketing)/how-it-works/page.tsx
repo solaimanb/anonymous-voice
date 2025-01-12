@@ -101,7 +101,7 @@ export default function Component() {
 
           {/* Steps */}
           <motion.div
-            className="space-y-12 mt-12"
+            className="space-y-12 mt-12 px-4"
             variants={containerVariants}
             initial="hidden"
             animate="visible"

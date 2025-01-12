@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { VideoSection } from "../stat/VideoSection";
-import { MoveRight } from "lucide-react";
+// import { MoveRight } from "lucide-react";
 
 export default function WhyAnonymousVoice() {
   return (
-    <section className="container mx-auto py-16 md:py-24 overflow-hidden">
+    <section className="container mx-auto px-4 py-16 md:py-24 overflow-hidden">
       <div className="mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left Column */}
@@ -29,12 +29,12 @@ export default function WhyAnonymousVoice() {
               daunting, which is why we focus on creating a comfortable and
               confidential environment.
             </p>
-            <Button className="bg-soft-paste rounded-md">
+            {/* <Button className="bg-soft-paste rounded-md">
               Learn More
               <span className="ml-2">
                 <MoveRight />
               </span>
-            </Button>
+            </Button> */}
           </div>
 
           {/* Right Column */}
