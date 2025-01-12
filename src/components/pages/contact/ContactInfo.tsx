@@ -10,7 +10,7 @@ import Link from "next/link";
 export default function ContactInfo() {
   return (
     <div
-      className="bg-violet text-white p-8 rounded-2xl bg-cover bg-center"
+      className="bg-violet text-white p-4 lg:p-8 rounded-2xl bg-cover bg-center"
       style={{ backgroundImage: "url('/images/contact_info_bg.png')" }}
     >
       <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>

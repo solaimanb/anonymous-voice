@@ -21,11 +21,7 @@ const stats: StatTypes[] = [
 ];
 
 const Stat = () => {
-  return (
-    <div>
-      <StatsSection stats={stats} />
-    </div>
-  );
+  return <StatsSection stats={stats} />;
 };
 
 export default Stat;

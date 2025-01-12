@@ -89,7 +89,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative container mx-auto z-10 flex flex-col items-center justify-center text-center text-white py-20 w-full">
+      <div className="relative container mx-auto z-10 flex flex-col items-center justify-center text-center text-white py-20 px-4 w-full">
         <motion.h1
           variants={textVariants}
           initial="initial"
