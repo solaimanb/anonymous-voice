@@ -10,9 +10,11 @@ import {
   // FileText,
   PenSquare,
   UserPlus,
+  Home,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 
 type NavItem = {
   title: string;
@@ -80,7 +82,14 @@ export default function DashboardSidebar() {
 
   return (
     <aside className="sticky top-0 left-0 hidden w-60 flex-col border-r bg-white md:flex">
-      <div className="p-4 font-bold text-xl">{dashboardTitle}</div>
+      <div className="p-2 pr-4 font-bold text-xl flex items-center justify-between">
+        <Link href="/">
+          <Button variant="secondary" size="icon">
+            <Home size={20} />
+          </Button>
+        </Link>
+        {dashboardTitle}
+      </div>
       <Separator className="mt-1" />
       <nav className="flex-1">
         {navItems.map((item) => (

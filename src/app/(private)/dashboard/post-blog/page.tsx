@@ -12,16 +12,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Image from "next/image";
 
 interface BlogPost {
   title: string;
   author: string;
-  readTime: string;
-  tags: string[];
-  content: string;
+  date: string;
+  category: string;
+  info: string;
+  description: string;
   image?: File;
 }
 
@@ -29,11 +35,11 @@ export default function PostBlog() {
   const [post, setPost] = useState<BlogPost>({
     title: "",
     author: "",
-    readTime: "",
-    tags: [],
-    content: "",
+    date: "",
+    category: "",
+    info: "",
+    description: "",
   });
-  const [currentTag, setCurrentTag] = useState("");
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,135 +50,153 @@ export default function PostBlog() {
     }
   };
 
-  const addTag = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && currentTag.trim()) {
-      e.preventDefault();
-      setPost({ ...post, tags: [...post.tags, currentTag.trim()] });
-      setCurrentTag("");
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setPost({ ...post, tags: post.tags.filter((tag) => tag !== tagToRemove) });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the post data to your API
     console.log("Submitting post:", post);
   };
 
   return (
-    <div className="container mx-auto py-8 max-w-4xl">
-      <Card className="bg-card">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Create New Blog Post
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={post.title}
-                onChange={(e) => setPost({ ...post, title: e.target.value })}
-                placeholder="Understanding Mental Health Conditions: A Comprehensive Guide"
-                className="bg-background"
-              />
-            </div>
+    <Card className="mb-4">
+      <CardHeader className="">
+        <CardTitle className="text-2xl font-semibold">
+          Post a new blog
+        </CardTitle>
+      </CardHeader>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="author">Author</Label>
-                <Input
-                  id="author"
-                  value={post.author}
-                  onChange={(e) => setPost({ ...post, author: e.target.value })}
-                  placeholder="Dr. Sarah Johnson"
-                  className="bg-background"
+      <CardContent className=" mt-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-[#F8FAFA] text-gray-700 border-gray-300 hover:bg-gray-100"
+                onClick={() => document.getElementById("image")?.click()}
+              >
+                Choose File
+              </Button>
+              <span className="text-gray-500">
+                {imagePreview ? "File chosen" : "No File Choosen"}
+              </span>
+            </div>
+            <Input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            {imagePreview && (
+              <div className="relative w-full h-[200px] mt-2 rounded-lg overflow-hidden">
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  fill
+                  className="object-cover"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="readTime">Read Time (in minutes)</Label>
-                <Input
-                  id="readTime"
-                  value={post.readTime}
-                  onChange={(e) =>
-                    setPost({ ...post, readTime: e.target.value })
-                  }
-                  placeholder="15"
-                  type="number"
-                  className="bg-background"
-                />
-              </div>
-            </div>
+            )}
+          </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-gray-700">
+              Blog Title
+            </Label>
+            <Input
+              id="title"
+              value={post.title}
+              onChange={(e) => setPost({ ...post, title: e.target.value })}
+              placeholder="Enter Title"
+              className="bg-white border-gray-300"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="tags">Tags</Label>
+              <Label htmlFor="author" className="text-gray-700">
+                Author
+              </Label>
               <Input
-                id="tags"
-                value={currentTag}
-                onChange={(e) => setCurrentTag(e.target.value)}
-                onKeyDown={addTag}
-                placeholder="Press Enter to add tags"
-                className="bg-background"
+                id="author"
+                value={post.author}
+                onChange={(e) => setPost({ ...post, author: e.target.value })}
+                placeholder="Enter Author Name"
+                className="bg-white border-gray-300"
               />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {post.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="px-2 py-1">
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="ml-2 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="image">Featured Image</Label>
+              <Label htmlFor="date" className="text-gray-700">
+                Date
+              </Label>
               <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="bg-background"
+                id="date"
+                type="date"
+                value={post.date}
+                onChange={(e) => setPost({ ...post, date: e.target.value })}
+                className="bg-white border-gray-300"
               />
-              {imagePreview && (
-                <div className="relative w-full h-[200px] mt-2 rounded-lg overflow-hidden">
-                  <Image
-                    src={imagePreview}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="content">Content</Label>
-              <Textarea
-                id="content"
-                value={post.content}
-                onChange={(e) => setPost({ ...post, content: e.target.value })}
-                placeholder="Write your blog post content here..."
-                className="min-h-[400px] bg-background"
-              />
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-end space-x-4">
-          <Button variant="outline">Preview</Button>
-          <Button onClick={handleSubmit}>Publish</Button>
-        </CardFooter>
-      </Card>
-    </div>
+          <div className="space-y-2">
+            <Label htmlFor="category" className="text-gray-700">
+              Post Category
+            </Label>
+            <Select
+              value={post.category}
+              onValueChange={(value) => setPost({ ...post, category: value })}
+            >
+              <SelectTrigger className="bg-white border-gray-300">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="technology">Technology</SelectItem>
+                <SelectItem value="health">Health</SelectItem>
+                <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                <SelectItem value="business">Business</SelectItem>
+                <SelectItem value="education">Education</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="info" className="text-gray-700">
+              Blog Info
+            </Label>
+            <Textarea
+              id="info"
+              value={post.info}
+              onChange={(e) => setPost({ ...post, info: e.target.value })}
+              placeholder="Enter Post Information"
+              className="bg-white border-gray-300 min-h-[100px] resize-none"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-gray-700">
+              Post Description
+            </Label>
+            <Textarea
+              id="description"
+              value={post.description}
+              onChange={(e) =>
+                setPost({ ...post, description: e.target.value })
+              }
+              placeholder="Enter Post Description"
+              className="bg-white border-gray-300 min-h-[200px] resize-none"
+            />
+          </div>
+        </form>
+      </CardContent>
+
+      <CardFooter className="">
+        <Button
+          onClick={handleSubmit}
+          className="w-full bg-soft-paste hover:bg-soft-paste-active text-white font-semibold py-6"
+        >
+          Post New Blog
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

@@ -50,9 +50,9 @@ export default function MentorRequests() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto">
       <header className="flex items-center justify-between mb-6">
-        <h1 className="text-lg text-soft-paste-dark font-bold">
+        <h1 className="text-lg  font-bold">
           {isLoading ? <Skeleton className="h-8 w-48" /> : "Mentor Requests"}
         </h1>
       </header>
