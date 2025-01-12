@@ -8,7 +8,7 @@ import {
   Users,
   // Settings2,
   // FileText,
-  // PenSquare,
+  PenSquare,
   UserPlus,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -54,11 +54,11 @@ const adminNavItems: NavItem[] = [
     href: "/dashboard/mentor-requests",
     icon: <UserPlus size={20} />,
   },
-  // {
-  //   title: "Post A Blog",
-  //   href: "/dashboard/post-blog",
-  //   icon: <PenSquare size={20} />,
-  // },
+  {
+    title: "Post A Blog",
+    href: "/dashboard/post-blog",
+    icon: <PenSquare size={20} />,
+  },
   // {
   //   title: "Blog Management",
   //   href: "/dashboard/blog-management",
