@@ -17,17 +17,19 @@ import CallInviteDialog from "@/components/chat/CallInviteDialog";
 import { CallService } from "@/lib/call/call-service";
 import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { useChatStore } from "@/store/useChatStore";
+import { ChatContact } from "@/types/chat.types";
 
-interface ChatContact {
-  id: string;
-  username: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp?: string;
-  isActive?: boolean;
-  hasHeart?: boolean;
-  mentorName?: string;
-}
+// interface ChatContact {
+//   id: string;
+//   username: string;
+//   avatar: string;
+//   lastMessage: string;
+//   timestamp?: string;
+//   isActive?: boolean;
+//   hasHeart?: boolean;
+//   mentorName?: string;
+//   mentorUserName: string;
+// }
 
 interface Message {
   id: string;
@@ -86,6 +88,7 @@ export default function ChatInterface() {
             : appointment.mentorUserName,
         avatar: "/images/avatar.png",
         lastMessage: "",
+        mentorUserName: appointment.mentorUserName,
       }));
 
     const uniqueConfirmedAppointments = Array.from(

@@ -10,21 +10,22 @@ import { cn } from "@/lib/utils";
 import { AuthService } from "@/services/auth.service";
 import { useChatStore } from "@/store/useChatStore";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ChatContact } from "@/types/chat.types";
 
 interface currentMentorUser {
   username: string;
   role: string;
 }
 
-interface ChatContact {
-  id: string;
-  username: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp?: string;
-  isActive?: boolean;
-  hasHeart?: boolean;
-}
+// interface ChatContact {
+//   id: string;
+//   username: string;
+//   avatar: string;
+//   lastMessage: string;
+//   timestamp?: string;
+//   isActive?: boolean;
+//   hasHeart?: boolean;
+// }
 
 interface ChatHeaderProps {
   selectedUser: ChatContact;
