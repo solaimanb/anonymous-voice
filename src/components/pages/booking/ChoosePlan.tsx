@@ -42,8 +42,8 @@ export default function ChoosePlan({
       <h1 className="text-center text-xl md:text-2xl font-bold text-violet-hover mb-8">
         Choose Plan
       </h1>
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-8 items-end">
+      <div className="">
+        <div className="flex justify-center gap-4 lg:gap-8 items-end">
           {sessionConfig.requiresDuration && (
             <PlanField
               label="Duration"
@@ -58,6 +58,7 @@ export default function ChoosePlan({
           {sessionConfig.requiresDate && (
             <PlanField label="Date" value={formatDateToLocale(selectedDate)} />
           )}
+
           <Button
             onClick={() => setShowConfirmDialog(true)}
             disabled={isBookingDisabled}
