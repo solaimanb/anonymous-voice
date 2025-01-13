@@ -46,6 +46,8 @@ interface ChatMessagesProps {
   setMessageInput: React.Dispatch<React.SetStateAction<string>>;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   onPhoneClick: () => void;
+  onLoadMore: () => void;
+  hasMore: boolean;
 }
 
 const formatDate = (date: Date) => {
@@ -81,6 +83,8 @@ const ChatMessages = ({
   setMessageInput,
   messagesEndRef,
   onPhoneClick,
+  onLoadMore,
+  hasMore,
 }: ChatMessagesProps) => {
   const { filteredContacts } = useChatContactsStore();
   const router = useRouter();
@@ -115,6 +119,13 @@ const ChatMessages = ({
     setChatSelectedUser(contact);
   };
 
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop } = e.currentTarget;
+    if (scrollTop === 0 && hasMore) {
+      onLoadMore();
+    }
+  };
+
   const renderChatView = () => {
     if (!selectedUser) return null;
 
@@ -133,7 +144,10 @@ const ChatMessages = ({
           onPhoneClick={onPhoneClick}
         />
 
-        <ScrollArea className="flex-1 px-4 py-6 overflow-y-auto">
+        <ScrollArea
+          className="flex-1 px-4 py-6 overflow-y-auto"
+          onScroll={handleScroll}
+        >
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (

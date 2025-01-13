@@ -19,18 +19,6 @@ import { useChatContactsStore } from "@/store/chat-contacts.store";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatContact } from "@/types/chat.types";
 
-// interface ChatContact {
-//   id: string;
-//   username: string;
-//   avatar: string;
-//   lastMessage: string;
-//   timestamp?: string;
-//   isActive?: boolean;
-//   hasHeart?: boolean;
-//   mentorName?: string;
-//   mentorUserName: string;
-// }
-
 interface Message {
   id: string;
   sentBy: string;
@@ -65,6 +53,8 @@ export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);
   const { addMessage } = useChatStore();
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const currentActiveUser = useMemo(() => AuthService.getStoredUser(), []);
   const currentUser = useMemo(
@@ -201,15 +191,17 @@ export default function ChatInterface() {
     };
   }, [currentUser.username, selectedUser]);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
+  const fetchMessages = React.useCallback(
+    async (page: number) => {
       if (!selectedUser) return;
 
       setIsLoading(true);
       try {
         const response = await socketService.getMessagesByUsername(
           selectedUser.username,
+          page,
         );
+        console.log("API Response:", response.data);
         const filteredMessages = response.data.filter(
           (message) =>
             (message.sentBy === currentUser.username &&
@@ -217,17 +209,24 @@ export default function ChatInterface() {
             (message.sentBy === selectedUser.username &&
               message.sentTo === currentUser.username),
         );
-        setMessages(filteredMessages.reverse());
-        scrollToBottom();
+        setMessages((prev) => [...filteredMessages.reverse(), ...prev]);
+        if (response.meta) {
+          setHasMore(response.meta.page < response.meta.total);
+        } else {
+          setHasMore(false);
+        }
       } catch (error) {
         console.error("Error fetching messages:", error);
       } finally {
         setIsLoading(false);
       }
-    };
+    },
+    [selectedUser, currentUser.username],
+  );
 
-    fetchMessages();
-  }, [selectedUser, currentUser.username]);
+  useEffect(() => {
+    fetchMessages(page);
+  }, [selectedUser, currentUser.username, page, fetchMessages]);
 
   useEffect(() => {
     scrollToBottom();
@@ -316,6 +315,8 @@ export default function ChatInterface() {
         messagesEndRef={messagesEndRef}
         currentUser={currentUser}
         onPhoneClick={handlePhoneClick}
+        onLoadMore={() => setPage((prev) => prev + 1)}
+        hasMore={hasMore}
       />
 
       {selectedUser && currentUser.role === "mentor" && (

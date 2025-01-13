@@ -16,6 +16,11 @@ interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+  };
 }
 
 class SocketService {
@@ -81,25 +86,37 @@ class SocketService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error saving message:", error);
-      throw error;
+      if (error instanceof Error) {
+        console.error("Error saving message:", error);
+        throw new Error(`Error saving message: ${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        throw new Error("Unexpected error occurred while saving message");
+      }
     }
   }
 
   async getMessagesByUsername(
     username: string,
+    page: number,
+    limit: number = 10,
   ): Promise<ApiResponse<Message[]>> {
     try {
       const response = await api.get<ApiResponse<Message[]>>(
         `/api/v1/message`,
         {
-          params: { username },
+          params: { username, page, limit },
         },
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching messages:", error);
-      throw error;
+      if (error instanceof Error) {
+        console.error("Error fetching messages:", error);
+        throw new Error(`Error fetching messages: ${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        throw new Error("Unexpected error occurred while fetching messages");
+      }
     }
   }
 
@@ -110,8 +127,13 @@ class SocketService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error fetching message:", error);
-      throw error;
+      if (error instanceof Error) {
+        console.error("Error fetching message:", error);
+        throw new Error(`Error fetching message: ${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        throw new Error("Unexpected error occurred while fetching message");
+      }
     }
   }
 }
