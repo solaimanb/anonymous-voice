@@ -61,6 +61,7 @@ export default function ChatInterface() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [users, setUsers] = useState<ChatContact[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  console.log("Messages from chat:", messages);
   const [selectedUser, setSelectedUser] = useState<ChatContact | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [incomingCall, setIncomingCall] = useState<CallInvitation | null>(null);

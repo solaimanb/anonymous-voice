@@ -1,5 +1,5 @@
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Send, Undo2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,6 +47,23 @@ interface ChatMessagesProps {
   messagesEndRef: React.RefObject<HTMLDivElement>;
   onPhoneClick: () => void;
 }
+
+const formatDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return date.toLocaleDateString(undefined, options);
+};
+
+const isSameDay = (date1: Date, date2: Date) => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
 
 const ChatMessages = ({
   selectedUser,
@@ -101,6 +118,8 @@ const ChatMessages = ({
   const renderChatView = () => {
     if (!selectedUser) return null;
 
+    let lastMessageDate: Date | null = null;
+
     return (
       <div className="flex flex-col h-full bg-gradient-to-b from-background to-muted/20">
         <ChatHeader
@@ -118,49 +137,72 @@ const ChatMessages = ({
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <AnimatePresence initial={false}>
-              {messages?.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className={cn(
-                    "flex mb-4 items-end gap-2",
-                    message.sentBy === currentActiveUser?.userName
-                      ? "justify-end"
-                      : "justify-start",
-                  )}
-                >
-                  {message.sentBy !== currentActiveUser?.userName && (
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage
-                        src="/images/avatar.png"
-                        alt={message.sentBy}
-                      />
-                      <AvatarFallback>{message.sentBy[0]}</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div
+            <div>
+              {messages?.map((message) => {
+                const messageDate = new Date(message.createdAt);
+                const showDateDivider =
+                  !lastMessageDate || !isSameDay(lastMessageDate, messageDate);
+
+                const messageElement = (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
                     className={cn(
-                      "max-w-[80%] rounded-2xl px-4 py-2 shadow-sm",
+                      "flex mb-4 items-end gap-2",
                       message.sentBy === currentActiveUser?.userName
-                        ? "bg-primary text-primary-foreground rounded-br-none"
-                        : "bg-muted rounded-bl-none",
+                        ? "justify-end"
+                        : "justify-start",
                     )}
                   >
-                    <p className="text-sm leading-relaxed">{message.message}</p>
-                    <span className="text-[9px] font-semibold opacity-50 block">
-                      {new Date(message.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
+                    {message.sentBy !== currentActiveUser?.userName && (
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src="/images/avatar.png"
+                          alt={message.sentBy}
+                        />
+                        <AvatarFallback>{message.sentBy[0]}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div
+                      className={cn(
+                        "max-w-[80%] rounded-2xl px-4 py-2 shadow-sm",
+                        message.sentBy === currentActiveUser?.userName
+                          ? "bg-primary text-primary-foreground rounded-br-none"
+                          : "bg-muted rounded-bl-none",
+                      )}
+                    >
+                      <p className="text-sm leading-relaxed">
+                        {message.message}
+                      </p>
+                      <span className="text-[9px] font-semibold opacity-50 block">
+                        {new Date(message.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+
+                lastMessageDate = messageDate;
+
+                return (
+                  <React.Fragment key={message.id}>
+                    {showDateDivider && (
+                      <div className="text-center my-4">
+                        <span className="px-4 py-2 bg-muted text-muted-foreground rounded-full text-xs font-semibold">
+                          {formatDate(messageDate)}
+                        </span>
+                      </div>
+                    )}
+                    {messageElement}
+                  </React.Fragment>
+                );
+              })}
               <div ref={messagesEndRef} />
-            </AnimatePresence>
+            </div>
           )}
         </ScrollArea>
 
