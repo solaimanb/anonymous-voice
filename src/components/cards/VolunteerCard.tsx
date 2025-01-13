@@ -56,6 +56,7 @@ export default function VolunteerCard({
 }: VolunteerProps) {
   const { isAuthenticated, userRole } = useAuth();
   const router = useRouter();
+  console.log("User role: ", userRole);
 
   const handleAction = (action: string) => {
     if (!isAuthenticated) {
@@ -77,7 +78,7 @@ export default function VolunteerCard({
     return actionType === buttonType;
   };
 
-  const isDisabled = userRole !== "mentee";
+  const isDisabled = userRole !== "mentee" && userRole !== "guest";
   const tooltipMessage =
     userRole === "mentor" || userRole === "admin"
       ? "Action not allowed for your role"
@@ -184,7 +185,7 @@ export default function VolunteerCard({
             <Button
               className="bg-soft-paste hover:bg-soft-paste-dark text-white border-0 rounded-md h-11"
               onClick={() => handleAction("quick-call")}
-              disabled={isDisabled || !isButtonEnabled("quick-call")}
+              disabled={!isButtonEnabled("quick-call")}
             >
               <Phone className="w-4 h-4 mr-2" />
               Quick Call
@@ -211,7 +212,7 @@ export default function VolunteerCard({
             <Button
               className="bg-violet hover:bg-violet-dark text-white border-0 rounded-md h-11"
               onClick={() => handleAction("chat")}
-              disabled={isDisabled || !isButtonEnabled("chat")}
+              disabled={!isButtonEnabled("chat")}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
               Chat
@@ -238,7 +239,7 @@ export default function VolunteerCard({
             <Button
               className="bg-soft-paste hover:bg-soft-paste-dark text-white border-0 rounded-md h-11"
               onClick={() => handleAction("booking")}
-              disabled={isDisabled || !isButtonEnabled("booking")}
+              disabled={!isButtonEnabled("booking")}
             >
               <CalendarCheck className="w-4 h-4 mr-2" />
               Book Call
