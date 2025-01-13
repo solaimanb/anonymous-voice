@@ -122,6 +122,7 @@ const ChatMessages = ({
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop } = e.currentTarget;
     if (scrollTop === 0 && hasMore) {
+      console.log("Loading more messages...");
       onLoadMore();
     }
   };

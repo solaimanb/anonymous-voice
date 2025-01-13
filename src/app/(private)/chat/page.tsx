@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 import { AuthService } from "@/services/auth.service";
 import { socketService } from "@/services/socket.service";
@@ -182,16 +182,19 @@ export default function ChatInterface() {
       }
     });
 
-    newSocket.on("private message error", (error: Error) => {
-      console.error("Private message error:", error);
-    });
+    newSocket.on(
+      "private message error",
+      (error: { to: string; message: string }) => {
+        console.error("Private message error:", error);
+      },
+    );
 
     return () => {
       newSocket.disconnect();
     };
   }, [currentUser.username, selectedUser]);
 
-  const fetchMessages = React.useCallback(
+  const fetchMessages = useCallback(
     async (page: number) => {
       if (!selectedUser) return;
 
